@@ -1,0 +1,8 @@
+Chestplate
+Shirt
+Top
+T-Shirt
+Tunic
+Pelt
+Parka
+Coat

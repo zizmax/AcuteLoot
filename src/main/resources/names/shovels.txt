@@ -1,0 +1,6 @@
+Shovel
+Digger
+Excavator
+Grave Digger
+Spade
+Earth Mover

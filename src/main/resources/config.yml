@@ -1,0 +1,206 @@
+####################################################################################################
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                           _              _         __             _                          | #
+# |                          /_\   ___ _   _| |_ ___  / /  ___   ___ | |_                        | #
+# |                         //_\\ / __| | | | __/ _ \/ /  / _ \ / _ \| __|                       | #
+# |                        /  _  \ (__| |_| | ||  __/ /__| (_) | (_) | |_                        | #
+# |                        \_/ \_/\___|\__,_|\__\___\____/\___/ \___/ \__|                       | #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                    SOURCE CODE: https://github.com/zizmax/AcuteLoot                          | #
+# |                                                                                              | #
+# |                    BUG REPORTS: https://github.com/zizmax/AcuteLoot/issues                   | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+####################################################################################################
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                             CORE                                             | #
+# |                                                                                              | #
+# |                       Core configuration for AcuteLoot's basic features                      | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# What should go between names and prefixes and suffixes
+conjunction: "of"
+
+# False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
+use-permissions: true
+
+# Names that look like Japanese katakana syllables (not in .txt files)
+kana-namegen: true
+
+# Color of the names of all AcuteLoot. See below for color options
+loot-name-color: "&3"
+
+# Color of the effects of all AcuteLoot. See below for color options
+loot-effect-color: "&d"
+
+# Debug mode (set to false unless you are actually trying to debug something. It will change the behavior of the plugin)
+debug: false
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                       Loot Settings                                          | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+loot-sources:
+  # Remember, loot comes from enchanting as well!
+  fishing:
+    enabled: true
+    chance: 25 #Percentage
+  chests: # Naturally generated chests ONLY e.g. chests in dungeons
+    enabled: true
+    # This is the chance for any loot to appear in chest as well as additional loot.
+    # Example: 1 loot = 65% chance, 2 loot = 0.65 * 0.65 = 42.25% chance and so on
+    chance: 65 #Percentage
+
+# This is the chance for the "next" enchantment for random loot (from fishing, chests and /al new command
+# All individual enchantments have an equal chance. i.e. Sharpness is just as common as Bane of Arthropods
+# Example: 1 enchantment = 65% chance, 2 enchantments = 0.65 * 0.65 = 42.25% chance and so on
+enchantment-chance: 65 #Percentage
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                         Rarities                                             | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# Rarities MUST be listed in order of ID number (Most common to least common)
+# ID numbers are arbitrary (they are used internally by the plugin to keep track of a rarity even if the name changes)
+# You can add new (and remove old) rarities as you see fit as long as you edit the ID's to match
+# The ID does not have to go in increments of 100. That is just used so that you have room for rarities in between
+# The chances don't HAVE to add up to 100% but you'll get more accurate probabilities if they do
+# Effect chance is chance that loot of that rarity will have ANY effect
+rarities:
+  100: #ID
+    name: "Common"
+    color: "&f"
+    chance: 64
+    effect-chance: 10
+  200: #ID
+    name: "Uncommon"
+    color: "&a"
+    chance: 32
+    effect-chance: 30
+  300: #ID
+    name: "Epic"
+    color: "&d"
+    chance: 16
+    effect-chance: 70
+  400: #ID
+    name: "Legendary"
+    color: "&6"
+    chance: 8
+    effect-chance: 100
+
+# Possible colors
+# If you choose a letter/number outside of this list, the effect will not work correctly!
+# Make sure to include the '&' before ALL codes. You can stack a color with a style, just make sure style comes second
+# E.g. &9&l is bold blue
+  #&4 dark_red
+  #&c red
+  #&6 gold
+  #&e yellow
+  #&2 dark_green
+  #&a green
+  #&b aqua
+  #&3 dark_aqua
+  #&1 dark_blue
+  #&9 blue
+  #&d light_purple
+  #&5 dark_purple
+  #&f white
+  #&7 gray
+  #&8 dark_gray
+  #&0 black
+  #&l Bold
+  #&o Italic
+  #&n Underline
+  #&m Strike
+  #&k Magic
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                           Effects                                            | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+effects:
+  enabled: true
+  # ONLY change "name" and "chance" values
+  # Changing the top level label of an effect WILL BREAK THE PLUGIN
+  # Individual effects can be entirely disabled by setting chance to 0. DO NOT DELETE AN EFFECT TO DISABLE IT
+  # Effect chances are the chance that a specific effect will be chosen out of the effects applicable to that item/material
+  # Example: When enchanting a bow, having ANY effect is based on rarity, but the specific effect it has will be chosen out of the bow effects according to chances below
+
+  # Miscellaneous Effects
+  gardener: # Applicable only to boots
+    name: "Gardener"
+    chance: 1 # Changing this won't do anything currently because it is the only effect for boots
+  enderbow: # Applicable only to bows and crossbows
+    # Launches the shooter like an arrow
+    name: "Enderbow"
+    chance: 5
+  xp-boost: # Applicable only to helmets
+    boost-amount: 1 # Can be changed, measured in raw XP (integer), not a percentage/multiplier
+    name: "XP Boost"
+    chance: 1 # Changing this won't do anything currently because it is the only effect for helmets
+
+  # Bow and Crossbow Effects
+  bows:
+    heart:
+      # Heals target equal to amount of damage dealt, including player
+      name: "Love"
+      chance: 5
+    purple-spark:
+      name: "Cursed"
+      chance: 20
+    lava:
+      name: "Lava"
+      chance: 10
+    drip:
+      name: "Linger"
+      chance: 30
+    sparkle:
+      name: "Sparkle"
+      chance: 30
+
+  # Weapons Effects (swords, axes)
+  weapons:
+    max-distance: 15 # Can be changed. How far out the effect will render. Very large values may be unstable
+    laser:
+      name: "Laser"
+      chance: 4
+    note:
+      name: "Music"
+      chance: 4
+    lava:
+      name: "Lava"
+      chance: 2
+    enchanting-table:
+      name: "Mythic"
+      chance: 10
+    potion-effect:
+      name: "Loopy"
+      chance: 10
+    nautilus:
+      name: "Magic"
+      chance: 10
+    slime:
+      name: "Sticky"
+      chance: 30
+    water-splash:
+      name: "Splash"
+      chance: 30

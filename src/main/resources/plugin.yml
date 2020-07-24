@@ -1,0 +1,34 @@
+name: AcuteLoot
+version: ${project.version}
+main: acute.loot.AcuteLoot
+api-version: 1.13
+authors: ["zizmax", "dizigma"]
+description: Custom loot names and effects in Minecraft
+commands:
+  acuteloot:
+    description: AcuteLoot parent command
+    usage: /<command> [add|remove|reload|stats|help|new]
+    aliases: [al]
+permissions:
+  acuteloot.*:
+    description: All AcuteLoot permissions
+    default: op
+  acuteloot:
+    default: op
+  acuteloot.help:
+    default: op
+  acuteloot.enchant:
+    description: To be able to create AcuteLoot items in enchanting table
+    default: true
+  acuteloot.new:
+    default: op
+  acuteloot.reload:
+    default: op
+  acuteloot.add:
+    default: op
+  acuteloot.remove:
+    default: op
+  acuteloot.rename:
+    default: op
+  acuteloot.stats:
+    default: op

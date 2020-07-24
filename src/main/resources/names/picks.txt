@@ -1,0 +1,6 @@
+Pickaxe
+Miner
+Excavator
+Ore Grabber
+Ore Remover
+Bulldozer
