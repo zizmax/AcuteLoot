@@ -1,5 +1,5 @@
 [![AcuteLoot](https://i.imgur.com/YbJbYAf.png)](https://spigotmc.org)
-#AcuteLoot
+
 AcuteLoot adds customizable, RPG style loot to Minecraft servers with over 6 BILLION unique possibilities. You can create AcuteLoot by in an enchantment table, by fishing up rare treasures, or by finding loot in a naturally-generated chest.
 
 Features
