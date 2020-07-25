@@ -46,8 +46,7 @@ public final class AcuteLoot extends JavaPlugin {
         saveDefaultConfig();
 
         // Connect to bStats
-        //FIXME: THIS ID IS MADE UP FOR NOW
-        int pluginId = 7348;
+        int pluginId = 81899;
         Metrics metrics = new Metrics(this, pluginId);
         metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
 
@@ -56,7 +55,7 @@ public final class AcuteLoot extends JavaPlugin {
         if (!this.isEnabled()) return;
 
         // Check for updates
-        UpdateChecker.init(this, 12038).requestUpdateCheck().whenComplete((result, exception) -> {
+        UpdateChecker.init(this, pluginId).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
                 this.getLogger().warning(String.format(UPDATE_AVAILABLE, result.getNewestVersion()));
                 return;
