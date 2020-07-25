@@ -75,7 +75,7 @@ enchantment-chance: 65 #Percentage
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-# Rarities MUST be listed in order of ID number (Most common to least common)
+# Rarities MUST be listed in order of ID number and chance (Most common to least common)
 # ID numbers are arbitrary (they are used internally by the plugin to keep track of a rarity even if the name changes)
 # You can add new (and remove old) rarities as you see fit as long as you edit the ID's to match
 # The ID does not have to go in increments of 100. That is just used so that you have room for rarities in between
@@ -85,22 +85,22 @@ rarities:
   100: #ID
     name: "Common"
     color: "&f"
-    chance: 64
+    chance: 50
     effect-chance: 10
   200: #ID
     name: "Uncommon"
     color: "&a"
-    chance: 32
+    chance: 30
     effect-chance: 30
   300: #ID
     name: "Epic"
     color: "&d"
-    chance: 16
+    chance: 15
     effect-chance: 70
   400: #ID
     name: "Legendary"
     color: "&6"
-    chance: 8
+    chance: 5
     effect-chance: 100
 
 # Possible colors
