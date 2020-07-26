@@ -9,6 +9,9 @@ import org.bukkit.Particle;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import java.util.Random;
@@ -46,16 +49,15 @@ public final class AcuteLoot extends JavaPlugin {
         saveDefaultConfig();
 
         // Connect to bStats
-        int pluginId = 81899;
+        int pluginId = 7348;
         Metrics metrics = new Metrics(this, pluginId);
-        metrics.addCustomChart(new Metrics.SimplePie("chart_id", () -> "My value"));
 
         // Configure name generators, rarities, and effects
         reloadConfiguration();
         if (!this.isEnabled()) return;
 
         // Check for updates
-        UpdateChecker.init(this, pluginId).requestUpdateCheck().whenComplete((result, exception) -> {
+        UpdateChecker.init(this, 81899).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
                 this.getLogger().warning(String.format(UPDATE_AVAILABLE, result.getNewestVersion()));
                 return;
@@ -112,14 +114,7 @@ public final class AcuteLoot extends JavaPlugin {
             File fileToCheck = new File("plugins/AcuteLoot/names/" + fileName + ".txt");
             if (!fileToCheck.exists()) {
                 try {
-                    InputStream stream = this.getClass().getResourceAsStream("/names/" + fileName + ".txt");
-                    byte[] buffer;
-                    buffer = new byte[stream.available()];
-                    stream.read(buffer);
-                    File fileToWrite = new File("plugins/AcuteLoot/names/" + fileName + ".txt");
-                    OutputStream outStream = null;
-                    outStream = new FileOutputStream(fileToWrite);
-                    outStream.write(buffer);
+                    Files.copy(this.getClass().getResourceAsStream("/names/" + fileName + ".txt"), Paths.get("plugins/AcuteLoot/names/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
                     getLogger().info("Wrote " + fileName + ".txt file");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -132,15 +127,9 @@ public final class AcuteLoot extends JavaPlugin {
             File fileToCheck = new File("plugins/AcuteLoot/names/fixed/" + fileName + ".txt");
             if (!fileToCheck.exists()) {
                 try {
-                    InputStream stream = this.getClass().getResourceAsStream("/names/fixed/" + fileName + ".txt");
-                    byte[] buffer;
-                    buffer = new byte[stream.available()];
-                    stream.read(buffer);
-                    File fileToWrite = new File("plugins/AcuteLoot/names/fixed/" + fileName + ".txt");
-                    OutputStream outStream = null;
-                    outStream = new FileOutputStream(fileToWrite);
-                    outStream.write(buffer);
+                    Files.copy(this.getClass().getResourceAsStream("/names/fixed/" + fileName + ".txt"), Paths.get("plugins/AcuteLoot/names/fixed/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
                     getLogger().info("Wrote fixed/" + fileName + ".txt file");
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -162,16 +151,10 @@ public final class AcuteLoot extends JavaPlugin {
         File fileToCheck = new File("plugins/AcuteLoot/" + fileName + ".txt");
         if (!fileToCheck.exists()) {
             try {
-                InputStream stream = this.getClass().getResourceAsStream("/" + fileName + version + ".txt");
-                byte[] buffer;
-                buffer = new byte[stream.available()];
-                stream.read(buffer);
-                File fileToWrite = new File("plugins/AcuteLoot/" + fileName + ".txt");
-                OutputStream outStream;
-                outStream = new FileOutputStream(fileToWrite);
-                outStream.write(buffer);
+                Files.copy(this.getClass().getResourceAsStream("/" + fileName + version + ".txt"), Paths.get("plugins/AcuteLoot/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
                 getLogger().info("Wrote " + version + " " + fileName + ".txt file");
             } catch (IOException e) {
+                this.getLogger().severe("IO Exception");
                 e.printStackTrace();
             }
         }
