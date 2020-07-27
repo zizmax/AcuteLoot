@@ -29,7 +29,6 @@ public class LootItemGenerator {
      */
     public LootItem generate(double rarity, LootMaterial material) {
         if (rarity < 0 || rarity > 1) throw new IllegalArgumentException("Rarity must be in [0, 1]");
-        rarity = 1.0 - rarity; // Lower is actually rarer for a properly configured pool
         final LootRarity lootRarity = rarityPool.draw(rarity);
         int itemRarity = lootRarity.getId();
 

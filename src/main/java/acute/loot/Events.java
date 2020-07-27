@@ -108,7 +108,7 @@ public class Events implements Listener {
             int enchantRarity = getEnchantRarity(enchantments);
             ItemStack item = event.getItem();
             if (getLootCode(plugin, item) == null) {
-                double chance = 1 - ((AcuteLoot.random.nextDouble() + (enchantRarity / 300.0)) / 2.0);
+                double chance = (AcuteLoot.random.nextDouble() + (enchantRarity / 300.0)) / 2.0;
                 item = createLootItem(item, chance);
                 if (AcuteLoot.debug) {
                     player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType().toString());
