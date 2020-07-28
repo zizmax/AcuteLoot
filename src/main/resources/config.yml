@@ -85,7 +85,7 @@ rarities:
   100: #ID
     name: "Common"
     color: "&f"
-    chance: 50
+    chance: 45
     effect-chance: 10
   200: #ID
     name: "Uncommon"
@@ -100,7 +100,7 @@ rarities:
   400: #ID
     name: "Legendary"
     color: "&6"
-    chance: 5
+    chance: 10
     effect-chance: 100
 
 # Possible colors

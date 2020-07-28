@@ -56,11 +56,6 @@ public final class PermutationCounts {
         final long prefixCount = names * prefixes;
         final long suffixCount = names * suffixes;
         final long prefixSuffixCount = names * prefixes * suffixes;
-        if(AcuteLoot.debug) {
-            Bukkit.getServer().getLogger().info("Prefixes: " + prefixes);
-            Bukkit.getServer().getLogger().info("Suffixes: " + suffixes);
-            Bukkit.getServer().getLogger().info("Names: " + names);
-        }
         return prefixCount + suffixCount + prefixSuffixCount;
     }
 

@@ -61,7 +61,7 @@ public class Commands implements CommandExecutor {
         plugin.reloadConfiguration();
 
         // Check for updates
-        UpdateChecker.init(plugin, 81899).requestUpdateCheck().whenComplete((result, exception) -> {
+        UpdateChecker.init(plugin, AcuteLoot.spigotID).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
                 sender.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE, result
                         .getNewestVersion()));

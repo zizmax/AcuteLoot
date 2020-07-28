@@ -24,10 +24,12 @@ public class BlockTrailEffect extends LootSpecialEffect {
 
             // Gardener effect
             if (plugin.getConfig().getDouble("effects.gardener.chance") > 0) {
-                Location flower_trail = getBlockBehindPlayer(player);
-                if (flower_trail.clone().add(0, -1, 0).getBlock().getType().equals(Material.DIRT) ||
-                    flower_trail.clone().add(0, -1, 0).getBlock().getType().equals(Material.GRASS_BLOCK) ||
-                    flower_trail.clone().add(0, -1, 0).getBlock().getType().equals(Material.COARSE_DIRT)) {
+                Location flower_trail = event.getFrom();
+                Material soilBlock = flower_trail.clone().subtract(0, 1, 0).getBlock().getType();
+                if (soilBlock.equals(Material.DIRT) ||
+                        soilBlock.equals(Material.GRASS_BLOCK) ||
+                        soilBlock.equals(Material.GRASS_PATH) ||
+                        soilBlock.equals(Material.COARSE_DIRT)) {
                     int f = AcuteLoot.random.nextInt(FLOWER_TYPES.length);
                     if (flower_trail.getBlock().getType().equals(Material.AIR)) {
                         for (Player p : plugin.getServer().getOnlinePlayers()) {

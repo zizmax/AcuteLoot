@@ -108,13 +108,16 @@ public class Events implements Listener {
             int enchantRarity = getEnchantRarity(enchantments);
             ItemStack item = event.getItem();
             if (getLootCode(plugin, item) == null) {
-                double chance = (AcuteLoot.random.nextDouble() + (enchantRarity / 300.0)) / 2.0;
+                double seed = AcuteLoot.random.nextDouble();
+                double chance = (seed + (enchantRarity / 300.0)) / 2.0;
                 item = createLootItem(item, chance);
                 if (AcuteLoot.debug) {
                     player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType().toString());
                     player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
-                    player.sendMessage(ChatColor.GOLD + "Rarity seed: " + ChatColor.AQUA + chance);
-                    player.sendMessage(ChatColor.GOLD + "Enchant Rarity: " + ChatColor.AQUA + enchantRarity);
+                    player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
+                    player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA + String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
+                    player.sendMessage(ChatColor.GOLD + "Seed: " + ChatColor.AQUA + String.format("%.2f%%", seed * 100.0));
+                    player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA + String.format("%.2f%%", chance * 100.0));
                     player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta().getLore().get(0));
                 }
             }

@@ -20,6 +20,8 @@ public final class AcuteLoot extends JavaPlugin {
 
     public static final Random random = new Random();
 
+    public static final int spigotID = 81899;
+
     public static boolean debug = false;
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
@@ -49,15 +51,15 @@ public final class AcuteLoot extends JavaPlugin {
         saveDefaultConfig();
 
         // Connect to bStats
-        int pluginId = 7348;
-        Metrics metrics = new Metrics(this, pluginId);
+        int bStatsID = 7348;
+        Metrics metrics = new Metrics(this, bStatsID);
 
         // Configure name generators, rarities, and effects
         reloadConfiguration();
         if (!this.isEnabled()) return;
 
         // Check for updates
-        UpdateChecker.init(this, 81899).requestUpdateCheck().whenComplete((result, exception) -> {
+        UpdateChecker.init(this, spigotID).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
                 this.getLogger().warning(String.format(UPDATE_AVAILABLE, result.getNewestVersion()));
                 return;
