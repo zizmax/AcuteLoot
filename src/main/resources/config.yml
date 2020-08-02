@@ -55,7 +55,7 @@ loot-sources:
   # Remember, loot comes from enchanting as well!
   fishing:
     enabled: true
-    chance: 25 #Percentage
+    chance: 10 #Percentage
   chests: # Naturally generated chests ONLY e.g. chests in dungeons
     enabled: true
     # This is the chance for any loot to appear in chest as well as additional loot.
@@ -157,6 +157,14 @@ effects:
     boost-amount: 1 # Can be changed, measured in raw XP (integer), not a percentage/multiplier
     name: "XP Boost"
     chance: 1 # Changing this won't do anything currently because it is the only effect for helmets
+
+  # [WARNING] EXPERIMENTAL: Only enabled if debug mode is on. Only turn on debug mode if you know what you are doing.
+  # Devs take no responsibility for things breaking with this [BETA] effect. It is currently being tested
+  timewalker: #Applicable only to boots
+    time-shift: 150 # Measured in ticks. (20 ticks per second on a standard server)
+    name: "Time Walker"
+    chance: 50 # This is the second effect for boots, after gardener. Keep that in mind if you enable it.
+    durability-modifier: 1
 
   # Bow and Crossbow Effects
   bows:

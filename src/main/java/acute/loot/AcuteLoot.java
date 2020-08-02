@@ -241,6 +241,13 @@ public final class AcuteLoot extends JavaPlugin {
             if(debug) getLogger().info(effect.getName() + ": " + chance);
             effectChancePool.add(effect, chance);
         }
+
+        // Dev Effects (currently being tested)
+        // Time Walk
+        if(debug) {
+            LootSpecialEffect.registerEffect(new TimewalkEffect("timewalker", 17, Collections.singletonList(LootMaterial.BOOTS), this));
+            effectChancePool.add(LootSpecialEffect.get(17), getConfig().getInt("effects.timewalker.chance"));
+        }
     }
 
     @Override

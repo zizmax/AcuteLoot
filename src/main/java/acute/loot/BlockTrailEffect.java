@@ -50,11 +50,6 @@ public class BlockTrailEffect extends LootSpecialEffect {
         }
     }
 
-    public Location getBlockBehindPlayer(Player player) {
-        Vector inverseVector = player.getLocation().getDirection().normalize().multiply(-1);
-        return player.getLocation().add(inverseVector);
-    }
-
     // Flowers used by the effect
     private static final Material[] FLOWER_TYPES = new Material[]{
             Material.DANDELION, Material.POPPY, Material.BLUE_ORCHID, Material.ALLIUM,

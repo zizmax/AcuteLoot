@@ -1,9 +1,6 @@
 package acute.loot;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
@@ -28,6 +25,7 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -215,8 +213,8 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
-        Entity entity = event.getCaught();
-        if (entity instanceof Item) {
+        Entity caught = event.getCaught();
+        if (caught instanceof Item) {
             if (plugin.getConfig().getBoolean("loot-sources.fishing.enabled")) {
                 double roll = AcuteLoot.random.nextDouble();
                 double chance = plugin.getConfig().getDouble("loot-sources.fishing.chance") / 100.0;
@@ -233,8 +231,13 @@ public class Events implements Listener {
                     event.getPlayer().sendMessage("Enchanted chance: " + chance);
                 if (roll <= chance) {
                     AcuteLoot.random.nextInt();
-                    Item itemEntity = (Item) entity;
+                    Item itemEntity = (Item) caught;
                     ItemStack item = createLootItem();
+                    // Turns out that unlike all the other trees, BAMBOO_SAPLING is NOT the material type
+                    // BAMBOO_SAPLING appears to be the block material ONLY, so will error when applied to an ItemStack
+                    // The original material lists include BAMBOO_SAPLING instead of the correct BAMBOO
+                    // This is a sanity check in case someone is running on the old version
+                    if(item.getType().equals(Material.BAMBOO_SAPLING)) item.setType(Material.BAMBOO);
                     itemEntity.setItemStack(item);
                 }
             }
@@ -327,7 +330,6 @@ public class Events implements Listener {
     // Create Loot Item with RANDOM type
     public ItemStack createLootItem() {
         Random random = AcuteLoot.random;
-
         int materialIndex = random.nextInt(materials.size());
         ItemStack item = new ItemStack(materials.get(materialIndex), 1);
 
@@ -399,19 +401,18 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-
-        // Block Trail Effect
-        // For now only "gardener"
         Player player = event.getPlayer();
-        if (player.isOnGround() && event.getFrom().getBlockX() != (event.getTo().getBlockX())
-                || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
-                || event.getFrom().getBlockY() != (event.getTo().getBlockY())) {
-            if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getBoots() != null) {
-                String lootCode = getLootCode(plugin, player.getInventory().getBoots());
-                if (lootCode != null) {
-                    LootItem loot = new LootItem(lootCode);
-                    List<LootSpecialEffect> effects = loot.getEffects();
-                    effects.forEach(e -> e.apply(event));
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getBoots() != null){
+            String lootCode = getLootCode(plugin, player.getInventory().getBoots());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                // Block Trail Effect and Time Walk Effect
+                // Check if player moves between a block
+                if (player.isOnGround() && (event.getFrom().getBlockX() != (event.getTo().getBlockX())
+                        || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
+                        || event.getFrom().getBlockY() != event.getTo().getBlockY())) {
+                        effects.forEach(e -> e.apply(event));
                 }
             }
         }

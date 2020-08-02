@@ -130,6 +130,7 @@ public class Commands implements CommandExecutor {
 
     private void newCommand(CommandSender sender) {
         Player player = (Player) sender;
+
         ItemStack item = new Events(plugin).createLootItem();
         if (player.getInventory().firstEmpty() != -1) {
             player.getInventory().addItem(item);
