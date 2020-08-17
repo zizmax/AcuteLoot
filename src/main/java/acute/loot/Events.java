@@ -1,5 +1,6 @@
 package acute.loot;
 
+import acute.loot.namegen.NameGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -283,21 +284,54 @@ public class Events implements Listener {
         return null;
     }
 
+    // Create Loot Item with RANDOM type
+    public ItemStack createLootItem() {
+        Random random = AcuteLoot.random;
+        int materialIndex = random.nextInt(materials.size());
+        ItemStack item = new ItemStack(materials.get(materialIndex), 1);
+
+        // Set random damage if Material is damageable
+        if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
+            Damageable dmgItemMeta = (Damageable) item.getItemMeta();
+            int damage = random.nextInt(item.getType().getMaxDurability());
+            dmgItemMeta.setDamage(damage);
+            item.setItemMeta((ItemMeta) dmgItemMeta);
+        }
+
+        return createLootItem(item, random.nextDouble());
+    }
+
+
     // Create Loot Item with GIVEN type
     public ItemStack createLootItem(ItemStack item, double rarity) {
         // Generate loot: name, rarity and effects
         LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
-        LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
+        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
         if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
             return item;
         }
-        LootItem loot = generator.generate(rarity, lootMaterial);
+        return createLootItem(item, generator.generate(rarity, lootMaterial));
+    }
+
+    public ItemStack createLootItem(ItemStack item, int rarity, List<Integer> effects) {
+        return createLootItem(item, new LootItem(rarity, effects));
+    }
+
+    public ItemStack createLootItem(ItemStack item, final LootItem loot) {
+        return createLootItem(item, loot, AcuteLoot.nameGenChancePool.draw());
+    }
+
+    public ItemStack createLootItem(ItemStack item, final LootItem loot, final NameGenerator nameGenerator) {
+        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
+        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
+            return item;
+        }
 
         String name = null;
         int attempts = 100;
         do {
             try {
-                name = AcuteLoot.nameGenChancePool.draw().generate(lootMaterial, loot.rarity());
+                name = nameGenerator.generate(lootMaterial, loot.rarity());
             } catch (NoSuchElementException e) {
                 // Couldn't draw a name for some reason, try again
                 attempts--;
@@ -325,78 +359,6 @@ public class Events implements Listener {
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
         item.setItemMeta(meta);
 
-        return item;
-    }
-
-    // Create Loot Item with RANDOM type
-    public ItemStack createLootItem() {
-        Random random = AcuteLoot.random;
-        int materialIndex = random.nextInt(materials.size());
-        ItemStack item = new ItemStack(materials.get(materialIndex), 1);
-
-        // Set random damage if Material is damageable
-        if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
-            Damageable dmgItemMeta = (Damageable) item.getItemMeta();
-            int damage = random.nextInt(item.getType().getMaxDurability());
-            dmgItemMeta.setDamage(damage);
-            item.setItemMeta((ItemMeta) dmgItemMeta);
-        }
-
-
-        // Generate loot: name, rarity and effects
-        LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
-        LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
-            return item;
-        }
-        double rarity = random.nextDouble();
-        LootItem loot = generator.generate(rarity, lootMaterial);
-
-        String name = null;
-        int attempts = 100;
-        do {
-            try {
-                name = AcuteLoot.nameGenChancePool.draw().generate(lootMaterial, loot.rarity());
-            } catch (NoSuchElementException e) {
-                // Couldn't draw a name for some reason, try again
-                attempts--;
-            }
-        } while (name == null && attempts > 0);
-        if (attempts == 0) {
-            // THIS IS BAD! Couldn't make a name!
-        }
-
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = new ArrayList<>();
-
-        // Store lootCode in metadata using PersistentDataHolder API
-        NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, loot.lootCode());
-
-        // Add loot info to lore and display name
-        lore.add(loot.rarity().getRarityColor() + loot.rarity().getName());
-        for (LootSpecialEffect effect : loot.getEffects()) {
-            String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
-            lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
-        }
-        meta.setLore(lore);
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
-        item.setItemMeta(meta);
-
-        // Add enchantments
-        List<Enchantment> possible = new ArrayList<Enchantment>();
-        for (Enchantment ench : Enchantment.values()) {
-            if (ench.canEnchantItem(item)) {
-                possible.add(ench);
-            }
-        }
-        double chanceToAddEnchantment = plugin.getConfig().getInt("enchantment-chance") / 100.0;
-        for (int i = 0; i < possible.size(); i++) {
-            Collections.shuffle(possible);
-            if (AcuteLoot.random.nextDouble() < 1 - chanceToAddEnchantment) break;
-            item.addEnchantment(possible.get(i), 1 + (AcuteLoot.random.nextInt((possible.get(i).getMaxLevel() - 1) + 1)));
-            i++;
-        }
         return item;
     }
 

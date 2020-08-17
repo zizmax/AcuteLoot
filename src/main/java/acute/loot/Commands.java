@@ -106,19 +106,21 @@ public class Commands implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(Events.getLootCode(plugin, item) == null) {
-                if(AcuteLoot.rarityNames.keySet().contains(args[1])) {
-                    if(args.length > 2) {
-                        if(AcuteLoot.effectNames.keySet().contains(args[2])){
-                            // Create AcuteLoot with specified rarity and effect
+            if (Events.getLootCode(plugin, item) == null) {
+                if (AcuteLoot.rarityNames.containsKey(args[1])) {
+                    final int rarity = AcuteLoot.rarityNames.get(args[1]);
+                    final List<Integer> effects = new ArrayList<>();
+                    if (args.length > 2) {
+                        if (AcuteLoot.effectNames.containsKey(args[2])){
+                            effects.add(AcuteLoot.effectNames.get(args[2]));
                         }
                         else {
                             player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
+                            return; // Do not apply the rarity if the effect is invalid
                         }
                     }
-                    else {
-                        // Create AcuteLoot with only specified rarity
-                    }
+
+                    new Events(plugin).createLootItem(item, rarity, effects);
                 }
                 else {
                     player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[1] + " doesn't exist");
