@@ -15,9 +15,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Commands implements CommandExecutor {
+public class Commands implements CommandExecutor, TabCompleter {
     private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename");
-    public static final TabCompleter TAB_COMPLETER = (s, c, l, args) -> (args.length == 1) ? StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, new ArrayList<>()) : null;
+    //public static final TabCompleter TAB_COMPLETER = (s, c, l, args) -> (args.length == 1) ? StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, new ArrayList<>()) : null;
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+        List<String> possibleArguments = new ArrayList<>();
+        if(args.length == 1){
+            StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, possibleArguments);
+            return possibleArguments;
+        }
+        if(args.length >= 2 && (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("new"))){
+            StringUtil.copyPartialMatches(args[1], AcuteLoot.rarityNames.keySet(), possibleArguments);
+            if(args.length == 3){
+                possibleArguments.clear();
+                StringUtil.copyPartialMatches(args[2], AcuteLoot.effectNames.keySet(), possibleArguments);
+                return possibleArguments;
+            }
+            return possibleArguments;
+        }
+        return null;
+    };
+
     private final AcuteLoot plugin;
 
     public Commands(AcuteLoot plugin) {
@@ -82,11 +102,31 @@ public class Commands implements CommandExecutor {
 
     }
 
-    private void addCommand(CommandSender sender) {
+    private void addCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            player.sendMessage(AcuteLoot.CHAT_PREFIX + "Coming soon!");
+            if(Events.getLootCode(plugin, item) == null) {
+                if(AcuteLoot.rarityNames.keySet().contains(args[1])) {
+                    if(args.length > 2) {
+                        if(AcuteLoot.effectNames.keySet().contains(args[2])){
+                            // Create AcuteLoot with specified rarity and effect
+                        }
+                        else {
+                            player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
+                        }
+                    }
+                    else {
+                        // Create AcuteLoot with only specified rarity
+                    }
+                }
+                else {
+                    player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[1] + " doesn't exist");
+                }
+            }
+            else{
+                player.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is already AcuteLoot");
+            }
         } else {
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "You must be holding something");
         }
@@ -103,9 +143,9 @@ public class Commands implements CommandExecutor {
                 NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
                 meta.getPersistentDataContainer().remove(key);
                 item.setItemMeta(meta);
-                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Loot removed");
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot removed");
             } else {
-                player.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is not loot");
+                player.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is not AcuteLoot");
             }
         } else {
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "You must be holding something");
@@ -197,9 +237,9 @@ public class Commands implements CommandExecutor {
                     if (sender instanceof Player) {
                         if (hasPermission(sender, "acuteloot.add")) {
                             if (args.length > 1) {
-                                addCommand(sender);
+                                addCommand(sender, args);
                             } else {
-                                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "/acuteloot add [effect]");
+                                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "/acuteloot add [rarity] <effect>");
                             }
                             return true;
                         } else {

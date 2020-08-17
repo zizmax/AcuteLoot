@@ -37,6 +37,9 @@ public final class AcuteLoot extends JavaPlugin {
     public static final IntegerChancePool<LootSpecialEffect> effectChancePool = new IntegerChancePool<>(random);
     public static final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
 
+    public static final HashMap<String, Integer> rarityNames = new HashMap<>();
+    public static final HashMap<String, Integer> effectNames = new HashMap<>();
+
     // Minecraft version: Used for materials compatibility
     public static final int serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2,4));
 
@@ -45,7 +48,6 @@ public final class AcuteLoot extends JavaPlugin {
         // Register events and commands
         getServer().getPluginManager().registerEvents(new Events(this), this);
         getCommand("acuteloot").setExecutor(new Commands(this));
-        getCommand("acuteloot").setTabCompleter(Commands.TAB_COMPLETER);
 
         // Save/read config.yml
         saveDefaultConfig();
@@ -179,6 +181,7 @@ public final class AcuteLoot extends JavaPlugin {
         // Set up rarities (changes in id's must be updated further down as well)
         LootRarity.getRarities().clear();
         rarityChancePool.clear();
+        rarityNames.clear();
         for(String key : getConfig().getConfigurationSection("rarities").getKeys(false)){
             int id;
             try {
@@ -191,6 +194,9 @@ public final class AcuteLoot extends JavaPlugin {
                 return;
             }
             String name = getConfig().getString("rarities." + id + ".name");
+
+            // Add "tab completer-safe" name to HashMap of rarities
+            rarityNames.put(name.replace(' ', '_'), id);
             String color = ChatColor.translateAlternateColorCodes('&', getConfig().getString("rarities." + id + ".color"));
             int chance =  getConfig().getInt("rarities." + id + ".chance");
             double effectChance = getConfig().getInt("rarities." + id + ".effect-chance") / 100.0;
@@ -236,10 +242,13 @@ public final class AcuteLoot extends JavaPlugin {
 
         // Rebuild the effect chance pool
         effectChancePool.clear();
+        effectNames.clear();
         for (LootSpecialEffect effect : LootSpecialEffect.getEffects().values()) {
             int chance = getConfig().getInt("effects." + effect.getName().replace("_", ".") + ".chance");
             if(debug) getLogger().info(effect.getName() + ": " + chance);
             effectChancePool.add(effect, chance);
+            // Add "tab completer-safe" name to HashMap of effects
+            effectNames.put(effect.getName(), effect.getId());
         }
 
         // Dev Effects (currently being tested)
@@ -247,6 +256,7 @@ public final class AcuteLoot extends JavaPlugin {
         if(debug) {
             LootSpecialEffect.registerEffect(new TimewalkEffect("timewalker", 17, Collections.singletonList(LootMaterial.BOOTS), this));
             effectChancePool.add(LootSpecialEffect.get(17), getConfig().getInt("effects.timewalker.chance"));
+            effectNames.put(LootSpecialEffect.get(17).getName(), LootSpecialEffect.get(17).getId());
         }
     }
 
