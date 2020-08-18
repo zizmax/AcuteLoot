@@ -284,25 +284,28 @@ public class Events implements Listener {
         return null;
     }
 
-    // Create Loot Item with RANDOM type
-    public ItemStack createLootItem() {
-        Random random = AcuteLoot.random;
-        int materialIndex = random.nextInt(materials.size());
+    public static ItemStack chooseLootMaterial(){
+        int materialIndex = AcuteLoot.random.nextInt(materials.size());
         ItemStack item = new ItemStack(materials.get(materialIndex), 1);
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
             Damageable dmgItemMeta = (Damageable) item.getItemMeta();
-            int damage = random.nextInt(item.getType().getMaxDurability());
+            int damage = AcuteLoot.random.nextInt(item.getType().getMaxDurability());
             dmgItemMeta.setDamage(damage);
             item.setItemMeta((ItemMeta) dmgItemMeta);
         }
+        return item;
+    }
 
-        return createLootItem(item, random.nextDouble());
+    // Create Loot Item with RANDOM material
+    public ItemStack createLootItem() {
+        ItemStack item = chooseLootMaterial();
+        return createLootItem(item, AcuteLoot.random.nextDouble());
     }
 
 
-    // Create Loot Item with GIVEN type
+    // Create Loot Item with GIVEN material
     public ItemStack createLootItem(ItemStack item, double rarity) {
         // Generate loot: name, rarity and effects
         LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
@@ -315,6 +318,12 @@ public class Events implements Listener {
 
     public ItemStack createLootItem(ItemStack item, int rarity, List<Integer> effects) {
         return createLootItem(item, new LootItem(rarity, effects));
+    }
+
+    public ItemStack createLootItem(ItemStack item, int rarity) {
+        //FIXME: Need LootItem that only takes int rarity
+        //return createLootItem(item, new LootItem(rarity));
+        return createLootItem(item, new LootItem(rarity, new ArrayList<>()));
     }
 
     public ItemStack createLootItem(ItemStack item, final LootItem loot) {

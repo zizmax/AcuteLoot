@@ -1,7 +1,10 @@
 package acute.loot;
 
 
+import acute.loot.namegen.JPKanaNameGenerator;
+import acute.loot.namegen.NameGenerator;
 import acute.loot.namegen.PermutationCounts;
+import acute.loot.namegen.PrefixSuffixNameGenerator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -107,23 +110,29 @@ public class Commands implements CommandExecutor, TabCompleter {
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (Events.getLootCode(plugin, item) == null) {
-                if (AcuteLoot.rarityNames.containsKey(args[1])) {
-                    final int rarity = AcuteLoot.rarityNames.get(args[1]);
-                    final List<Integer> effects = new ArrayList<>();
-                    if (args.length > 2) {
-                        if (AcuteLoot.effectNames.containsKey(args[2])){
-                            effects.add(AcuteLoot.effectNames.get(args[2]));
-                        }
-                        else {
-                            player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
-                            return; // Do not apply the rarity if the effect is invalid
-                        }
-                    }
-
-                    new Events(plugin).createLootItem(item, rarity, effects);
-                }
+                if(args.length == 1) new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
                 else {
-                    player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[1] + " doesn't exist");
+                    if (AcuteLoot.rarityNames.containsKey(args[1])) {
+                        final int rarity = AcuteLoot.rarityNames.get(args[1]);
+                        final List<Integer> effects = new ArrayList<>();
+                        if (args.length > 2) {
+                            if (AcuteLoot.effectNames.containsKey(args[2])) {
+                                effects.add(AcuteLoot.effectNames.get(args[2]));
+                            } else {
+                                player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
+                                return; // Do not apply the rarity if the effect is invalid
+                            }
+                            new Events(plugin).createLootItem(item, rarity, effects);
+                        }
+                        else new Events(plugin).createLootItem(item, rarity);
+
+                        //TODO: Add new /al name command??
+                        //TODO: Add name generator using getNamegeneratorByName() or something
+                        new Events(plugin).createLootItem(item, new LootItem(rarity, effects), PrefixSuffixNameGenerator.getPrefixGenerator());
+
+                    } else {
+                        player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[1] + " doesn't exist");
+                    }
                 }
             }
             else{
@@ -170,10 +179,35 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     }
 
-    private void newCommand(CommandSender sender) {
+    private void newCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
+        ItemStack item = Events.chooseLootMaterial();
+        if(args.length == 1) new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
+        else{
+            if (AcuteLoot.rarityNames.containsKey(args[1])) {
+                final int rarity = AcuteLoot.rarityNames.get(args[1]);
+                if(args.length == 2){
+                    new Events(plugin).createLootItem(item, rarity);
+                    return;
+                }
+                final List<Integer> effects = new ArrayList<>();
+                if (args.length > 2) {
+                    if (AcuteLoot.effectNames.containsKey(args[2])){
+                        effects.add(AcuteLoot.effectNames.get(args[2]));
+                    }
+                    else {
+                        player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
+                        return; // Do not apply the rarity if the effect is invalid
+                    }
+                }
+                new Events(plugin).createLootItem(item, rarity, effects);
 
-        ItemStack item = new Events(plugin).createLootItem();
+            }
+            else {
+                player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[1] + " doesn't exist");
+                return;
+            }
+        }
         if (player.getInventory().firstEmpty() != -1) {
             player.getInventory().addItem(item);
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "Created " + ChatColor.GOLD + item.getType());
@@ -197,6 +231,32 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 name = name + args[args.length - 1];
                 meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
+            } else {
+                // Setting to null will force the default material name
+                meta.setDisplayName(null);
+            }
+            item.setItemMeta(meta);
+
+        } else {
+            player.sendMessage(AcuteLoot.CHAT_PREFIX + "You must be holding something");
+        }
+
+    }
+
+    private void nameCommand(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (item.getType() != Material.AIR) {
+            ItemMeta meta = item.getItemMeta();
+            if (args.length > 1) {
+                List<String> nameGeneratorNames = new ArrayList<>();
+                for (NameGenerator generator: AcuteLoot.nameGenChancePool.values()) {
+                    //FIXME: Is there a better way to get the readable name of a name generator?
+                    nameGeneratorNames.add(generator.toString());
+                }
+                //FIXME: Needs method to get string from specific name generator
+                //TODO: Document /al name everywhere: like Spigot profile, tab completer, permissions, etc
+                meta.setDisplayName("TESTING");
             } else {
                 // Setting to null will force the default material name
                 meta.setDisplayName(null);
@@ -238,11 +298,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 else if (args[0].equalsIgnoreCase("add")) {
                     if (sender instanceof Player) {
                         if (hasPermission(sender, "acuteloot.add")) {
-                            if (args.length > 1) {
-                                addCommand(sender, args);
-                            } else {
-                                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "/acuteloot add [rarity] <effect>");
-                            }
+                            addCommand(sender, args);
                             return true;
                         } else {
                             sender.sendMessage(PERM_DENIED_MSG);
@@ -302,11 +358,27 @@ public class Commands implements CommandExecutor, TabCompleter {
 
                 }
 
+                // Name
+                else if (args[0].equalsIgnoreCase("name")) {
+                    if (sender instanceof Player) {
+                        if (hasPermission(sender, "acuteloot.name")) {
+                            nameCommand(sender, args);
+                            return true;
+                        } else {
+                            sender.sendMessage(PERM_DENIED_MSG);
+                        }
+                    } else {
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
+                    }
+                    return true;
+
+                }
+
                 // New
                 else if (args[0].equalsIgnoreCase("new")) {
                     if (sender instanceof Player) {
                         if (hasPermission(sender, "acuteloot.new")) {
-                            newCommand(sender);
+                            newCommand(sender, args);
                         } else {
                             sender.sendMessage(PERM_DENIED_MSG);
                         }

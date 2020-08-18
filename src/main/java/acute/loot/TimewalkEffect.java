@@ -30,49 +30,55 @@ public class TimewalkEffect extends LootSpecialEffect{
                 Player player = ((PlayerMoveEvent) origEvent).getPlayer();
                 ItemStack boots = player.getInventory().getBoots();
                 ItemMeta meta = boots.getItemMeta();
-                if(((Damageable) meta).getDamage() > boots.getType().getMaxDurability()) {
+                if (((Damageable) meta).getDamage() > boots.getType().getMaxDurability()) {
                     player.getInventory().setBoots(null);
                     player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
                     return;
                 }
                 ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig().getInt("effects.timewalker.durability-modifier"));
                 boots.setItemMeta(meta);
-                World world = player.getWorld();
+                Vector travel = event.getFrom().toVector().subtract(event.getTo().toVector());
+                float direction = player.getLocation().getDirection().angle(travel);
                 int timeWarp = plugin.getConfig().getInt("effects.timewalker.time-shift");
                 int cropGrowthFactor = 1;
                 boolean forward = true;
-                Vector travel = event.getFrom().toVector().subtract(event.getTo().toVector());
-                float direction = player.getLocation().getDirection().angle(travel);
-                if (direction < 1) {
-                    timeWarp = -timeWarp;
-                    cropGrowthFactor = -cropGrowthFactor;
-                    forward = false;
-                }
-                world.setTime(world.getTime() + timeWarp);
-                List<Entity> entities = player.getNearbyEntities(30, 5, 30);
-                for (Entity entity: entities) {
-                    if(entity instanceof org.bukkit.entity.Ageable) {
-                        org.bukkit.entity.Ageable ageable = (org.bukkit.entity.Ageable) entity;
-                        entity.setCustomName(String.valueOf(ageable.getAge()));
-                        double roll = AcuteLoot.random.nextDouble();
-                        double chance = 20 / 100.0;
-                        if(ageable.getAge() < 0 && roll < chance) {
-                            playGrowthParticles(forward, entity.getLocation());
-                            ageable.setAge(ageable.getAge() + timeWarp);
-                            //ageable.setCustomName(String.valueOf(ageable.getAge()));
-                            //ageable.setCustomNameVisible(true);
+                //TODO: Remove debug titles
+                if (forward) {
+                    if(direction > 1.65) player.sendTitle("forward", "" + direction, 0, 1, 0);
+                    else if (direction < 1.2) {
+                        timeWarp = -timeWarp;
+                        cropGrowthFactor = -cropGrowthFactor;
+                        forward = false;
+                        player.sendTitle("backward", "" + direction, 0, 1, 0);
+                    }
+                    else player.sendTitle("???", "" + direction, 0, 1, 0);
+                    World world = player.getWorld();
+                    world.setTime(world.getTime() + timeWarp);
+                    List<Entity> entities = player.getNearbyEntities(30, 5, 30);
+                    for (Entity entity : entities) {
+                        if (entity instanceof org.bukkit.entity.Ageable) {
+                            org.bukkit.entity.Ageable ageable = (org.bukkit.entity.Ageable) entity;
+                            entity.setCustomName(String.valueOf(ageable.getAge()));
+                            double roll = AcuteLoot.random.nextDouble();
+                            double chance = 20 / 100.0;
+                            if (ageable.getAge() < 0 && roll < chance) {
+                                playGrowthParticles(forward, entity.getLocation());
+                                ageable.setAge(ageable.getAge() + timeWarp);
+                                //ageable.setCustomName(String.valueOf(ageable.getAge()));
+                                //ageable.setCustomNameVisible(true);
+                            }
                         }
                     }
-                }
-                List<Block> blocks = getNearbyBlocks(player.getLocation(), 20, 5, 20);
-                for (Block block:blocks) {
-                    if(block.getBlockData() instanceof org.bukkit.block.data.Ageable) {
-                        Ageable ageable = (Ageable) block.getBlockData();
-                        double roll = AcuteLoot.random.nextDouble();
-                        double chance = 10 / 100.0;
-                        if(((ageable.getAge() < ageable.getMaximumAge() && forward) || (ageable.getAge() > 0 && !forward)) && roll < chance) {
-                            ageable.setAge(ageable.getAge() + cropGrowthFactor);
-                            block.setBlockData(ageable);
+                    List<Block> blocks = getNearbyBlocks(player.getLocation(), 20, 5, 20);
+                    for (Block block : blocks) {
+                        if (block.getBlockData() instanceof org.bukkit.block.data.Ageable) {
+                            Ageable ageable = (Ageable) block.getBlockData();
+                            double roll = AcuteLoot.random.nextDouble();
+                            double chance = 10 / 100.0;
+                            if (((ageable.getAge() < ageable.getMaximumAge() && forward) || (ageable.getAge() > 0 && !forward)) && roll < chance) {
+                                ageable.setAge(ageable.getAge() + cropGrowthFactor);
+                                block.setBlockData(ageable);
+                            }
                         }
                     }
                 }
