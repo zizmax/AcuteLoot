@@ -320,10 +320,13 @@ public class Events implements Listener {
         return createLootItem(item, new LootItem(rarity, effects));
     }
 
-    public ItemStack createLootItem(ItemStack item, int rarity) {
-        //FIXME: Need LootItem that only takes int rarity
-        //return createLootItem(item, new LootItem(rarity));
-        return createLootItem(item, new LootItem(rarity, new ArrayList<>()));
+    public ItemStack createLootItem(ItemStack item, LootRarity rarity) {
+        LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
+        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
+        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
+            return item;
+        }
+        return createLootItem(item, generator.generateWithRarity(rarity, lootMaterial));
     }
 
     public ItemStack createLootItem(ItemStack item, final LootItem loot) {

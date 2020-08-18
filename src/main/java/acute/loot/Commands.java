@@ -16,6 +16,7 @@ import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Commands implements CommandExecutor, TabCompleter {
@@ -114,21 +115,20 @@ public class Commands implements CommandExecutor, TabCompleter {
                 else {
                     if (AcuteLoot.rarityNames.containsKey(args[1])) {
                         final int rarity = AcuteLoot.rarityNames.get(args[1]);
-                        final List<Integer> effects = new ArrayList<>();
                         if (args.length > 2) {
                             if (AcuteLoot.effectNames.containsKey(args[2])) {
-                                effects.add(AcuteLoot.effectNames.get(args[2]));
+                                final LootItem lootItem = new LootItem(rarity, Collections.singletonList(AcuteLoot.effectNames.get(args[2])));
+                                new Events(plugin).createLootItem(item, lootItem);
                             } else {
                                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
-                                return; // Do not apply the rarity if the effect is invalid
                             }
-                            new Events(plugin).createLootItem(item, rarity, effects);
+                        } else {
+                            new Events(plugin).createLootItem(item, LootRarity.get(rarity));
                         }
-                        else new Events(plugin).createLootItem(item, rarity);
 
                         //TODO: Add new /al name command??
                         //TODO: Add name generator using getNamegeneratorByName() or something
-                        new Events(plugin).createLootItem(item, new LootItem(rarity, effects), PrefixSuffixNameGenerator.getPrefixGenerator());
+                        new Events(plugin).createLootItem(item, new LootItem(rarity, Collections.emptyList()), PrefixSuffixNameGenerator.getPrefixGenerator());
 
                     } else {
                         player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[1] + " doesn't exist");

@@ -22,14 +22,25 @@ public class LootItemGenerator {
     }
 
     /**
-     * Generate a loot item using the given rarity
+     * Generate a loot item using the given rarity and material.
      *
      * @param rarity Rarity of the item generated. Higher is rarer. Must be in [0, 1]
+     * @param material Material of the item generated.
      * @return A randomly generated LootItem
      */
     public LootItem generate(double rarity, LootMaterial material) {
         if (rarity < 0 || rarity > 1) throw new IllegalArgumentException("Rarity must be in [0, 1]");
         final LootRarity lootRarity = rarityPool.draw(rarity);
+        return generateWithRarity(lootRarity, material);
+    }
+
+    /**
+     * Generate a loot item with the provided rarity and material.
+     * @param lootRarity Rarity of the item generated. Higher is rarer. Must be in [0, 1]
+     * @param material Material of the item generated.
+     * @return A randomly generated LootItem with the provided rarity
+     */
+    public LootItem generateWithRarity(LootRarity lootRarity, LootMaterial material) {
         int itemRarity = lootRarity.getId();
 
         List<Integer> effects = new ArrayList<>();
