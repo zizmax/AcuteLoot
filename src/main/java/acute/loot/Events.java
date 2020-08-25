@@ -1,34 +1,35 @@
 package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
-import org.bukkit.event.player.PlayerExpChangeEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.projectiles.ProjectileSource;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -127,23 +128,61 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerHitMob(EntityDamageByEntityEvent event) {
+        if(event.getDamager() instanceof Player){
+            if(DeadEyeEffect.deadEyeArrowsShot.containsKey(event.getDamager())){
+                // Cancel player's attacks while in Dead Eye
+                event.setCancelled(true);
+            }
+        }
+
         if (event.getDamager() instanceof Arrow) {
             Arrow arrow = (Arrow) event.getDamager();
             if (arrow.getShooter() instanceof Player) {
                 if (plugin.getConfig().getBoolean("effects.enabled") && ((Player) arrow.getShooter()).getInventory()
                                                                                                      .getItemInMainHand()
                                                                                                      .getType() == Material.BOW) {
-                    String lootCode = getLootCode(plugin, ((Player) arrow.getShooter()).getInventory()
-                                                                                       .getItemInMainHand());
-                    if (lootCode != null) {
-                        LootItem loot = new LootItem(lootCode);
-                        List<LootSpecialEffect> effects = loot.getEffects();
-                        effects.forEach(e -> e.apply(event));
+                    if(event.getEntity() instanceof LivingEntity) {
+                        if(arrow.hasMetadata("deadEye")) {
+                            LivingEntity livingEntity = (LivingEntity) event.getEntity();
+                            livingEntity.setMaximumNoDamageTicks(0);
+                            livingEntity.setNoDamageTicks(0);
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    livingEntity.setNoDamageTicks(0);
+                                }
+                            }.runTaskLater(plugin, 1L);
+                            // Set maximumNoDamageTicks back to default after all arrows have hit
+                            new BukkitRunnable() {
+                                @Override
+                                public void run() {
+                                    livingEntity.setMaximumNoDamageTicks(20);
+                                }
+
+                            }.runTaskLater(plugin, 20L);
+                        }
+                        String lootCode = getLootCode(plugin, ((Player) arrow.getShooter()).getInventory()
+                                .getItemInMainHand());
+                        if (lootCode != null) {
+                            LootItem loot = new LootItem(lootCode);
+                            List<LootSpecialEffect> effects = loot.getEffects();
+                            effects.forEach(e -> e.apply(event));
+                        }
                     }
                 }
             }
         }
     }
+
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if(event.getEntity().hasMetadata("turnedToStone")) {
+            String message = plugin.getConfig().getString("effects.medusa.death-message");
+            event.setDeathMessage(event.getEntity().getDisplayName() + " " + message);
+        }
+    }
+
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -211,6 +250,21 @@ public class Events implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onDropItem(PlayerDropItemEvent event){
+        /*
+        // May be used in the future to prevent Dead Eye from activating while viewing inventory
+        // This "bug" could potentially be fixed by putting the entire Dead Eye logic into a Runnable that
+        // executes in the next tick instead of the current tick. This would allow this event to mark that
+        // PlayerInteractEvent was actually associated with dropping an item out of inventory and NOT a true
+        // interaction. This event is called after PlayerInteractEvent so without delaying it by a tick,
+        // setting the association won't do anything.
+
+        // Example of what this event could do to mark its association with PlayerInteractEvent
+        deadEyeArrowsShot.putIfAbsent((Player) event.getPlayer(), -3);
+         */
     }
 
     @EventHandler
@@ -316,8 +370,8 @@ public class Events implements Listener {
         return createLootItem(item, generator.generate(rarity, lootMaterial));
     }
 
-    public ItemStack createLootItem(ItemStack item, int rarity, List<Integer> effects) {
-        return createLootItem(item, new LootItem(rarity, effects));
+    public ItemStack createLootItem(ItemStack item, int rarityID, List<Integer> effects) {
+        return createLootItem(item, new LootItem(rarityID, effects));
     }
 
     public ItemStack createLootItem(ItemStack item, LootRarity rarity) {
@@ -329,11 +383,8 @@ public class Events implements Listener {
         return createLootItem(item, generator.generateWithRarity(rarity, lootMaterial));
     }
 
-    public ItemStack createLootItem(ItemStack item, final LootItem loot) {
-        return createLootItem(item, loot, AcuteLoot.nameGenChancePool.draw());
-    }
 
-    public ItemStack createLootItem(ItemStack item, final LootItem loot, final NameGenerator nameGenerator) {
+    public ItemStack createLootItem(ItemStack item, final LootItem loot) {
         final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
         if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
             return item;
@@ -341,8 +392,10 @@ public class Events implements Listener {
 
         String name = null;
         int attempts = 100;
+        NameGenerator nameGenerator = null;
         do {
             try {
+                nameGenerator = AcuteLoot.nameGenChancePool.draw();
                 name = nameGenerator.generate(lootMaterial, loot.rarity());
             } catch (NoSuchElementException e) {
                 // Couldn't draw a name for some reason, try again
@@ -351,6 +404,7 @@ public class Events implements Listener {
         } while (name == null && attempts > 0);
         if (attempts == 0) {
             plugin.getLogger().severe("Could not generate a name in 100 attempts! Are name files empty or corrupted?");
+            plugin.getLogger().severe("Name Generator: " + nameGenerator.toString());
         }
 
         // Add loot info to lore and display name
@@ -396,6 +450,10 @@ public class Events implements Listener {
     @EventHandler
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player && plugin.getConfig().getBoolean("effects.enabled")) {
+            Arrow arrow = (Arrow) event.getProjectile();
+            event.getEntity().sendMessage("damage: " + arrow.getDamage());
+            event.getEntity().sendMessage("knockback: " + arrow.getKnockbackStrength());
+            event.getEntity().sendMessage("fire: " + arrow.getFireTicks());
             Player player = (Player) event.getEntity();
             String lootCode = getLootCode(plugin, player.getInventory().getItemInMainHand());
             if (lootCode != null) {
@@ -404,5 +462,25 @@ public class Events implements Listener {
                 effects.forEach(e -> e.apply(event));
             }
         }
+        if(event.getEntity() instanceof Skeleton && event.getEntity().hasPotionEffect(PotionEffectType.SLOW) && event.getEntity().hasMetadata("deadEyeSlowness")) {
+            // It ruins the Dead Eye slo-mo effect when skeletons can shoot you during it
+            event.setCancelled(true);
+        }
     }
+
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        if(DeadEyeEffect.deadEyeArrowsShot.get(player) != null){
+            ItemMeta bowMeta = event.getItemDrop().getItemStack().getItemMeta();
+            List<String> bowLore = bowMeta.getLore();
+            if(bowLore.get(bowLore.size() - 1 ).contains("Activated")) {
+                bowLore.remove(bowLore.size() - 1);
+                bowMeta.setLore(bowLore);
+                event.getItemDrop().getItemStack().setItemMeta(bowMeta);
+            }
+        }
+    }
+
 }

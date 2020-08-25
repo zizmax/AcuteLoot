@@ -42,30 +42,26 @@ public class TimewalkEffect extends LootSpecialEffect{
                 int timeWarp = plugin.getConfig().getInt("effects.timewalker.time-shift");
                 int cropGrowthFactor = 1;
                 boolean forward = true;
-                //TODO: Remove debug titles
-                if (forward) {
-                    if(direction > 1.65) player.sendTitle("forward", "" + direction, 0, 1, 0);
-                    else if (direction < 1.2) {
+                // Only execute effect if moving forwards or backwards, NOT sideways
+                if (direction > 1.65 || direction < 1.2) {
+                    if (direction < 1.2) {
                         timeWarp = -timeWarp;
                         cropGrowthFactor = -cropGrowthFactor;
                         forward = false;
-                        player.sendTitle("backward", "" + direction, 0, 1, 0);
                     }
-                    else player.sendTitle("???", "" + direction, 0, 1, 0);
                     World world = player.getWorld();
                     world.setTime(world.getTime() + timeWarp);
                     List<Entity> entities = player.getNearbyEntities(30, 5, 30);
                     for (Entity entity : entities) {
                         if (entity instanceof org.bukkit.entity.Ageable) {
                             org.bukkit.entity.Ageable ageable = (org.bukkit.entity.Ageable) entity;
-                            entity.setCustomName(String.valueOf(ageable.getAge()));
                             double roll = AcuteLoot.random.nextDouble();
                             double chance = 20 / 100.0;
-                            if (ageable.getAge() < 0 && roll < chance) {
-                                playGrowthParticles(forward, entity.getLocation());
-                                ageable.setAge(ageable.getAge() + timeWarp);
-                                //ageable.setCustomName(String.valueOf(ageable.getAge()));
-                                //ageable.setCustomNameVisible(true);
+                            if (roll < chance) {
+                                if(ageable.getAge() < 0 || (ageable.getAge() >= 0 && timeWarp < 0)) {
+                                    playGrowthParticles(forward, entity.getLocation());
+                                    ageable.setAge(ageable.getAge() + timeWarp);
+                                }
                             }
                         }
                     }

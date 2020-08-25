@@ -14,13 +14,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Commands implements CommandExecutor, TabCompleter {
-    private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename");
+    private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename", "name");
     //public static final TabCompleter TAB_COMPLETER = (s, c, l, args) -> (args.length == 1) ? StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, new ArrayList<>()) : null;
 
     @Override
@@ -30,17 +27,23 @@ public class Commands implements CommandExecutor, TabCompleter {
             StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, possibleArguments);
             return possibleArguments;
         }
-        if(args.length >= 2 && (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("new"))){
-            StringUtil.copyPartialMatches(args[1], AcuteLoot.rarityNames.keySet(), possibleArguments);
-            if(args.length == 3){
-                possibleArguments.clear();
-                StringUtil.copyPartialMatches(args[2], AcuteLoot.effectNames.keySet(), possibleArguments);
+        if(args.length >= 2){
+            if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("new")){
+                StringUtil.copyPartialMatches(args[1], AcuteLoot.rarityNames.keySet(), possibleArguments);
+                if (args.length == 3) {
+                    possibleArguments.clear();
+                    StringUtil.copyPartialMatches(args[2], AcuteLoot.effectNames.keySet(), possibleArguments);
+                    return possibleArguments;
+                }
                 return possibleArguments;
             }
-            return possibleArguments;
+            if(args[0].equalsIgnoreCase("name")){
+                StringUtil.copyPartialMatches(args[1], AcuteLoot.nameGeneratorNames.keySet(), possibleArguments);
+                return possibleArguments;
+            }
         }
         return null;
-    };
+    }
 
     private final AcuteLoot plugin;
 
@@ -69,10 +72,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     private void helpCommand(CommandSender sender) {
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al reload" + ChatColor.GRAY + " Reload AL config and names");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al add" + ChatColor.GRAY + " Feature coming soon!");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al add [rarity] [effect]" + ChatColor.GRAY + " Add AcuteLoot to item");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al remove" + ChatColor.GRAY + " Remove AcuteLoot from an item");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al new" + ChatColor.GRAY + " Create new random AcuteLoot");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al rename [name]" + ChatColor.GRAY + " Rename an item (Color codes supported!)");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al name [generator]" + ChatColor.GRAY + " Name item using generator");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al stats" + ChatColor.GRAY + " Stats about an item or general stats");
     }
 
@@ -111,7 +115,15 @@ public class Commands implements CommandExecutor, TabCompleter {
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
             ItemStack item = player.getInventory().getItemInMainHand();
             if (Events.getLootCode(plugin, item) == null) {
-                if(args.length == 1) new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
+                if(args.length == 1) {
+                    final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
+                    if(lootMaterial == LootMaterial.UNKNOWN) {
+                        player.sendMessage(AcuteLoot.CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
+                        return;
+                    }
+                    new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
+                    player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with random rarity");
+                }
                 else {
                     if (AcuteLoot.rarityNames.containsKey(args[1])) {
                         final int rarity = AcuteLoot.rarityNames.get(args[1]);
@@ -119,21 +131,21 @@ public class Commands implements CommandExecutor, TabCompleter {
                             if (AcuteLoot.effectNames.containsKey(args[2])) {
                                 final LootItem lootItem = new LootItem(rarity, Collections.singletonList(AcuteLoot.effectNames.get(args[2])));
                                 new Events(plugin).createLootItem(item, lootItem);
+                                player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1] + " and " + args[2]);
+                                sendIncompatibleEffectsWarning(player, lootItem, item);
                             } else {
                                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
                             }
                         } else {
                             new Events(plugin).createLootItem(item, LootRarity.get(rarity));
+                            player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1]);
                         }
-
-                        //TODO: Add new /al name command??
-                        //TODO: Add name generator using getNamegeneratorByName() or something
-                        new Events(plugin).createLootItem(item, new LootItem(rarity, Collections.emptyList()), PrefixSuffixNameGenerator.getPrefixGenerator());
 
                     } else {
                         player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[1] + " doesn't exist");
                     }
                 }
+
             }
             else{
                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is already AcuteLoot");
@@ -182,25 +194,26 @@ public class Commands implements CommandExecutor, TabCompleter {
     private void newCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
         ItemStack item = Events.chooseLootMaterial();
+        LootItem lootItem = null;
         if(args.length == 1) new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
         else{
             if (AcuteLoot.rarityNames.containsKey(args[1])) {
-                final int rarity = AcuteLoot.rarityNames.get(args[1]);
+                final int rarityID = AcuteLoot.rarityNames.get(args[1]);
                 if(args.length == 2){
-                    new Events(plugin).createLootItem(item, rarity);
-                    return;
+                    new Events(plugin).createLootItem(item, LootRarity.get(rarityID));
                 }
                 final List<Integer> effects = new ArrayList<>();
                 if (args.length > 2) {
                     if (AcuteLoot.effectNames.containsKey(args[2])){
                         effects.add(AcuteLoot.effectNames.get(args[2]));
+                        lootItem = new LootItem(rarityID, Collections.singletonList(AcuteLoot.effectNames.get(args[2])));
+                        new Events(plugin).createLootItem(item, lootItem);
                     }
                     else {
                         player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
                         return; // Do not apply the rarity if the effect is invalid
                     }
                 }
-                new Events(plugin).createLootItem(item, rarity, effects);
 
             }
             else {
@@ -213,6 +226,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "Created " + ChatColor.GOLD + item.getType());
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "Name: " + item.getItemMeta().getDisplayName());
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + item.getItemMeta().getLore().get(0));
+            sendIncompatibleEffectsWarning(player, lootItem, item);
         } else {
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "Inventory cannot be full");
         }
@@ -247,26 +261,67 @@ public class Commands implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() != Material.AIR) {
-            ItemMeta meta = item.getItemMeta();
-            if (args.length > 1) {
-                List<String> nameGeneratorNames = new ArrayList<>();
-                for (NameGenerator generator: AcuteLoot.nameGenChancePool.values()) {
-                    //FIXME: Is there a better way to get the readable name of a name generator?
-                    nameGeneratorNames.add(generator.toString());
-                }
-                //FIXME: Needs method to get string from specific name generator
-                //TODO: Document /al name everywhere: like Spigot profile, tab completer, permissions, etc
-                meta.setDisplayName("TESTING");
-            } else {
-                // Setting to null will force the default material name
-                meta.setDisplayName(null);
+            final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
+            if(lootMaterial == LootMaterial.UNKNOWN) {
+                player.sendMessage(AcuteLoot.CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
+                return;
             }
+            ItemMeta meta = item.getItemMeta();
+            String name = null;
+            LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
+            if (args.length >= 2) {
+                if (AcuteLoot.nameGeneratorNames.containsKey(args[1])) {
+                    try {
+                        name = AcuteLoot.nameGeneratorNames.get(args[1]).generate(lootMaterial, generator.generate(AcuteLoot.random.nextDouble(), lootMaterial).rarity());
+                    } catch (NoSuchElementException e) {
+                        player.sendMessage(AcuteLoot.CHAT_PREFIX + args[1] + " doesn't have any valid names for this item!");
+                        return;
+                    }
+                    player.sendMessage(AcuteLoot.CHAT_PREFIX + "Name added with " + args[1]);
+                }
+                else {
+                    player.sendMessage(AcuteLoot.CHAT_PREFIX + "Name generator " + args[1] + " doesn't exist");
+                    return;
+                }
+
+            } else {
+                // Choose random generator when no other arguments are present
+                int attempts = 100;
+                NameGenerator nameGenerator = null;
+                do {
+                    try {
+                        nameGenerator = AcuteLoot.nameGenChancePool.draw();
+                        name = nameGenerator.generate(lootMaterial, generator.generate(AcuteLoot.random.nextDouble(), lootMaterial).rarity());
+                        player.sendMessage(AcuteLoot.CHAT_PREFIX + "Name added with random generator");
+                    } catch (NoSuchElementException e) {
+                        // Couldn't draw a name for some reason, try again
+                        attempts--;
+                    }
+                } while (name == null && attempts > 0);
+                if (attempts == 0) {
+                    plugin.getLogger().severe("Could not generate a name in 100 attempts! Are name files empty or corrupted?");
+                    plugin.getLogger().severe("Name Generator: " + nameGenerator.toString());
+                }
+            }
+            player.sendMessage(name);
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
             item.setItemMeta(meta);
+
 
         } else {
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "You must be holding something");
         }
 
+    }
+
+    public void sendIncompatibleEffectsWarning(Player player, LootItem lootItem, ItemStack item){
+        if(lootItem == null) return;
+        for(LootSpecialEffect effect : lootItem.getEffects()){
+            if(!effect.getValidMaterials().contains(LootMaterial.lootMaterialForMaterial(item.getType()))){
+                player.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + effect.getName() + " not strictly compatible with this item!");
+                player.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + "Effect may not work as expected/won't do anything");
+            }
+        }
     }
 
     @Override

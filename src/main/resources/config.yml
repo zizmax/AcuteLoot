@@ -158,13 +158,25 @@ effects:
     name: "XP Boost"
     chance: 1 # Changing this won't do anything currently because it is the only effect for helmets
 
-  # [WARNING] EXPERIMENTAL: Only enabled if debug mode is on. Only turn on debug mode if you know what you are doing.
-  # Devs take no responsibility for things breaking with this [BETA] effect. It is currently being tested
   timewalker: #Applicable only to boots
-    time-shift: 150 # Measured in ticks. (20 ticks per second on a standard server)
+    time-shift: 150 # Measured in ticks. E.g. 150 / 20 = 7.5 seconds (20 ticks/second under normal conditions)
     name: "Time Walker"
     chance: 50 # This is the second effect for boots, after gardener. Keep that in mind if you enable it.
     durability-modifier: 1
+
+  dead-eye:
+    effect-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
+    cooldown-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
+    vanilla-enchantments: true # Should Dead Eye be affected by enchantments like Infinity, Punch and Power
+    durability-modifier: 1
+    name: "Dead Eye"
+    chance: 50
+
+  medusa:
+    affect-players: true
+    death-message: "turned to stone"
+    name: "Gorgon"
+    chance: 50
 
   # Bow and Crossbow Effects
   bows:

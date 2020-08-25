@@ -39,6 +39,7 @@ public final class AcuteLoot extends JavaPlugin {
 
     public static final HashMap<String, Integer> rarityNames = new HashMap<>();
     public static final HashMap<String, Integer> effectNames = new HashMap<>();
+    public static final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
 
     // Minecraft version: Used for materials compatibility
     public static final int serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2,4));
@@ -172,11 +173,18 @@ public final class AcuteLoot extends JavaPlugin {
         nameGenChancePool.clear();
         final String conjunction = getConfig().getString("conjunction");
         nameGenChancePool.add(PrefixSuffixNameGenerator.getPrefixGenerator(), 6);
+        nameGeneratorNames.put("prefixGenerator", PrefixSuffixNameGenerator.getPrefixGenerator());
         nameGenChancePool.add(PrefixSuffixNameGenerator.getSuffixGenerator(conjunction), 6);
+        nameGeneratorNames.put("suffixGenerator", PrefixSuffixNameGenerator.getSuffixGenerator(conjunction));
         nameGenChancePool.add(PrefixSuffixNameGenerator.getPrefixSuffixGenerator(conjunction), 6);
-        if (getConfig().getBoolean("kana-namegen"))
+        nameGeneratorNames.put("prefixSuffixGenerator", PrefixSuffixNameGenerator.getPrefixSuffixGenerator(conjunction));
+        if (getConfig().getBoolean("kana-namegen")) {
             nameGenChancePool.add(JPKanaNameGenerator.jpKanaNameGenerator, 1);
+            nameGeneratorNames.put("kanaGenerator", JPKanaNameGenerator.jpKanaNameGenerator);
+        }
         nameGenChancePool.add(FixedNameGenerator.defaultGenerator(), 1);
+        nameGeneratorNames.put("fixedGenerator", FixedNameGenerator.defaultGenerator());
+
 
         // Set up rarities (changes in id's must be updated further down as well)
         LootRarity.getRarities().clear();
@@ -240,6 +248,15 @@ public final class AcuteLoot extends JavaPlugin {
         // XP Boost
         LootSpecialEffect.registerEffect(new XPBoostEffect("xp-boost", 16, Collections.singletonList(LootMaterial.HELMET), this));
 
+        // Time Walker
+        LootSpecialEffect.registerEffect(new TimewalkEffect("timewalker", 17, Collections.singletonList(LootMaterial.BOOTS), this));
+
+        // Dead Eye
+        LootSpecialEffect.registerEffect(new DeadEyeEffect("dead-eye", 18, Collections.singletonList(LootMaterial.BOW), this));
+
+        //Medusa (Gorgon)
+        LootSpecialEffect.registerEffect(new MedusaEffect("medusa", 19, Collections.singletonList(LootMaterial.BOW), this));
+
         // Rebuild the effect chance pool
         effectChancePool.clear();
         effectNames.clear();
@@ -252,11 +269,9 @@ public final class AcuteLoot extends JavaPlugin {
         }
 
         // Dev Effects (currently being tested)
-        // Time Walk
         if(debug) {
-            LootSpecialEffect.registerEffect(new TimewalkEffect("timewalker", 17, Collections.singletonList(LootMaterial.BOOTS), this));
-            effectChancePool.add(LootSpecialEffect.get(17), getConfig().getInt("effects.timewalker.chance"));
-            effectNames.put(LootSpecialEffect.get(17).getName(), LootSpecialEffect.get(17).getId());
+            // Register effect, add effect to chancePool, add effect to effectNames
+            // None currently
         }
     }
 

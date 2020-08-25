@@ -32,3 +32,5 @@ permissions:
     default: op
   acuteloot.stats:
     default: op
+  acuteloot.name:
+    default: op

@@ -78,7 +78,7 @@ public class ToolParticleEffect extends LootSpecialEffect {
                     }
                 }
 
-                if (locations.get(i).getBlock().getType() != Material.AIR || entities.size() > 0) {
+                if (!locations.get(i).getBlock().getType().isAir() || entities.size() > 0) {
                     Location location;
                     if (locations.size() == 0 || i == 0) {
                         location = player.getEyeLocation();
