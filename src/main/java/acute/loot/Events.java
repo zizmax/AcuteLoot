@@ -450,10 +450,6 @@ public class Events implements Listener {
     @EventHandler
     public void onEntityShootBow(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player && plugin.getConfig().getBoolean("effects.enabled")) {
-            Arrow arrow = (Arrow) event.getProjectile();
-            event.getEntity().sendMessage("damage: " + arrow.getDamage());
-            event.getEntity().sendMessage("knockback: " + arrow.getKnockbackStrength());
-            event.getEntity().sendMessage("fire: " + arrow.getFireTicks());
             Player player = (Player) event.getEntity();
             String lootCode = getLootCode(plugin, player.getInventory().getItemInMainHand());
             if (lootCode != null) {
