@@ -146,39 +146,42 @@ effects:
   # Example: When enchanting a bow, having ANY effect is based on rarity, but the specific effect it has will be chosen out of the bow effects according to chances below
 
   # Miscellaneous Effects
+
+  # Boots
   gardener: # Applicable only to boots
     name: "Gardener"
-    chance: 1 # Changing this won't do anything currently because it is the only effect for boots
+    chance: 90
+  timewalker: #Applicable only to boots
+    time-shift: 150 # Measured in ticks. E.g. 150 / 20 = 7.5 seconds (20 ticks/second under normal conditions)
+    name: "Time Walker"
+    chance: 50 # This is the second effect for boots, after gardener.
+    durability-modifier: 1
+
+  # Bows
   enderbow: # Applicable only to bows and crossbows
     # Launches the shooter like an arrow
     name: "Enderbow"
     chance: 5
-  xp-boost: # Applicable only to helmets
-    boost-amount: 1 # Can be changed, measured in raw XP (integer), not a percentage/multiplier
-    name: "XP Boost"
-    chance: 1 # Changing this won't do anything currently because it is the only effect for helmets
-
-  timewalker: #Applicable only to boots
-    time-shift: 150 # Measured in ticks. E.g. 150 / 20 = 7.5 seconds (20 ticks/second under normal conditions)
-    name: "Time Walker"
-    chance: 50 # This is the second effect for boots, after gardener. Keep that in mind if you enable it.
-    durability-modifier: 1
-
   dead-eye:
     effect-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
     cooldown-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
     vanilla-enchantments: true # Should Dead Eye be affected by enchantments like Infinity, Punch and Power
     durability-modifier: 1
     name: "Dead Eye"
-    chance: 50
-
+    chance: 2
   medusa:
-    affect-players: true
-    death-message: "turned to stone"
-    name: "Gorgon"
-    chance: 50
+    affect-players: true # Should players hit by these arrows turn to stone and die?
+    death-message: "turned to stone" # Example: [player] turned to stone
+    name: "Gorgo"
+    chance: 2
 
-  # Bow and Crossbow Effects
+  # Helmets
+  xp-boost: # Applicable only to helmets
+    boost-amount: 1 # Can be changed, measured in raw XP (integer), not a percentage/multiplier
+    name: "XP Boost"
+    chance: 1 # Changing this won't do anything currently because it is the only effect for helmets
+
+  # Bow and Crossbow Particle Effects
   bows:
     heart:
       # Heals target equal to amount of damage dealt, including player
@@ -197,7 +200,7 @@ effects:
       name: "Sparkle"
       chance: 30
 
-  # Weapons Effects (swords, axes)
+  # Weapons Particle Effects (swords, axes)
   weapons:
     max-distance: 15 # Can be changed. How far out the effect will render. Very large values may be unstable
     laser:
