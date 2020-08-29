@@ -51,6 +51,7 @@ public final class AcuteLoot extends JavaPlugin {
         getCommand("acuteloot").setExecutor(new Commands(this));
 
         // Save/read config.yml
+        getConfig().options().copyDefaults(true);
         saveDefaultConfig();
 
         // Connect to bStats
@@ -91,6 +92,10 @@ public final class AcuteLoot extends JavaPlugin {
     }
 
     public void reloadConfiguration() {
+        // Reload config
+        reloadConfig();
+        saveDefaultConfig();
+
         // Set debug mode
         debug = getConfig().getBoolean("debug");
         if(debug) this.getLogger().warning("Debug mode enabled!");

@@ -3,10 +3,12 @@ package acute.loot;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 
@@ -25,6 +27,7 @@ public class MedusaEffect extends LootSpecialEffect{
         if (origEvent instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
             if (event.getDamager() instanceof Arrow && event.getEntity() instanceof LivingEntity) {
+                LivingEntity livingEntity = (LivingEntity) event.getEntity();
                 Arrow arrow = (Arrow) event.getDamager();
                 event.getEntity().playEffect(EntityEffect.ENTITY_POOF);
                 World world = event.getEntity().getWorld();
@@ -44,14 +47,28 @@ public class MedusaEffect extends LootSpecialEffect{
 
                 if(event.getEntity() instanceof Player){
                     Player player = (Player) event.getEntity();
-                    if(plugin.getConfig().getBoolean("effects.medusa.affect-players")){
+                    if (plugin.getConfig().getBoolean("effects.medusa.affect-players")){
                         player.setHealth(0);
                         player.setMetadata("turnedToStone", new FixedMetadataValue(plugin, true));
                     }
                     else return;
                 }
                 else{
-                    event.getEntity().remove();
+                    if (plugin.getConfig().getBoolean("effects.medusa.drop-loot")){
+                        for (ItemStack item : livingEntity.getEquipment().getArmorContents()) {
+                            if (item != null && !item.getType().isAir())
+                                livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), item);
+                        }
+                        ItemStack mainHand = livingEntity.getEquipment().getItemInMainHand();
+                        ItemStack offHand = livingEntity.getEquipment().getItemInOffHand();
+                        if (mainHand != null && !mainHand.getType().isAir()){
+                            livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), mainHand);
+                        }
+                        if (offHand != null && !offHand.getType().isAir()){
+                            livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), offHand);
+                        }
+                    }
+                    livingEntity.remove();
                 }
 
                 arrow.remove();

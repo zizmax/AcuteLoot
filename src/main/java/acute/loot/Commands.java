@@ -81,11 +81,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     private void reloadCommand(CommandSender sender) {
-        // Reload config
-        plugin.reloadConfig();
-        plugin.saveDefaultConfig();
-
-        // Reload names and rarities
+        // Reload names/rarities, copy and save config.yml
         plugin.reloadConfiguration();
 
         // Check for updates

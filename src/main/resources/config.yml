@@ -172,6 +172,7 @@ effects:
   medusa:
     affect-players: true # Should players hit by these arrows turn to stone and die?
     death-message: "turned to stone" # Example: [player] turned to stone
+    drop-loot: true # Should mobs drop their inventory when they are hit?
     name: "Gorgo"
     chance: 2
 
