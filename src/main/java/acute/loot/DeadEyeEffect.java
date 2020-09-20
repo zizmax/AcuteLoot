@@ -37,7 +37,7 @@ public class DeadEyeEffect extends LootSpecialEffect{
         // -1: In cooldown period
         // -2: Out of arrows
         // -3: No bow
-        // -4: No bow or arrows
+        // -4: No bow and no arrows
 
         if(origEvent instanceof PlayerInteractEvent) {
             if (plugin.getConfig().getDouble("effects.dead-eye.chance") > 0) {
@@ -64,7 +64,7 @@ public class DeadEyeEffect extends LootSpecialEffect{
                                 }
                             }
 
-                            if (locations.get(i).getBlock().getType() != Material.AIR || entities.size() > 0 || i == locations.size() - 1) {
+                            if (!locations.get(i).getBlock().getType().isAir() || entities.size() > 0 || i == locations.size() - 1) {
                                 Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(255, 0, 0), 2);
                                 Location location;
                                 if (locations.size() == 0 || i == 0) {
@@ -82,14 +82,15 @@ public class DeadEyeEffect extends LootSpecialEffect{
                                     }
 
                                 }.runTaskTimer(plugin, 0L, 2L);
-                                long timeLeft = player.getPotionEffect(PotionEffectType.SLOW).getDuration();
+                                long timeLeft = 0L;
+                                if(player.hasPotionEffect(PotionEffectType.SLOW)) timeLeft =  player.getPotionEffect(PotionEffectType.SLOW).getDuration();
                                 new BukkitRunnable() {
                                     @Override
                                     public void run() {
                                         if ((player.getInventory().contains(Material.ARROW) && player.getInventory().contains(Material.BOW)) || (player.getGameMode().equals(GameMode.CREATIVE) && player.getInventory().contains(Material.BOW))) {
                                             int bowSlot = -1;
                                             for (int i = 0; i < 36; i++) {
-                                                if(player.getInventory().getItem(i) != null && player.getInventory().getItem(i).getType().equals(Material.BOW) && player.getInventory().getItem(i).getItemMeta().getLore().get(player.getInventory().getItem(i).getItemMeta().getLore().size() -1).contains("Activated") ){
+                                                if(player.getInventory().getItem(i) != null && player.getInventory().getItem(i).getType().equals(Material.BOW) && player.getInventory().getItem(i).hasItemMeta() && player.getInventory().getItem(i).getItemMeta().hasLore() && player.getInventory().getItem(i).getItemMeta().getLore().get(player.getInventory().getItem(i).getItemMeta().getLore().size() -1).contains("Activated") ){
                                                     bowSlot = i;
                                                     break;
                                                 }
@@ -127,7 +128,15 @@ public class DeadEyeEffect extends LootSpecialEffect{
                                             Vector direction = to.subtract(from);
                                             direction.normalize();
                                             direction.multiply(3); // Set speed
-                                            Arrow arrow = player.launchProjectile(Arrow.class, direction);
+                                            //FIXME: "x not finite" error
+                                            Arrow arrow;
+                                            try{
+                                                direction.checkFinite();
+                                                arrow = player.launchProjectile(Arrow.class, direction);
+                                            }
+                                            catch(IllegalArgumentException e){
+                                                arrow = player.launchProjectile(Arrow.class, direction);
+                                            }
                                             arrow.setMetadata("deadEye", new FixedMetadataValue(plugin, true));
                                             arrow.setCritical(true);
                                             player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_ARROW_SHOOT, 1, 1);
@@ -214,7 +223,7 @@ public class DeadEyeEffect extends LootSpecialEffect{
                                         // Remove lore that marks bow as Dead Eye "active" after all arrows have been shot
                                         int bowSlot = -1;
                                         for (int i = 0; i < 36; i++) {
-                                            if(player.getInventory().getItem(i) != null && player.getInventory().getItem(i).getType().equals(Material.BOW) && player.getInventory().getItem(i).getItemMeta().getLore().get(player.getInventory().getItem(i).getItemMeta().getLore().size() -1).contains("Activated") ){
+                                            if(player.getInventory().getItem(i) != null && player.getInventory().getItem(i).getType().equals(Material.BOW) && player.getInventory().getItem(i).hasItemMeta() && player.getInventory().getItem(i).getItemMeta().hasLore() && player.getInventory().getItem(i).getItemMeta().getLore().get(player.getInventory().getItem(i).getItemMeta().getLore().size() -1).contains("Activated") ){
                                                 bowSlot = i;
                                                 break;
                                             }

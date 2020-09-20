@@ -468,7 +468,7 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if(DeadEyeEffect.deadEyeArrowsShot.get(player) != null){
+        if(DeadEyeEffect.deadEyeArrowsShot.get(player) != null && event.getItemDrop().getItemStack().getType().equals(Material.BOW) && event.getItemDrop().getItemStack().hasItemMeta() && event.getItemDrop().getItemStack().getItemMeta().hasLore()){
             ItemMeta bowMeta = event.getItemDrop().getItemStack().getItemMeta();
             List<String> bowLore = bowMeta.getLore();
             if(bowLore.get(bowLore.size() - 1 ).contains("Activated")) {
