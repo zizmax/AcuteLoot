@@ -128,7 +128,6 @@ public class DeadEyeEffect extends LootSpecialEffect{
                                             Vector direction = to.subtract(from);
                                             direction.normalize();
                                             direction.multiply(3); // Set speed
-                                            //FIXME: "x not finite" error
                                             Arrow arrow;
                                             try{
                                                 direction.checkFinite();
