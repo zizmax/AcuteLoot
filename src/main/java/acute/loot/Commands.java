@@ -27,7 +27,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, possibleArguments);
             return possibleArguments;
         }
-        if(args.length >= 2){
+        if(args.length >= 2 && args.length < 4){
             if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("new")){
                 StringUtil.copyPartialMatches(args[1], AcuteLoot.rarityNames.keySet(), possibleArguments);
                 if (args.length == 3) {
@@ -37,7 +37,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 return possibleArguments;
             }
-            if(args[0].equalsIgnoreCase("name")){
+            if(args.length == 2 && args[0].equalsIgnoreCase("name")){
                 StringUtil.copyPartialMatches(args[1], AcuteLoot.nameGeneratorNames.keySet(), possibleArguments);
                 return possibleArguments;
             }
@@ -46,13 +46,10 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     private final AcuteLoot plugin;
-
     public Commands(AcuteLoot plugin) {
         this.plugin = plugin;
     }
-
     final String PERM_DENIED_MSG = AcuteLoot.CHAT_PREFIX + "You do not have permission to do this";
-
     private boolean hasPermission(CommandSender sender, String node) {
         return (!plugin.getConfig().getBoolean("use-permissions") && sender.isOp())
                 || (plugin.getConfig().getBoolean("use-permissions") && sender.hasPermission(node));
