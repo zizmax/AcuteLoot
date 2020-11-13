@@ -1,35 +1,30 @@
 package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.projectiles.ProjectileSource;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,7 +41,7 @@ public class Events implements Listener {
         this.plugin = plugin;
     }
 
-    static List<Material> materials = new ArrayList<Material>();
+    static List<Material> materials = new ArrayList<>();
 
     public static void createMaterials(AcuteLoot plugin, String path) {
         materials = new ArrayList<>();
@@ -57,7 +52,7 @@ public class Events implements Listener {
                     String[] materialStrings = line.split(",");
                     for (String material : materialStrings) {
                         material = material.trim();
-                        if (!material.equals(null) && !material.equals("")) {
+                        if (!material.equals("")) {
                             try {
                                 Material mat = Material.matchMaterial(material);
                                 if (mat != null) materials.add(mat);
@@ -249,11 +244,29 @@ public class Events implements Listener {
                     }
                 }
             }
+
+            if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+                String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+                if (lootCode != null) {
+                    LootItem loot = new LootItem(lootCode);
+                    List<LootSpecialEffect> effects = loot.getEffects();
+                    effects.forEach(e -> e.apply(event));
+                }
+            }
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler()
     public void onDropItem(PlayerDropItemEvent event){
+        Player player = event.getPlayer();
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+            String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                effects.forEach(e -> e.apply(event));
+            }
+        }
         /*
         // May be used in the future to prevent Dead Eye from activating while viewing inventory
         // This "bug" could potentially be fixed by putting the entire Dead Eye logic into a Runnable that
@@ -383,7 +396,6 @@ public class Events implements Listener {
         return createLootItem(item, generator.generateWithRarity(rarity, lootMaterial));
     }
 
-
     public ItemStack createLootItem(ItemStack item, final LootItem loot) {
         final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
         if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
@@ -436,13 +448,21 @@ public class Events implements Listener {
             if (lootCode != null) {
                 LootItem loot = new LootItem(lootCode);
                 List<LootSpecialEffect> effects = loot.getEffects();
-                // Block Trail Effect and Time Walk Effect
+                // Block Trail Effect and Time Walk Effect and Midas Effect
                 // Check if player moves between a block
                 if (player.isOnGround() && (event.getFrom().getBlockX() != (event.getTo().getBlockX())
                         || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
                         || event.getFrom().getBlockY() != event.getTo().getBlockY())) {
                         effects.forEach(e -> e.apply(event));
                 }
+            }
+        }
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+            String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                effects.forEach(e -> e.apply(event));
             }
         }
     }
@@ -475,6 +495,73 @@ public class Events implements Listener {
                 bowLore.remove(bowLore.size() - 1);
                 bowMeta.setLore(bowLore);
                 event.getItemDrop().getItemStack().setItemMeta(bowMeta);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerPickupItem(EntityPickupItemEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+                String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+                if (lootCode != null) {
+                    LootItem loot = new LootItem(lootCode);
+                    List<LootSpecialEffect> effects = loot.getEffects();
+                    effects.forEach(e -> e.apply(event));
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerEnterBed(PlayerBedEnterEvent event) {
+        Player player = event.getPlayer();
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+            String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                effects.forEach(e -> e.apply(event));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerEnterPortal(PlayerPortalEvent event) {
+        Player player = event.getPlayer();
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+            String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                effects.forEach(e -> e.apply(event));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerHoldItem(PlayerItemHeldEvent event) {
+        Player player = event.getPlayer();
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+            String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                effects.forEach(e -> e.apply(event));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerClickTonight(InventoryClickEvent event) {
+        Player player = (Player) event.getWhoClicked();
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
+            String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                effects.forEach(e -> e.apply(event));
             }
         }
     }

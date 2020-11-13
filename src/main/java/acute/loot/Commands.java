@@ -1,10 +1,8 @@
 package acute.loot;
 
 
-import acute.loot.namegen.JPKanaNameGenerator;
 import acute.loot.namegen.NameGenerator;
 import acute.loot.namegen.PermutationCounts;
-import acute.loot.namegen.PrefixSuffixNameGenerator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -171,7 +169,6 @@ public class Commands implements CommandExecutor, TabCompleter {
     private void statsCommand(CommandSender sender) {
         Player player = (Player) sender;
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
-            ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
             String lootCode = Events.getLootCode(plugin, player.getInventory().getItemInMainHand());
             if (lootCode != null) {
                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "Loot code: " + ChatColor.AQUA + lootCode);
@@ -347,15 +344,13 @@ public class Commands implements CommandExecutor, TabCompleter {
                     if (sender instanceof Player) {
                         if (hasPermission(sender, "acuteloot.add")) {
                             addCommand(sender, args);
-                            return true;
                         } else {
                             sender.sendMessage(PERM_DENIED_MSG);
-                            return true;
                         }
                     } else {
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
-                        return true;
                     }
+                    return true;
                 }
 
                 // Remove
@@ -382,11 +377,10 @@ public class Commands implements CommandExecutor, TabCompleter {
                         } else {
                             sender.sendMessage(PERM_DENIED_MSG);
                         }
-                        return true;
                     } else {
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
-                        return true;
                     }
+                    return true;
 
                 }
 
@@ -398,11 +392,10 @@ public class Commands implements CommandExecutor, TabCompleter {
                         } else {
                             sender.sendMessage(PERM_DENIED_MSG);
                         }
-                        return true;
                     } else {
                         printGeneralStats(sender);
-                        return true;
                     }
+                    return true;
 
                 }
 
@@ -430,11 +423,10 @@ public class Commands implements CommandExecutor, TabCompleter {
                         } else {
                             sender.sendMessage(PERM_DENIED_MSG);
                         }
-                        return true;
                     } else {
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
-                        return true;
                     }
+                    return true;
                 } else {
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Subcommand not found!");
                     return true;

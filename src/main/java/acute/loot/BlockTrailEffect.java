@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.Vector;
 
 import java.util.List;
 
@@ -20,7 +19,6 @@ public class BlockTrailEffect extends LootSpecialEffect {
     public void apply(Event origEvent) {
         if (origEvent instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
-            Player player = event.getPlayer();
 
             // Gardener effect
             if (plugin.getConfig().getDouble("effects.gardener.chance") > 0) {

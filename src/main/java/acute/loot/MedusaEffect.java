@@ -3,7 +3,6 @@ package acute.loot;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -84,7 +83,7 @@ public class MedusaEffect extends LootSpecialEffect{
     }
 
     public static List<Block> getMobBoundingBlocks(Location location, int x_length, int y_length, int z_length) {
-        List<Block> blocks = new ArrayList<Block>();
+        List<Block> blocks = new ArrayList<>();
         for(int x = location.getBlockX(); x <= location.getBlockX() + x_length; x ++) {
             for(int y = location.getBlockY(); y <= location.getBlockY() + y_length; y ++) {
                 for(int z = location.getBlockZ(); z <= location.getBlockZ() + z_length; z ++) {

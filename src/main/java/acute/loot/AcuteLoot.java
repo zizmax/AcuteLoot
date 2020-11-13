@@ -88,6 +88,8 @@ public final class AcuteLoot extends JavaPlugin {
         final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(getConfig().getBoolean("kana-namegen")), 0.5, 0.0001);
         getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(getConfig().getBoolean("kana-namegen"))));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
+
+        getLogger().info("Please report bugs and suggest new features at: https://git.io/JkJLD");
         getLogger().info("Enabled");
     }
 
@@ -275,8 +277,26 @@ public final class AcuteLoot extends JavaPlugin {
 
         // Dev Effects (currently being tested)
         if(debug) {
+
             // Register effect, add effect to chancePool, add effect to effectNames
-            // None currently
+
+            /*
+            // COMING SOON //
+
+            // Diviner
+            LootSpecialEffect.registerEffect(new DivinerEffect("diviner", 20, Collections.singletonList(LootMaterial.SHOVEL), this));
+            effectChancePool.add(LootSpecialEffect.get(20), 1);
+            // Add "tab completer-safe" name to HashMap of effects
+            effectNames.put("Diviner", 20);
+
+            // Midas
+            LootSpecialEffect.registerEffect(new MidasEffect("midas", 21, Collections.singletonList(LootMaterial.CHEST_PLATE), this));
+            effectChancePool.add(LootSpecialEffect.get(21), 1);
+            // Add "tab completer-safe" name to HashMap of effects
+            effectNames.put("Midas", 21);
+
+             */
+
         }
     }
 
