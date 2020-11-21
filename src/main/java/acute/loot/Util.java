@@ -27,7 +27,6 @@ public final class Util {
     }
 
     public static List<Location> getLine(Location from, double distance, double addition) {
-        //TODO: Take getLine out of other classes and use this one
         List<Location> locations = new ArrayList<>();
         final Vector direction = from.getDirection(); // End - Begin | length to 1
         for (double d = addition; d < distance; d += addition) {

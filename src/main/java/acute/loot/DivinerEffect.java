@@ -2,6 +2,7 @@ package acute.loot;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
@@ -33,7 +34,6 @@ public class DivinerEffect extends LootSpecialEffect {
             Player player = event.getPlayer();
             int max_beam_distance = plugin.getConfig().getInt("effects.weapons.max-distance");
             double beam_segment_length = 0.3;
-            //TODO: Boolean option for getLine to ignore water so Diviner can be used while submerged
             final List<Location> locations = Util.getLine(player.getEyeLocation(), max_beam_distance, beam_segment_length);
             for (Location location : locations) {
                 final List<Entity> entities = (List<Entity>) player.getWorld().getNearbyEntities(location, 0.2, 0.2, 0.2);
@@ -43,7 +43,7 @@ public class DivinerEffect extends LootSpecialEffect {
                     }
                 }
 
-                if (!location.getBlock().getType().isAir()) {
+                if (!location.getBlock().getType().isAir() && location.getBlock().getType() != Material.WATER) {
                     printStats(analyzeBlock(location.getBlock()), player);
                     break;
                 }

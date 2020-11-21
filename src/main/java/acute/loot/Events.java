@@ -515,6 +515,19 @@ public class Events implements Listener {
     }
 
     @EventHandler
+    public void onPlayerStatisticIncrement(PlayerStatisticIncrementEvent event){
+        Player player = event.getPlayer();
+        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getBoots() != null) {
+            String lootCode = getLootCode(plugin, player.getInventory().getBoots());
+            if (lootCode != null) {
+                LootItem loot = new LootItem(lootCode);
+                List<LootSpecialEffect> effects = loot.getEffects();
+                effects.forEach(e -> e.apply(event));
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerEnterBed(PlayerBedEnterEvent event) {
         Player player = event.getPlayer();
         if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {

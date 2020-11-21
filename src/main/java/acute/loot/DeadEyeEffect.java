@@ -52,7 +52,7 @@ public class DeadEyeEffect extends LootSpecialEffect{
                     if (deadEyeArrowsShot.containsKey(player)) {
                         player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, .5f, 1);
                         deadEyeArrowsShot.replace(player, deadEyeArrowsShot.get(player) + 1);
-                        final List<Location> locations = getLine(player.getEyeLocation(), 30, .3);
+                        final List<Location> locations = Util.getLine(player.getEyeLocation(), 30, .3);
                         for (int i = 0; i < locations.size(); i++) {
 
                             final List<Entity> entities = (List<Entity>) player.getWorld()
@@ -254,15 +254,5 @@ public class DeadEyeEffect extends LootSpecialEffect{
 
         }
 
-    }
-
-    private List<Location> getLine(Location from, double distance, double addition) {
-        List<Location> locations = new ArrayList<>();
-        final Vector direction = from.getDirection(); // End - Begin | length to 1
-
-        for (double d = addition; d < distance; d += addition) {
-            locations.add(from.clone().add(direction.clone().normalize().multiply(d)));
-        }
-        return locations;
     }
 }

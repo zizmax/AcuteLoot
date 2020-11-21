@@ -25,18 +25,6 @@ public class ToolParticleEffect extends LootSpecialEffect {
         this.beamVisible = beamVisible;
     }
 
-    private List<Location> getLine(Location from, double distance, double addition) {
-        List<Location> locations = new ArrayList<>();
-        final Vector direction = from.getDirection(); // End - Begin | length to 1
-
-        for (double d = addition; d < distance; d += addition) {
-            locations.add(from.clone().add(direction.clone().normalize().multiply(d)));
-        }
-
-        return locations;
-    }
-
-
     @Override
     public void apply(Event origEvent) {
         if (origEvent instanceof PlayerInteractEvent) {
@@ -55,7 +43,7 @@ public class ToolParticleEffect extends LootSpecialEffect {
                     dustOptions = new Particle.DustOptions(Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255)), 6);
             }
 
-            final List<Location> locations = getLine(player.getEyeLocation(), max_beam_distance, beam_segment_length);
+            final List<Location> locations = Util.getLine(player.getEyeLocation(), max_beam_distance, beam_segment_length);
             for (int i = 0; i < locations.size(); i++) {
                 if (beamVisible) {
                     if (particle == Particle.REDSTONE) {

@@ -46,6 +46,14 @@ public final class AcuteLoot extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        getLogger().info("+----------------------------------------------------------------+");
+        getLogger().info("|                      AcuteLoot Community                       |");
+        getLogger().info("+================================================================+");
+        getLogger().info("| * Please report bugs at: https://git.io/JkJLD                  |");
+        getLogger().info("| * Join the AcuteLoot Discord at: https://discord.gg/BXhUUQEymg |");
+        getLogger().info("| * Enjoying the plugin? Leave a review and share with a friend! |");
+        getLogger().info("+----------------------------------------------------------------+");
+
         // Register events and commands
         getServer().getPluginManager().registerEvents(new Events(this), this);
         getCommand("acuteloot").setExecutor(new Commands(this));
@@ -89,7 +97,6 @@ public final class AcuteLoot extends JavaPlugin {
         getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(getConfig().getBoolean("kana-namegen"))));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
 
-        getLogger().info("Please report bugs and suggest new features at: https://git.io/JkJLD");
         getLogger().info("Enabled");
     }
 
@@ -289,13 +296,18 @@ public final class AcuteLoot extends JavaPlugin {
             // Add "tab completer-safe" name to HashMap of effects
             effectNames.put("Diviner", 20);
 
-            // Midas
+            // Midas Touch
             LootSpecialEffect.registerEffect(new MidasEffect("midas", 21, Collections.singletonList(LootMaterial.CHEST_PLATE), this));
             effectChancePool.add(LootSpecialEffect.get(21), 1);
             // Add "tab completer-safe" name to HashMap of effects
             effectNames.put("Midas", 21);
 
-             */
+            // MoonBoots
+            LootSpecialEffect.registerEffect(new MoonBootsEffect("moonboots", 20, Collections.singletonList(LootMaterial.BOOTS), this));
+            effectChancePool.add(LootSpecialEffect.get(20), 1);
+            // Add "tab completer-safe" name to HashMap of effects
+            effectNames.put("Moonboots", 20);
+            */
 
         }
     }
