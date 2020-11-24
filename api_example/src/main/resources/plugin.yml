@@ -1,0 +1,7 @@
+name: ALApiDemo
+version: 1.0.0
+main: acute.loot.apidemo.ALApiDemo
+api-version: 1.13
+authors: ["zizmax", "dizigma"]
+description: AcuteLoot API demo plugin
+softdepend: [AcuteLoot]
