@@ -39,7 +39,7 @@ public abstract class LootSpecialEffect {
         this.validMaterials = validMaterials;
     }
 
-    abstract void apply(Event event);
+    public abstract void apply(Event event);
 
     public List<LootMaterial> getValidMaterials() {
         return validMaterials;
@@ -56,6 +56,10 @@ public abstract class LootSpecialEffect {
             throw new IllegalArgumentException("Effect with id '" + effect.getId() + "' already registered.");
         }
         effects.put(effect.getId(), effect);
+    }
+
+    public static LootSpecialEffect unregisterEffect(final LootSpecialEffect effect) {
+        return effects.remove(effect.getId());
     }
 
     public static Map<Integer, LootSpecialEffect> getEffects() {

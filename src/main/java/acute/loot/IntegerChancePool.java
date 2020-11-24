@@ -66,6 +66,10 @@ public class IntegerChancePool<T> {
     }
 
     public T drawWithPredicate(Function<T, Boolean> predicate) {
+        return filter(predicate).draw();
+    }
+
+    public IntegerChancePool<T> filter(Function<T, Boolean> predicate) {
         final List<Element<T>> effectiveElements = elements.stream()
                                                            .filter(e -> predicate.apply(e.val))
                                                            .collect(Collectors.toList());
@@ -74,8 +78,13 @@ public class IntegerChancePool<T> {
         for (Element<T> e : effectiveElements) {
             effectivePool.add(e.val, e.upper - e.lower);
         }
+        return effectivePool;
+    }
 
-        return effectivePool.draw();
+    public void removeWithPredicate(Function<T, Boolean> predicate) {
+        final IntegerChancePool<T> newPool = filter(predicate);
+        elements.clear();
+        elements.addAll(newPool.elements);
     }
 
     public int max() {
