@@ -123,7 +123,7 @@ public class TestLootItem {
         }
 
         @Override
-        void apply(Event event) {
+        public void apply(Event event) {
         }
     }
 
