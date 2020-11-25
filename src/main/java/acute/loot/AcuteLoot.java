@@ -42,7 +42,8 @@ public final class AcuteLoot extends JavaPlugin {
     public static final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
 
     // Minecraft version: Used for materials compatibility
-    public static final int serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2,4));
+    // Defaults to -1 before the plugin has loaded, useful for tests
+    public static int serverVersion = -1;
 
     @Override
     public void onEnable() {
@@ -65,6 +66,9 @@ public final class AcuteLoot extends JavaPlugin {
         // Connect to bStats
         int bStatsID = 7348;
         Metrics metrics = new Metrics(this, bStatsID);
+
+        // Set server version
+        serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2,4));
 
         // Configure name generators, rarities, and effects
         reloadConfiguration();

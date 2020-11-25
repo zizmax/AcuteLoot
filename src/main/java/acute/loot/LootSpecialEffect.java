@@ -22,6 +22,9 @@ public abstract class LootSpecialEffect {
     private List<String> matchNames = new ArrayList<>();
 
     public LootSpecialEffect(String name, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
+        if (name.contains(" ")) throw new IllegalArgumentException("Name must not contain spaces");
+        if (name.trim().isEmpty()) throw new IllegalArgumentException("Name cannot be empty");
+        if (validMaterials == null || validMaterials.isEmpty()) throw new IllegalArgumentException("Materials list cannot be null or empty");
         this.name = name;
         this.id = id;
         this.validMaterials = validMaterials;
