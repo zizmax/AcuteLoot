@@ -37,7 +37,7 @@ public class IntegerChancePool<T> {
     }
 
     public void add(T val, int relativeChance) {
-        if (relativeChance < 1) throw new IllegalArgumentException("Relative chance must be positive and non-zero.");
+        if (relativeChance < 1) throw new IllegalArgumentException("Relative chance must be positive.");
         elements.add(new Element<>(val, max, max + relativeChance));
         max += relativeChance;
     }
