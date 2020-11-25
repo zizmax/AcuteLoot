@@ -64,6 +64,10 @@ public class API {
         return thisIteration >= baseIteration;
     }
 
+    public static boolean apiVersionOlderThan(final String base) {
+        return !apiVersionNewerThan(base);
+    }
+
     protected static void setAcuteLoot(final AcuteLoot acuteLoot) {
         API.acuteLoot = acuteLoot;
     }
