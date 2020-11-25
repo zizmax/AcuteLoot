@@ -70,6 +70,9 @@ public final class AcuteLoot extends JavaPlugin {
         reloadConfiguration();
         if (!this.isEnabled()) return;
 
+        // Set the AcuteLoot instance for the API
+        ALApi.setAcuteLoot(this);
+
         // Check for updates
         UpdateChecker.init(this, spigotID).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
