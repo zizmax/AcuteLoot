@@ -20,11 +20,11 @@ public class ALIntegration {
 
     private final Logger logger;
 
-    private final ALApi api;
+    private final API api;
 
     public ALIntegration(final Plugin plugin) {
         logger = plugin.getLogger();
-        api = new ALApi(plugin);
+        api = new API(plugin);
     }
 
     public boolean checkVersion() {

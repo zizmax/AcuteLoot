@@ -71,7 +71,7 @@ public final class AcuteLoot extends JavaPlugin {
         if (!this.isEnabled()) return;
 
         // Set the AcuteLoot instance for the API
-        ALApi.setAcuteLoot(this);
+        API.setAcuteLoot(this);
 
         // Check for updates
         UpdateChecker.init(this, spigotID).requestUpdateCheck().whenComplete((result, exception) -> {

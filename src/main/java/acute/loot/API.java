@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public class ALApi {
+public class API {
 
     public static final String API_VERSION = "1.0.0-beta";
     private static final List<String> API_ITERATIONS = Collections.singletonList("1.0.0-beta");
@@ -18,7 +18,7 @@ public class ALApi {
     private final Plugin user;
     private final List<LootSpecialEffect> registeredEffects = new ArrayList<>();
 
-    public ALApi(final Plugin user) {
+    public API(final Plugin user) {
         this.user = user;
     }
 
@@ -65,7 +65,7 @@ public class ALApi {
     }
 
     protected static void setAcuteLoot(final AcuteLoot acuteLoot) {
-        ALApi.acuteLoot = acuteLoot;
+        API.acuteLoot = acuteLoot;
     }
 
 }
