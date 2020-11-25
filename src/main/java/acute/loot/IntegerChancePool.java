@@ -82,9 +82,10 @@ public class IntegerChancePool<T> {
     }
 
     public void removeWithPredicate(Function<T, Boolean> predicate) {
-        final IntegerChancePool<T> newPool = filter(predicate);
+        final IntegerChancePool<T> newPool = filter(x -> !predicate.apply(x)); // Get items that DO NOT match the predicate
         elements.clear();
         elements.addAll(newPool.elements);
+        max = newPool.max;
     }
 
     public int max() {
