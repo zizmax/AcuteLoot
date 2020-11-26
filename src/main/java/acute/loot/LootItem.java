@@ -18,7 +18,9 @@ public class LootItem {
     }
 
     public LootItem(String lootcode) {
+        if (lootcode == null || lootcode.trim().isEmpty()) throw new IllegalArgumentException("LootCode cannot be null or empty");
         String[] parts = lootcode.split(":");
+        if (parts.length < 2) throw new IllegalArgumentException("Invalid loot code, could not read version");
 
         version = parts[1];
 
@@ -40,13 +42,41 @@ public class LootItem {
         return rarity;
     }
 
+    public String lootCode() {
+        return lootCodeV1();
+    }
+
     // A version 1 lootcode is of the form
     // #AL:$vn:$rarity:$effects:#
     // Where:
     // $vn is the string "1.0"
     // $rarity is the integer rarity ID
     // $effects is an underscore '_' separated list of effect IDs, possible empty
-    public String lootCode() {
+    public String lootCodeV1() {
+        StringBuilder str = new StringBuilder();
+        str.append("#AL:");
+        str.append(version);
+        str.append(':');
+        str.append(rarity);
+        str.append(':');
+        for (int i = 0; i < effects.size(); i++) {
+            if (i != 0) str.append("_");
+            str.append(effects.get(i));
+        }
+        str.append(":#");
+        return str.toString();
+    }
+
+    // A version 2 lootcode is of the form
+    // #AL:$vn:$rarity:$effects:#
+    // Where:
+    // $vn is the string "1.0"
+    // $rarity is the integer rarity ID
+    // $effects is an underscore '_' separated list of namespaced effect IDs, possible empty
+    //
+    // a namespaced effect id is of the form $NS;$id, where $NS is the namespace of the plugin
+    // that added the effect and $id is the integer effect ID
+    public String lootCodeV2() {
         StringBuilder str = new StringBuilder();
         str.append("#AL:");
         str.append(version);

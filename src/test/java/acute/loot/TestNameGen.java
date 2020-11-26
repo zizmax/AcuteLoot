@@ -4,7 +4,6 @@ import acute.loot.namegen.FixedNameGenerator;
 import acute.loot.namegen.JPKanaNameGenerator;
 import acute.loot.namegen.NameGenerator;
 import acute.loot.namegen.PrefixSuffixNameGenerator;
-import org.bukkit.ChatColor;
 
 import java.util.stream.IntStream;
 
@@ -16,11 +15,7 @@ public class TestNameGen {
     }
 
     public static void main(String[] args) {
-        LootRarity.registerRarity(new LootRarity(-10, "Common", 0.0, ChatColor.AQUA.toString()));
-        LootRarity.registerRarity(new LootRarity(1, "Uncommon", 0.1, ChatColor.BLACK.toString()));
-        LootRarity.registerRarity(new LootRarity(25, "Rare", 0.3, ChatColor.BLUE.toString()));
-        LootRarity.registerRarity(new LootRarity(100, "Legendary", 0.8, ChatColor.DARK_BLUE.toString()));
-        LootRarity.registerRarity(new LootRarity(1000, "Mythical", 1.0, ChatColor.DARK_AQUA.toString()));
+        new TestHelper().addTestResources();
 
         final LootMaterial mat = LootMaterial.SWORD;
         final LootRarity rarity = LootRarity.get(1);
