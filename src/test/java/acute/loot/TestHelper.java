@@ -15,6 +15,9 @@ public class TestHelper {
     public final VoidEffect effect1;
     public final VoidEffect effect2;
     public final VoidEffect effect3;
+    public final VoidEffect ns_effect1;
+    public final VoidEffect ns_effect2;
+    public final VoidEffect ns_effect3;
 
     public final List<LootRarity> rarities;
     public final List<LootSpecialEffect> effects;
@@ -25,12 +28,15 @@ public class TestHelper {
         rare = new LootRarity(25, "Rare", 0.3, ChatColor.BLUE.toString());
 
         final List<LootMaterial> matList = Arrays.asList(LootMaterial.SWORD, LootMaterial.PICK);
-        effect1 = new VoidEffect("effect-1", 1, matList, null);
-        effect2 = new VoidEffect("effect-2", -100, matList, null);
-        effect3 = new VoidEffect("effect-3", 1234, matList, null);
+        effect1 = new VoidEffect("effect-1", LootSpecialEffect.AL_NS, 1, matList, null);
+        effect2 = new VoidEffect("effect-2", LootSpecialEffect.AL_NS, -100, matList, null);
+        effect3 = new VoidEffect("effect-3", LootSpecialEffect.AL_NS, 1234, matList, null);
+        ns_effect1 = new VoidEffect("ns-effect-1", "NS1", 1, matList, null);
+        ns_effect2 = new VoidEffect("ns-effect-2", "NS1", 2, matList, null);
+        ns_effect3 = new VoidEffect("ns-effect-2", "NS2", 1, matList, null);
 
         rarities = Arrays.asList(common, uncommon, rare);
-        effects = Arrays.asList(effect1, effect2, effect3);
+        effects = Arrays.asList(effect1, effect2, effect3, ns_effect1, ns_effect2, ns_effect3);
     }
 
     /**
@@ -48,8 +54,8 @@ public class TestHelper {
 
     public static class VoidEffect extends LootSpecialEffect {
 
-        public VoidEffect(String name, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
-            super(name, id, validMaterials, plugin);
+        public VoidEffect(String name, String ns, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
+            super(name, ns, id, validMaterials, plugin);
         }
 
         @Override

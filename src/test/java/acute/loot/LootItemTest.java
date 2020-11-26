@@ -17,6 +17,8 @@ public class LootItemTest {
     private static LootItemWithCode liRareNoEffects;
     private static LootItemWithCode liUncommonOneEffect;
     private static LootItemWithCode liRareTwoEffects;
+    private static LootItemWithCode liCommonNsEffect;
+    private static LootItemWithCode liRareDifferentNsEffects;
 
     @BeforeAll
     public static void setup() {
@@ -31,6 +33,22 @@ public class LootItemTest {
                                                    String.format("#AL:1.0:%d:%d:#", testHelper.uncommon.getId(), testHelper.effect1.getId()));
         liRareTwoEffects = new LootItemWithCode(new LootItem(testHelper.rare.getId(), Arrays.asList(testHelper.effect2.getId(), testHelper.effect3.getId())),
                                                 String.format("#AL:1.0:%d:%d_%d:#", testHelper.rare.getId(), testHelper.effect2.getId(), testHelper.effect3.getId()));
+
+        liCommonNsEffect = new LootItemWithCode(new LootItem(Collections.singletonList(testHelper.ns_effect1.effectId()), testHelper.common.getId()),
+                                                String.format("#AL:2.0:%d:%s;%d:#", testHelper.common.getId(), testHelper.ns_effect1.ns(), testHelper.ns_effect1.id()));
+
+        liRareDifferentNsEffects = new LootItemWithCode(new LootItem(Arrays.asList(testHelper.ns_effect2.effectId(),
+                                                                                   testHelper.ns_effect3.effectId(),
+                                                                                   testHelper.effect1.effectId()),
+                                                                     testHelper.rare.getId()),
+                                                        String.format("#AL:2.0:%d:%s;%d_%s;%d_%s;%d:#",
+                                                                      testHelper.rare.getId(),
+                                                                      testHelper.ns_effect2.ns(),
+                                                                      testHelper.ns_effect2.id(),
+                                                                      testHelper.ns_effect3.ns(),
+                                                                      testHelper.ns_effect3.id(),
+                                                                      testHelper.effect1.ns(),
+                                                                      testHelper.effect1.id()));
     }
 
     @Test
@@ -44,9 +62,25 @@ public class LootItemTest {
         assertThat(new LootItem(liUncommonOneEffect.lootCode), is(liUncommonOneEffect.lootItem));
         assertThat(new LootItem(liRareNoEffects.lootCode), is(liRareNoEffects.lootItem));
         assertThat(new LootItem(liRareTwoEffects.lootCode), is(liRareTwoEffects.lootItem));
+
+        assertThrows(IllegalStateException.class, () -> liCommonNsEffect.lootItem.lootCodeV1());
+        assertThrows(IllegalStateException.class, () -> liRareDifferentNsEffects.lootItem.lootCodeV1());
     }
 
-    //public void testLootCodeV2();
+    @Test
+    @DisplayName("V2 Loot Code can be constructed and reconstructed")
+    public void testLootCodeV2() {
+        // Cannot do this test with items with a V1 loot code (because the V2 loot code will clearly be different)
+        assertThat(liCommonNsEffect.lootItem.lootCodeV2(), is(liCommonNsEffect.lootCode));
+        assertThat(liRareDifferentNsEffects.lootItem.lootCodeV2(), is(liRareDifferentNsEffects.lootCode));
+
+        assertThat(new LootItem(liCommonNoEffects.lootItem.lootCodeV2()), is(liCommonNoEffects.lootItem));
+        assertThat(new LootItem(liUncommonOneEffect.lootItem.lootCodeV2()), is(liUncommonOneEffect.lootItem));
+        assertThat(new LootItem(liRareNoEffects.lootItem.lootCodeV2()), is(liRareNoEffects.lootItem));
+        assertThat(new LootItem(liRareTwoEffects.lootItem.lootCodeV2()), is(liRareTwoEffects.lootItem));
+        assertThat(new LootItem(liCommonNsEffect.lootCode), is(liCommonNsEffect.lootItem));
+        assertThat(new LootItem(liRareDifferentNsEffects.lootCode), is(liRareDifferentNsEffects.lootItem));
+    }
 
     @Test
     @DisplayName("Invalid loot code throws IllegalArgumentException")
@@ -78,11 +112,11 @@ public class LootItemTest {
         final Random random = new Random(0);
         for (int i = 0; i < 100; i++) {
             final int rarity = testHelper.rarities.get(random.nextInt(testHelper.rarities.size())).getId();
-            final List<Integer> effects = new ArrayList<>();
+            final List<EffectId> effects = new ArrayList<>();
             for (int j = 0; j < random.nextInt(5); i++) {
-                effects.add(testHelper.effects.get(random.nextInt(testHelper.rarities.size())).getId());
+                effects.add(testHelper.effects.get(random.nextInt(testHelper.rarities.size())).effectId());
             }
-            LootItem lootItem = new LootItem(rarity, effects);
+            LootItem lootItem = new LootItem(effects, rarity);
 
             assertThat(new LootItem(lootItem.lootCode()), is(lootItem));
         }

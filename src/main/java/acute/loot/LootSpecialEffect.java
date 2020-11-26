@@ -103,10 +103,6 @@ public abstract class LootSpecialEffect {
         return name;
     }
 
-    public List<String> getMatchNames() {
-        return matchNames;
-    }
-
     @Override
     public String toString() {
         return name;

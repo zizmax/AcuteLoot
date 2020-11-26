@@ -7,8 +7,6 @@ import java.util.stream.Collectors;
 
 public class LootItem {
 
-    private String version = "1.0";
-
     private final int rarity;
     private List<EffectId> effects = new ArrayList<>();
 
@@ -28,13 +26,25 @@ public class LootItem {
         String[] parts = lootcode.split(":");
         if (parts.length < 2) throw new IllegalArgumentException("Invalid loot code, could not read version");
 
-        version = parts[1];
+        String version = parts[1];
 
         if (version.equals("1.0")) {
             this.rarity = Integer.parseInt(parts[2]);
 
-            for (String effect : parts[3].split("_"))
-                if (!effect.isEmpty()) effects.add(new EffectId(LootSpecialEffect.AL_NS, Integer.parseInt(effect)));
+            for (String effect : parts[3].split("_")) {
+                if (!effect.isEmpty()) {
+                    effects.add(new EffectId(LootSpecialEffect.AL_NS, Integer.parseInt(effect)));
+                }
+            }
+        } else if (version.equals("2.0")) {
+            this.rarity = Integer.parseInt(parts[2]);
+
+            for (String effect : parts[3].split("_")) {
+                if (!effect.isEmpty()) {
+                    final String[] effectParts = effect.split(";");
+                    effects.add(new EffectId(effectParts[0], Integer.parseInt(effectParts[1])));
+                }
+            }
         } else {
             throw new IllegalArgumentException("Unknown LootCode version '" + version + "'.");
         }
@@ -49,7 +59,7 @@ public class LootItem {
     }
 
     public String lootCode() {
-        return lootCodeV1();
+        return lootCodeV2();
     }
 
     // A version 1 lootcode is of the form
@@ -59,9 +69,12 @@ public class LootItem {
     // $rarity is the integer rarity ID
     // $effects is an underscore '_' separated list of effect IDs, possible empty
     public String lootCodeV1() {
+        if (effects.stream().anyMatch(e -> !e.ns.equals(LootSpecialEffect.AL_NS))) {
+            throw new IllegalStateException("Cannot use v1.0 lootcode with non-AcuteLoot namespace effects");
+        }
         StringBuilder str = new StringBuilder();
         str.append("#AL:");
-        str.append(version);
+        str.append("1.0");
         str.append(':');
         str.append(rarity);
         str.append(':');
@@ -85,7 +98,7 @@ public class LootItem {
     public String lootCodeV2() {
         StringBuilder str = new StringBuilder();
         str.append("#AL:");
-        str.append(version);
+        str.append("2.0");
         str.append(':');
         str.append(rarity);
         str.append(':');
