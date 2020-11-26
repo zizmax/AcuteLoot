@@ -7,6 +7,9 @@ import acute.loot.namegen.PrefixSuffixNameGenerator;
 
 import java.util.stream.IntStream;
 
+/**
+ * This class will print names generated from the name generators.
+ */
 public class TestNameGen {
 
     private static void printNExamples(int n, NameGenerator generator, LootMaterial material, LootRarity rarity) {

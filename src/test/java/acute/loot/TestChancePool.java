@@ -2,6 +2,10 @@ package acute.loot;
 
 import java.util.Random;
 
+/**
+ * This class will do repeated draws from an IntegerChancePool and print
+ * the actual count of each item drawn compared to the expected.
+ */
 public class TestChancePool {
 
     public static void main(String[] args) {

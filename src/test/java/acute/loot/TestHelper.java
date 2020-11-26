@@ -6,6 +6,9 @@ import org.bukkit.event.Event;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class will set up a "standard" set of test effects and rarities.
+ */
 public class TestHelper {
 
     public final LootRarity common;
@@ -39,9 +42,6 @@ public class TestHelper {
         effects = Arrays.asList(effect1, effect2, effect3, ns_effect1, ns_effect2, ns_effect3);
     }
 
-    /**
-     * Set up a "standard" set of test effects, rarities, and items
-     */
     public void addTestResources() {
         LootRarity.registerRarity(common);
         LootRarity.registerRarity(uncommon);
