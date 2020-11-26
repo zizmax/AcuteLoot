@@ -25,7 +25,9 @@ public class API {
     }
 
     public void registerEffect(final LootSpecialEffect effect, final int chance) {
-        // todo check effect in correct namespace
+        if (!effect.ns().equals(namespace)) {
+            throw new IllegalArgumentException("Effect namespace does not match API namespace");
+        }
         LootSpecialEffect.registerEffect(effect);
         AcuteLoot.effectChancePool.add(effect, chance);
         AcuteLoot.effectNames.put(effect.getName(), effect.effectId().toString());
