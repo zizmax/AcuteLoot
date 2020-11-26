@@ -430,7 +430,8 @@ public class Events implements Listener {
         // Add loot info to lore and display name
         lore.add(loot.rarity().getRarityColor() + loot.rarity().getName());
         for (LootSpecialEffect effect : loot.getEffects()) {
-            String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
+            //String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
+            String effectName = effect.getDisplayName();
             lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
         }
         meta.setLore(lore);

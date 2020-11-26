@@ -12,16 +12,18 @@ public abstract class LootSpecialEffect {
     private static final String PREFIX = "plugins/AcuteLoot/";
     private List<LootMaterial> validMaterials;
     private final String name;
+    private final String displayName;
     private final EffectId id;
     private List<String> matchNames = new ArrayList<>();
 
-    public LootSpecialEffect(String name, String ns, int id, List<LootMaterial> validMaterials) {
+    public LootSpecialEffect(String name, String ns, int id, List<LootMaterial> validMaterials, String displayName) {
         if (name.contains(" ")) throw new IllegalArgumentException("Name must not contain spaces");
         if (name.trim().isEmpty()) throw new IllegalArgumentException("Name cannot be empty");
         if (validMaterials == null || validMaterials.isEmpty()) throw new IllegalArgumentException("Materials list cannot be null or empty");
         this.name = name;
         this.id = new EffectId(ns, id);
         this.validMaterials = validMaterials;
+        this.displayName = displayName;
     }
 
     public abstract void apply(Event event);
@@ -79,6 +81,10 @@ public abstract class LootSpecialEffect {
 
     public String getName() {
         return name;
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     @Override

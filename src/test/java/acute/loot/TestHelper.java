@@ -55,7 +55,7 @@ public class TestHelper {
     public static class VoidEffect extends LootSpecialEffect {
 
         public VoidEffect(String name, String ns, int id, List<LootMaterial> validMaterials) {
-            super(name, ns, id, validMaterials);
+            super(name, ns, id, validMaterials, name.replace('-', ' '));
         }
 
         @Override
