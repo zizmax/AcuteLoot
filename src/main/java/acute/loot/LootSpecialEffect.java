@@ -59,7 +59,7 @@ public abstract class LootSpecialEffect {
             effects.put(effect.ns(), new HashMap<>());
         }
         if (effects.get(effect.ns()).containsKey(effect.getId())) {
-            throw new IllegalArgumentException("Effect with id '" + effect.getId() + "' already registered.");
+            throw new IllegalArgumentException("Effect with id '" + effect + "' already registered.");
         }
         effects.get(effect.ns()).put(effect.id(), effect);
     }
@@ -71,11 +71,6 @@ public abstract class LootSpecialEffect {
 
     public static LootSpecialEffect unregisterEffect(final String ns, final LootSpecialEffect effect) {
         return effects.get(ns).remove(effect.getId());
-    }
-
-    @Deprecated
-    public static Map<Integer, LootSpecialEffect> getEffects() {
-        return getEffects(AL_NS);
     }
 
     public static Map<Integer, LootSpecialEffect> getEffects(final String ns) {

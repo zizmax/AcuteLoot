@@ -383,9 +383,9 @@ public class Events implements Listener {
         return createLootItem(item, generator.generate(rarity, lootMaterial));
     }
 
-    public ItemStack createLootItem(ItemStack item, int rarityID, List<Integer> effects) {
-        return createLootItem(item, new LootItem(rarityID, effects));
-    }
+    //public ItemStack createLootItem(ItemStack item, int rarityID, List<Integer> effects) {
+    //    return createLootItem(item, new LootItem(rarityID, effects));
+    //}
 
     public ItemStack createLootItem(ItemStack item, LootRarity rarity) {
         LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);

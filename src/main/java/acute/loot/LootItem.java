@@ -10,13 +10,7 @@ public class LootItem {
     private final int rarity;
     private List<EffectId> effects = new ArrayList<>();
 
-    @Deprecated
-    public LootItem(int rarity, List<Integer> effects) {
-        this.rarity = rarity;
-        this.effects = effects.stream().map(id -> new EffectId(LootSpecialEffect.AL_NS, id)).collect(Collectors.toList());
-    }
-
-    public LootItem(List<EffectId> effects, int rarity) {
+    public LootItem(int rarity, List<EffectId> effects) {
         this.rarity = rarity;
         this.effects = effects;
     }

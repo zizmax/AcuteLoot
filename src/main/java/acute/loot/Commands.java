@@ -120,7 +120,8 @@ public class Commands implements CommandExecutor, TabCompleter {
                         final int rarity = AcuteLoot.rarityNames.get(args[1]);
                         if (args.length > 2) {
                             if (AcuteLoot.effectNames.containsKey(args[2])) {
-                                final LootItem lootItem = new LootItem(rarity, Collections.singletonList(AcuteLoot.effectNames.get(args[2])));
+                                final EffectId effectId = new EffectId(AcuteLoot.effectNames.get(args[2]));
+                                final LootItem lootItem = new LootItem(rarity, Collections.singletonList(effectId));
                                 new Events(plugin).createLootItem(item, lootItem);
                                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1] + " and " + args[2]);
                                 sendIncompatibleEffectsWarning(player, lootItem, item);
@@ -192,11 +193,11 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if(args.length == 2){
                     new Events(plugin).createLootItem(item, LootRarity.get(rarityID));
                 }
-                final List<Integer> effects = new ArrayList<>();
+                final List<EffectId> effects = new ArrayList<>();
                 if (args.length > 2) {
                     if (AcuteLoot.effectNames.containsKey(args[2])){
-                        effects.add(AcuteLoot.effectNames.get(args[2]));
-                        lootItem = new LootItem(rarityID, Collections.singletonList(AcuteLoot.effectNames.get(args[2])));
+                        effects.add(new EffectId(AcuteLoot.effectNames.get(args[2])));
+                        lootItem = new LootItem(rarityID, effects);
                         new Events(plugin).createLootItem(item, lootItem);
                     }
                     else {
@@ -446,4 +447,6 @@ public class Commands implements CommandExecutor, TabCompleter {
         }
         return false;
     }
+
+
 }

@@ -16,21 +16,24 @@ public class API {
     private static AcuteLoot acuteLoot;
 
     private final Plugin user;
+    private final String namespace;
     private final List<LootSpecialEffect> registeredEffects = new ArrayList<>();
 
-    public API(final Plugin user) {
+    public API(final Plugin user, String namespace) {
         this.user = user;
+        this.namespace = namespace;
     }
 
     public void registerEffect(final LootSpecialEffect effect, final int chance) {
+        // todo check effect in correct namespace
         LootSpecialEffect.registerEffect(effect);
         AcuteLoot.effectChancePool.add(effect, chance);
-        AcuteLoot.effectNames.put(effect.getName(), effect.getId());
+        AcuteLoot.effectNames.put(effect.getName(), effect.effectId().toString());
         registeredEffects.add(effect);
     }
 
     public void unregisterPluginEffects() {
-        registeredEffects.forEach(LootSpecialEffect::unregisterEffect);
+        registeredEffects.forEach(effect -> LootSpecialEffect.unregisterEffect(namespace, effect));
         AcuteLoot.effectChancePool.removeWithPredicate(e -> !registeredEffects.contains(e));
         registeredEffects.clear();
     }

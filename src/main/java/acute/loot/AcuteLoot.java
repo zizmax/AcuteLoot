@@ -38,7 +38,7 @@ public final class AcuteLoot extends JavaPlugin {
     public static final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
 
     public static final HashMap<String, Integer> rarityNames = new HashMap<>();
-    public static final HashMap<String, Integer> effectNames = new HashMap<>();
+    public static final HashMap<String, String> effectNames = new HashMap<>();
     public static final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
 
     // Minecraft version: Used for materials compatibility
@@ -241,7 +241,7 @@ public final class AcuteLoot extends JavaPlugin {
         // Set up effects
 
         // Clear any existing effects
-        LootSpecialEffect.getEffects().clear();
+        LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).clear();
 
         // Tool Particle
         LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_laser", 1, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.REDSTONE, true, this));
@@ -281,12 +281,12 @@ public final class AcuteLoot extends JavaPlugin {
         // Rebuild the effect chance pool
         effectChancePool.clear();
         effectNames.clear();
-        for (LootSpecialEffect effect : LootSpecialEffect.getEffects().values()) {
+        for (LootSpecialEffect effect : LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).values()) {
             int chance = getConfig().getInt("effects." + effect.getName().replace("_", ".") + ".chance");
             if(debug) getLogger().info(effect.getName() + ": " + chance);
             effectChancePool.add(effect, chance);
             // Add "tab completer-safe" name to HashMap of effects
-            effectNames.put(effect.getName(), effect.getId());
+            effectNames.put(effect.getName(), effect.effectId().toString());
         }
 
         // Dev Effects (currently being tested)

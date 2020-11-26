@@ -29,18 +29,18 @@ public class LootItemTest {
                                                  String.format("#AL:1.0:%d::#", testHelper.common.getId()));
         liRareNoEffects = new LootItemWithCode(new LootItem(testHelper.rare.getId(), Collections.emptyList()),
                                                String.format("#AL:1.0:%d::#", testHelper.rare.getId()));
-        liUncommonOneEffect = new LootItemWithCode(new LootItem(testHelper.uncommon.getId(), Collections.singletonList(testHelper.effect1.getId())),
-                                                   String.format("#AL:1.0:%d:%d:#", testHelper.uncommon.getId(), testHelper.effect1.getId()));
-        liRareTwoEffects = new LootItemWithCode(new LootItem(testHelper.rare.getId(), Arrays.asList(testHelper.effect2.getId(), testHelper.effect3.getId())),
-                                                String.format("#AL:1.0:%d:%d_%d:#", testHelper.rare.getId(), testHelper.effect2.getId(), testHelper.effect3.getId()));
+        liUncommonOneEffect = new LootItemWithCode(new LootItem(testHelper.uncommon.getId(), Collections.singletonList(testHelper.effect1.effectId())),
+                                                   String.format("#AL:1.0:%d:%d:#", testHelper.uncommon.getId(), testHelper.effect1.id()));
+        liRareTwoEffects = new LootItemWithCode(new LootItem(testHelper.rare.getId(), Arrays.asList(testHelper.effect2.effectId(), testHelper.effect3.effectId())),
+                                                String.format("#AL:1.0:%d:%d_%d:#", testHelper.rare.getId(), testHelper.effect2.id(), testHelper.effect3.id()));
 
-        liCommonNsEffect = new LootItemWithCode(new LootItem(Collections.singletonList(testHelper.ns_effect1.effectId()), testHelper.common.getId()),
+        liCommonNsEffect = new LootItemWithCode(new LootItem(testHelper.common.getId(), Collections.singletonList(testHelper.ns_effect1.effectId())),
                                                 String.format("#AL:2.0:%d:%s;%d:#", testHelper.common.getId(), testHelper.ns_effect1.ns(), testHelper.ns_effect1.id()));
 
-        liRareDifferentNsEffects = new LootItemWithCode(new LootItem(Arrays.asList(testHelper.ns_effect2.effectId(),
+        liRareDifferentNsEffects = new LootItemWithCode(new LootItem(testHelper.rare.getId(), Arrays.asList(testHelper.ns_effect2.effectId(),
                                                                                    testHelper.ns_effect3.effectId(),
-                                                                                   testHelper.effect1.effectId()),
-                                                                     testHelper.rare.getId()),
+                                                                                   testHelper.effect1.effectId())
+        ),
                                                         String.format("#AL:2.0:%d:%s;%d_%s;%d_%s;%d:#",
                                                                       testHelper.rare.getId(),
                                                                       testHelper.ns_effect2.ns(),
@@ -116,7 +116,7 @@ public class LootItemTest {
             for (int j = 0; j < random.nextInt(5); i++) {
                 effects.add(testHelper.effects.get(random.nextInt(testHelper.rarities.size())).effectId());
             }
-            LootItem lootItem = new LootItem(effects, rarity);
+            LootItem lootItem = new LootItem(rarity, effects);
 
             assertThat(new LootItem(lootItem.lootCode()), is(lootItem));
         }
