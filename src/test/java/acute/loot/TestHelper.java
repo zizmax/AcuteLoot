@@ -31,12 +31,12 @@ public class TestHelper {
         rare = new LootRarity(25, "Rare", 0.3, ChatColor.BLUE.toString());
 
         final List<LootMaterial> matList = Arrays.asList(LootMaterial.SWORD, LootMaterial.PICK);
-        effect1 = new VoidEffect("effect-1", LootSpecialEffect.AL_NS, 1, matList, null);
-        effect2 = new VoidEffect("effect-2", LootSpecialEffect.AL_NS, -100, matList, null);
-        effect3 = new VoidEffect("effect-3", LootSpecialEffect.AL_NS, 1234, matList, null);
-        ns_effect1 = new VoidEffect("ns-effect-1", "NS-A", 1, matList, null);
-        ns_effect2 = new VoidEffect("ns-effect-2", "NS-A", 2, matList, null);
-        ns_effect3 = new VoidEffect("ns-effect-2", "NS-B", 1, matList, null);
+        effect1 = new VoidEffect("effect-1", LootSpecialEffect.AL_NS, 1, matList);
+        effect2 = new VoidEffect("effect-2", LootSpecialEffect.AL_NS, -100, matList);
+        effect3 = new VoidEffect("effect-3", LootSpecialEffect.AL_NS, 1234, matList);
+        ns_effect1 = new VoidEffect("ns-effect-1", "NS-A", 1, matList);
+        ns_effect2 = new VoidEffect("ns-effect-2", "NS-A", 2, matList);
+        ns_effect3 = new VoidEffect("ns-effect-2", "NS-B", 1, matList);
 
         rarities = Arrays.asList(common, uncommon, rare);
         effects = Arrays.asList(effect1, effect2, effect3, ns_effect1, ns_effect2, ns_effect3);
@@ -54,8 +54,8 @@ public class TestHelper {
 
     public static class VoidEffect extends LootSpecialEffect {
 
-        public VoidEffect(String name, String ns, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
-            super(name, ns, id, validMaterials, plugin);
+        public VoidEffect(String name, String ns, int id, List<LootMaterial> validMaterials) {
+            super(name, ns, id, validMaterials);
         }
 
         @Override

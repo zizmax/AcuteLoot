@@ -6,7 +6,7 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 
 import java.util.List;
 
-public class XPBoostEffect extends LootSpecialEffect {
+public class XPBoostEffect extends AcuteLootSpecialEffect {
 
     public XPBoostEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, ns, id, validLootMaterials, plugin);

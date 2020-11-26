@@ -88,7 +88,7 @@ public class LootSpecialEffectTest {
     public static class TestEffect extends LootSpecialEffect {
 
         public TestEffect(String name, String ns, int id, List<LootMaterial> validMaterials) {
-            super(name, ns, id, validMaterials, null);
+            super(name, ns, id, validMaterials);
         }
 
         @Override

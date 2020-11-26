@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
-public class BlockTrailEffect extends LootSpecialEffect {
+public class BlockTrailEffect extends AcuteLootSpecialEffect {
 
     public BlockTrailEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, ns, id, validLootMaterials, plugin);

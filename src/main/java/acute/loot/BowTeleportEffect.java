@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
-public class BowTeleportEffect extends LootSpecialEffect {
+public class BowTeleportEffect extends AcuteLootSpecialEffect {
 
     public BowTeleportEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, ns, id, validLootMaterials, plugin);

@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimewalkEffect extends LootSpecialEffect{
+public class TimewalkEffect extends AcuteLootSpecialEffect{
 
 
     public TimewalkEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {

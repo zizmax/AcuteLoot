@@ -10,7 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
 
-public class MoonBootsEffect extends LootSpecialEffect {
+public class MoonBootsEffect extends AcuteLootSpecialEffect {
 
     public MoonBootsEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, ns, id, validLootMaterials, plugin);

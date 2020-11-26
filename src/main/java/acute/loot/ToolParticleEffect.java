@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ToolParticleEffect extends LootSpecialEffect {
+public class ToolParticleEffect extends AcuteLootSpecialEffect {
 
     private final Particle particle;
     private final boolean beamVisible;

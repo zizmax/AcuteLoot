@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DeadEyeEffect extends LootSpecialEffect{
+public class DeadEyeEffect extends AcuteLootSpecialEffect{
 
     public static HashMap<Player, Integer> deadEyeArrowsShot = new HashMap<>();
 

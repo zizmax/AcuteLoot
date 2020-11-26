@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 
-public class MidasEffect extends LootSpecialEffect {
+public class MidasEffect extends AcuteLootSpecialEffect {
     //TODO: Config option to only send block change packets, not actually change the blocks
     //FIXME: Does calling setType() work as intended for all types of blocks?
 

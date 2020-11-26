@@ -14,7 +14,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MedusaEffect extends LootSpecialEffect{
+public class MedusaEffect extends AcuteLootSpecialEffect{
 
 
     public MedusaEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {

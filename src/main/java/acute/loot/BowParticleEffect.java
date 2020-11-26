@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
-public class BowParticleEffect extends LootSpecialEffect {
+public class BowParticleEffect extends AcuteLootSpecialEffect {
 
     private final Particle particle;
 
