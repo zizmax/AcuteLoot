@@ -10,9 +10,15 @@ public class LootItem {
     private String version = "1.0";
 
     private final int rarity;
-    private List<Integer> effects = new ArrayList<>();
+    private List<EffectId> effects = new ArrayList<>();
 
+    @Deprecated
     public LootItem(int rarity, List<Integer> effects) {
+        this.rarity = rarity;
+        this.effects = effects.stream().map(id -> new EffectId(LootSpecialEffect.AL_NS, id)).collect(Collectors.toList());
+    }
+
+    public LootItem(List<EffectId> effects, int rarity) {
         this.rarity = rarity;
         this.effects = effects;
     }
@@ -28,7 +34,7 @@ public class LootItem {
             this.rarity = Integer.parseInt(parts[2]);
 
             for (String effect : parts[3].split("_"))
-                if (!effect.isEmpty()) effects.add(Integer.parseInt(effect));
+                if (!effect.isEmpty()) effects.add(new EffectId(LootSpecialEffect.AL_NS, Integer.parseInt(effect)));
         } else {
             throw new IllegalArgumentException("Unknown LootCode version '" + version + "'.");
         }
@@ -61,7 +67,7 @@ public class LootItem {
         str.append(':');
         for (int i = 0; i < effects.size(); i++) {
             if (i != 0) str.append("_");
-            str.append(effects.get(i));
+            str.append(effects.get(i).id);
         }
         str.append(":#");
         return str.toString();
@@ -85,7 +91,9 @@ public class LootItem {
         str.append(':');
         for (int i = 0; i < effects.size(); i++) {
             if (i != 0) str.append("_");
-            str.append(effects.get(i));
+            str.append(effects.get(i).ns);
+            str.append(';');
+            str.append(effects.get(i).id);
         }
         str.append(":#");
         return str.toString();

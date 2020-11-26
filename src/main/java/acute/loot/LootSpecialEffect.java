@@ -18,28 +18,22 @@ public abstract class LootSpecialEffect {
     protected final AcuteLoot plugin;
     private List<LootMaterial> validMaterials;
     private final String name;
-    private final int id;
+    private final EffectId id;
     private List<String> matchNames = new ArrayList<>();
 
+    @Deprecated
     public LootSpecialEffect(String name, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
+        this(name, AL_NS, id, validMaterials, plugin);
+    }
+
+    public LootSpecialEffect(String name, String ns, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
         if (name.contains(" ")) throw new IllegalArgumentException("Name must not contain spaces");
         if (name.trim().isEmpty()) throw new IllegalArgumentException("Name cannot be empty");
         if (validMaterials == null || validMaterials.isEmpty()) throw new IllegalArgumentException("Materials list cannot be null or empty");
         this.name = name;
-        this.id = id;
+        this.id = new EffectId(ns, id);
         this.validMaterials = validMaterials;
         this.plugin = plugin;
-    }
-
-    public LootSpecialEffect(String name, int id, List<LootMaterial> validMaterials, String matchNames, AcuteLoot plugin) {
-        this(name, id, validMaterials, plugin);
-
-        try (Stream<String> stream = Files.lines(Paths.get(PREFIX + matchNames))) {
-            this.matchNames = stream.collect(Collectors.toList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        this.validMaterials = validMaterials;
     }
 
     public abstract void apply(Event event);
@@ -48,28 +42,60 @@ public abstract class LootSpecialEffect {
         return validMaterials;
     }
 
-    private static final Map<Integer, LootSpecialEffect> effects = new HashMap<>();
+    private static final Map<String, Map<Integer,LootSpecialEffect>> effects = new HashMap<>();
+    public static final String AL_NS = "AL";
 
+    @Deprecated
     public static LootSpecialEffect get(int id) {
-        return effects.get(id);
+        return get(new EffectId(AL_NS, id));
+    }
+
+    public static LootSpecialEffect get(final EffectId id) {
+        return effects.get(id.ns).get(id.id);
     }
 
     public static void registerEffect(final LootSpecialEffect effect) {
-        if (effects.containsKey(effect.getId())) {
+        if (!effects.containsKey(effect.ns())) {
+            effects.put(effect.ns(), new HashMap<>());
+        }
+        if (effects.get(effect.ns()).containsKey(effect.getId())) {
             throw new IllegalArgumentException("Effect with id '" + effect.getId() + "' already registered.");
         }
-        effects.put(effect.getId(), effect);
+        effects.get(effect.ns()).put(effect.id(), effect);
     }
 
+    @Deprecated
     public static LootSpecialEffect unregisterEffect(final LootSpecialEffect effect) {
-        return effects.remove(effect.getId());
+        return unregisterEffect(AL_NS, effect);
     }
 
+    public static LootSpecialEffect unregisterEffect(final String ns, final LootSpecialEffect effect) {
+        return effects.get(ns).remove(effect.getId());
+    }
+
+    @Deprecated
     public static Map<Integer, LootSpecialEffect> getEffects() {
-        return effects;
+        return getEffects(AL_NS);
     }
 
+    public static Map<Integer, LootSpecialEffect> getEffects(final String ns) {
+        return effects.get(ns);
+    }
+
+    @Deprecated
     public int getId() {
+        return id();
+    }
+
+    public int id() {
+        return id.id;
+    }
+
+    public String ns() {
+        return id.ns;
+    }
+
+    public EffectId effectId() {
         return id;
     }
 
