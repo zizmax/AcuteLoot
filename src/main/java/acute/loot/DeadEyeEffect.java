@@ -27,8 +27,8 @@ public class DeadEyeEffect extends LootSpecialEffect{
 
     public static HashMap<Player, Integer> deadEyeArrowsShot = new HashMap<>();
 
-    public DeadEyeEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-            super(name, id, validLootMaterials, plugin);
+    public DeadEyeEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+            super(name, ns, id, validLootMaterials, plugin);
     }
 
     @Override

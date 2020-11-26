@@ -21,11 +21,6 @@ public abstract class LootSpecialEffect {
     private final EffectId id;
     private List<String> matchNames = new ArrayList<>();
 
-    @Deprecated
-    public LootSpecialEffect(String name, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
-        this(name, AL_NS, id, validMaterials, plugin);
-    }
-
     public LootSpecialEffect(String name, String ns, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
         if (name.contains(" ")) throw new IllegalArgumentException("Name must not contain spaces");
         if (name.trim().isEmpty()) throw new IllegalArgumentException("Name cannot be empty");
@@ -58,7 +53,7 @@ public abstract class LootSpecialEffect {
         if (!effects.containsKey(effect.ns())) {
             effects.put(effect.ns(), new HashMap<>());
         }
-        if (effects.get(effect.ns()).containsKey(effect.getId())) {
+        if (effects.get(effect.ns()).containsKey(effect.id())) {
             throw new IllegalArgumentException("Effect with id '" + effect + "' already registered.");
         }
         effects.get(effect.ns()).put(effect.id(), effect);
@@ -70,16 +65,11 @@ public abstract class LootSpecialEffect {
     }
 
     public static LootSpecialEffect unregisterEffect(final String ns, final LootSpecialEffect effect) {
-        return effects.get(ns).remove(effect.getId());
+        return effects.get(ns).remove(effect.id());
     }
 
     public static Map<Integer, LootSpecialEffect> getEffects(final String ns) {
         return effects.get(ns);
-    }
-
-    @Deprecated
-    public int getId() {
-        return id();
     }
 
     public int id() {

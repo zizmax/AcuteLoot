@@ -18,9 +18,9 @@ public class ToolParticleEffect extends LootSpecialEffect {
     private final Particle particle;
     private final boolean beamVisible;
 
-    public ToolParticleEffect(String name, int id, List<LootMaterial> validLootMaterials,
+    public ToolParticleEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials,
                               Particle particle, boolean beamVisible, AcuteLoot plugin) {
-        super(name, id, validLootMaterials, plugin);
+        super(name, ns, id, validLootMaterials, plugin);
         this.particle = particle;
         this.beamVisible = beamVisible;
     }

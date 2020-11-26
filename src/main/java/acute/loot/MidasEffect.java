@@ -18,8 +18,8 @@ public class MidasEffect extends LootSpecialEffect {
     //TODO: Config option to only send block change packets, not actually change the blocks
     //FIXME: Does calling setType() work as intended for all types of blocks?
 
-    public MidasEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, id, validLootMaterials, plugin);
+    public MidasEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, ns, id, validLootMaterials, plugin);
     }
 
     @Override

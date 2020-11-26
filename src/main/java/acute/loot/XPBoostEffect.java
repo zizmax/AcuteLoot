@@ -8,8 +8,8 @@ import java.util.List;
 
 public class XPBoostEffect extends LootSpecialEffect {
 
-    public XPBoostEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, id, validLootMaterials, plugin);
+    public XPBoostEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, ns, id, validLootMaterials, plugin);
     }
 
     @Override

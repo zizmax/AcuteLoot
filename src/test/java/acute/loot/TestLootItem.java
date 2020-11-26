@@ -119,7 +119,7 @@ public class TestLootItem {
 
     private static class MockSwordSpecialEffect extends LootSpecialEffect {
         public MockSwordSpecialEffect(String name, int id) {
-            super(name, id, Collections.singletonList(LootMaterial.SWORD), null);
+            super(name, "AL", id, Collections.singletonList(LootMaterial.SWORD), null);
         }
 
         @Override
