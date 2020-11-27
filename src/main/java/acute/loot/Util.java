@@ -18,6 +18,7 @@ public final class Util {
     /**
      * Draw a random element from a list. If the list is empty, throw a NoSuchElementException.
      *
+     * @param <T> type of the list
      * @param list the List to draw from
      * @return a random element from the list
      */
