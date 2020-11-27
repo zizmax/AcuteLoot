@@ -31,11 +31,15 @@ public class API {
     private final List<LootSpecialEffect> registeredEffects = new ArrayList<>();
 
     /**
-     * Construct a new API instance.
+     * Construct a new API instance. Throws an AcuteLootException is the
+     * provided namespace is not valid.
      * @param user the Plugin that will be using the API
      * @param namespace the namespace the Plugin will be using for LootSpecialEffect id's
      */
     public API(final Plugin user, String namespace) {
+        if (!EffectId.validNamespace(namespace)) {
+            throw new AcuteLootException("Invalid namespace");
+        }
         this.user = user;
         this.namespace = namespace;
     }
@@ -62,7 +66,7 @@ public class API {
      * handle config reloads, for example.
      */
     public void unregisterPluginEffects() {
-        registeredEffects.forEach(effect -> LootSpecialEffect.unregisterEffect(effect));
+        registeredEffects.forEach(LootSpecialEffect::unregisterEffect);
         registeredEffects.forEach(effect -> AcuteLoot.effectNames.remove(effect.getName()));
         AcuteLoot.effectChancePool.removeWithPredicate(e -> !registeredEffects.contains(e));
         registeredEffects.clear();
@@ -139,8 +143,8 @@ public class API {
      * @param version version to check
      * @return if the version is newer than or equal to the current API version
      */
-    public static boolean apiVersionOlderThan(final String base) {
-        return !apiVersionNewerThan(base);
+    public static boolean apiVersionOlderThan(final String version) {
+        return !apiVersionNewerThan(version);
     }
 
     // Set the API AcuteLoot instance
