@@ -53,6 +53,7 @@ public abstract class LootSpecialEffect {
      * @return the effect map for the given namespace
      */
     public static Map<Integer, LootSpecialEffect> getEffects(final String ns) {
+        effects.putIfAbsent(ns, new HashMap<>());
         return effects.get(ns);
     }
 
