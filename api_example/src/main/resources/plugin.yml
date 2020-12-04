@@ -1,6 +1,6 @@
 name: ALApiDemo
 version: 1.0.0
-main: acute.loot.apidemo.ALApiDemo
+main: acute.loot.apidemo.APIDemo
 api-version: 1.13
 authors: ["zizmax", "dizigma"]
 description: AcuteLoot API demo plugin

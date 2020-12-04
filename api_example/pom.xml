@@ -14,6 +14,7 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <doclint>none</doclint>
     </properties>
 
     <build>
@@ -89,7 +90,7 @@
         <dependency>
             <groupId>com.github.zizmax</groupId>
             <artifactId>AcuteLoot</artifactId>
-            <version>api-1.0.0-beta</version>
+            <version>api~api-1.0.0-beta-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

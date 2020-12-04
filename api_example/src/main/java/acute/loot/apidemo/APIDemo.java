@@ -6,7 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 /**
  * Plugin class. NO references to AcuteLoot here!
  */
-public class ALApiDemo extends JavaPlugin {
+public class APIDemo extends JavaPlugin {
 
     private ALIntegration alIntegration;
 

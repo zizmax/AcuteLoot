@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import acute.loot.API;
+
 /**
  * Plugin class. ALL references to AcuteLoot here!
  */
@@ -24,16 +26,16 @@ public class ALIntegration {
 
     public ALIntegration(final Plugin plugin) {
         logger = plugin.getLogger();
-        api = new API(plugin);
+        api = new API(plugin, "DEMO");
     }
 
     public boolean checkVersion() {
-        return ALApi.apiVersionNewerThan(AL_API_VERSION);
+        return API.apiVersionNewerThan(AL_API_VERSION);
     }
 
     public void addEffects() {
         logger.info("Adding AcuteLoot effects");
-        final DemoEffect effect = new DemoEffect("Demo Effect", 101, Collections.singletonList(LootMaterial.HOE), api.getAcuteLoot());
+        final DemoEffect effect = new DemoEffect("demo-effect", "DEMO", 101, Collections.singletonList(LootMaterial.HOE), "Demo Effect");
         api.registerEffect(effect, 100);
     }
 
@@ -44,8 +46,8 @@ public class ALIntegration {
 
     private class DemoEffect extends LootSpecialEffect {
 
-        public DemoEffect(String name, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
-            super(name, id, validMaterials, plugin);
+        public DemoEffect(String name, String ns, int id, List<LootMaterial> validMaterials, String displayName) {
+            super(name, ns, id, validMaterials, displayName);
         }
 
         @Override
