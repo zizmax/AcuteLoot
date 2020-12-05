@@ -38,11 +38,12 @@ public final class AcuteLoot extends JavaPlugin {
     public static final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
 
     public static final HashMap<String, Integer> rarityNames = new HashMap<>();
-    public static final HashMap<String, Integer> effectNames = new HashMap<>();
+    public static final HashMap<String, String> effectNames = new HashMap<>();
     public static final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
 
     // Minecraft version: Used for materials compatibility
-    public static final int serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2,4));
+    // Defaults to -1 before the plugin has loaded, useful for tests
+    public static int serverVersion = -1;
 
     @Override
     public void onEnable() {
@@ -66,9 +67,15 @@ public final class AcuteLoot extends JavaPlugin {
         int bStatsID = 7348;
         Metrics metrics = new Metrics(this, bStatsID);
 
+        // Set server version
+        serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2,4));
+
         // Configure name generators, rarities, and effects
         reloadConfiguration();
         if (!this.isEnabled()) return;
+
+        // Set the AcuteLoot instance for the API
+        API.setAcuteLoot(this);
 
         // Check for updates
         UpdateChecker.init(this, spigotID).requestUpdateCheck().whenComplete((result, exception) -> {
@@ -234,52 +241,53 @@ public final class AcuteLoot extends JavaPlugin {
         // Set up effects
 
         // Clear any existing effects
-        LootSpecialEffect.getEffects().clear();
+        LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).clear();
 
         // Tool Particle
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_laser", 1, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.REDSTONE, true, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_note", 2, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.NOTE, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_lava", 3, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.LAVA, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_enchanting-table", 4, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.ENCHANTMENT_TABLE, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_potion-effect", 5, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.SPELL_MOB, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_nautilus", 6, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.NAUTILUS, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_slime", 7, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.SLIME, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_water-splash", 8, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.WATER_SPLASH, false, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_laser", LootSpecialEffect.AL_NS, 1, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.REDSTONE, true, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_note", LootSpecialEffect.AL_NS, 2, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.NOTE, false, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_lava", LootSpecialEffect.AL_NS, 3, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.LAVA, false, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_enchanting-table", LootSpecialEffect.AL_NS, 4, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.ENCHANTMENT_TABLE, false, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_potion-effect", LootSpecialEffect.AL_NS, 5, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.SPELL_MOB, false, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_nautilus", LootSpecialEffect.AL_NS, 6, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.NAUTILUS, false, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_slime", LootSpecialEffect.AL_NS, 7, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.SLIME, false, this));
+        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_water-splash", LootSpecialEffect.AL_NS, 8, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.WATER_SPLASH, false, this));
 
         // Bow Teleport
-        LootSpecialEffect.registerEffect(new BowTeleportEffect("enderbow", 9,  Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), this));
+        LootSpecialEffect.registerEffect(new BowTeleportEffect("enderbow", LootSpecialEffect.AL_NS, 9,  Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), this));
 
         // Bow Particle
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_heart", 10, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.HEART, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_purple-spark", 11, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.SPELL_WITCH, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_lava", 12, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.LAVA, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_drip", 13, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.DRIP_LAVA, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_sparkle", 14, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.TOTEM, this ));
+        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_heart", LootSpecialEffect.AL_NS, 10, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.HEART, this ));
+        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_purple-spark", LootSpecialEffect.AL_NS, 11, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.SPELL_WITCH, this ));
+        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_lava", LootSpecialEffect.AL_NS, 12, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.LAVA, this ));
+        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_drip", LootSpecialEffect.AL_NS, 13, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.DRIP_LAVA, this ));
+        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_sparkle", LootSpecialEffect.AL_NS, 14, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.TOTEM, this ));
 
         // Block Trail
-        LootSpecialEffect.registerEffect(new BlockTrailEffect("gardener", 15, Collections.singletonList(LootMaterial.BOOTS), this));
+        LootSpecialEffect.registerEffect(new BlockTrailEffect("gardener", LootSpecialEffect.AL_NS, 15, Collections.singletonList(LootMaterial.BOOTS), this));
 
         // XP Boost
-        LootSpecialEffect.registerEffect(new XPBoostEffect("xp-boost", 16, Collections.singletonList(LootMaterial.HELMET), this));
+        LootSpecialEffect.registerEffect(new XPBoostEffect("xp-boost", LootSpecialEffect.AL_NS, 16, Collections.singletonList(LootMaterial.HELMET), this));
 
         // Time Walker
-        LootSpecialEffect.registerEffect(new TimewalkEffect("timewalker", 17, Collections.singletonList(LootMaterial.BOOTS), this));
+        LootSpecialEffect.registerEffect(new TimewalkEffect("timewalker", LootSpecialEffect.AL_NS, 17, Collections.singletonList(LootMaterial.BOOTS), this));
 
         // Dead Eye
-        LootSpecialEffect.registerEffect(new DeadEyeEffect("dead-eye", 18, Collections.singletonList(LootMaterial.BOW), this));
+        LootSpecialEffect.registerEffect(new DeadEyeEffect("dead-eye", LootSpecialEffect.AL_NS, 18, Collections.singletonList(LootMaterial.BOW), this));
 
         //Medusa (Gorgon)
-        LootSpecialEffect.registerEffect(new MedusaEffect("medusa", 19, Collections.singletonList(LootMaterial.BOW), this));
+        LootSpecialEffect.registerEffect(new MedusaEffect("medusa", LootSpecialEffect.AL_NS, 19, Collections.singletonList(LootMaterial.BOW), this));
 
         // Rebuild the effect chance pool
         effectChancePool.clear();
         effectNames.clear();
-        for (LootSpecialEffect effect : LootSpecialEffect.getEffects().values()) {
+        for (LootSpecialEffect effect : LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).values()) {
             int chance = getConfig().getInt("effects." + effect.getName().replace("_", ".") + ".chance");
             if(debug) getLogger().info(effect.getName() + ": " + chance);
             effectChancePool.add(effect, chance);
             // Add "tab completer-safe" name to HashMap of effects
-            effectNames.put(effect.getName(), effect.getId());
+            //FIXME: Append namespace for duplicate effect names across different namespaces
+            effectNames.put(effect.getName(), effect.effectId().toString());
         }
 
         // Dev Effects (currently being tested)
@@ -304,9 +312,9 @@ public final class AcuteLoot extends JavaPlugin {
 
             // MoonBoots
             LootSpecialEffect.registerEffect(new MoonBootsEffect("moonboots", 20, Collections.singletonList(LootMaterial.BOOTS), this));
-            effectChancePool.add(LootSpecialEffect.get(20), 1);
+            effectChancePool.add(LootSpecialEffect.get(22), 1);
             // Add "tab completer-safe" name to HashMap of effects
-            effectNames.put("Moonboots", 20);
+            effectNames.put("Moonboots", 22);
             */
 
         }

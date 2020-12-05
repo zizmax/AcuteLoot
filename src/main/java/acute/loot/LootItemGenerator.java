@@ -43,11 +43,11 @@ public class LootItemGenerator {
     public LootItem generateWithRarity(LootRarity lootRarity, LootMaterial material) {
         int itemRarity = lootRarity.getId();
 
-        List<Integer> effects = new ArrayList<>();
+        List<EffectId> effects = new ArrayList<>();
         try {
             if (random.nextDouble() <= lootRarity.getEffectChance()) {
                 final LootSpecialEffect effect = effectPool.drawWithPredicate(l -> l.getValidMaterials().contains(material));
-                effects.add(effect.getId());
+                effects.add(effect.effectId());
             }
         } catch (NoSuchElementException e) {
             // No effects for this material, ignore.

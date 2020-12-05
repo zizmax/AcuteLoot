@@ -3,19 +3,24 @@ package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
 import acute.loot.namegen.PermutationCounts;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.DoubleChestInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.StringUtil;
 
 import java.util.*;
 
 public class Commands implements CommandExecutor, TabCompleter {
-    private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename", "name");
+    private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename", "name", "chest", "salvage");
     //public static final TabCompleter TAB_COMPLETER = (s, c, l, args) -> (args.length == 1) ? StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, new ArrayList<>()) : null;
 
     @Override
@@ -66,13 +71,16 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     private void helpCommand(CommandSender sender) {
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.YELLOW + "==========| " + ChatColor.GRAY + "AcuteLoot Help" + ChatColor.YELLOW + " |==========");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al reload" + ChatColor.GRAY + " Reload AL config and names");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al add [rarity] [effect]" + ChatColor.GRAY + " Add AcuteLoot to item");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al add <rarity> [effect]" + ChatColor.GRAY + " Add AcuteLoot to item");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al remove" + ChatColor.GRAY + " Remove AcuteLoot from an item");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al new" + ChatColor.GRAY + " Create new random AcuteLoot");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al rename [name]" + ChatColor.GRAY + " Rename an item (Color codes supported!)");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al rename [name]" + ChatColor.GRAY + " Supports '&' codes!");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al name [generator]" + ChatColor.GRAY + " Name item using generator");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al stats" + ChatColor.GRAY + " Stats about an item or general stats");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al chest [minutes]" + ChatColor.GRAY + " Set AL chests");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al salvage" + ChatColor.GRAY + " Open the salvaging GUI");
     }
 
     private void reloadCommand(CommandSender sender) {
@@ -120,7 +128,8 @@ public class Commands implements CommandExecutor, TabCompleter {
                         final int rarity = AcuteLoot.rarityNames.get(args[1]);
                         if (args.length > 2) {
                             if (AcuteLoot.effectNames.containsKey(args[2])) {
-                                final LootItem lootItem = new LootItem(rarity, Collections.singletonList(AcuteLoot.effectNames.get(args[2])));
+                                final EffectId effectId = new EffectId(AcuteLoot.effectNames.get(args[2]));
+                                final LootItem lootItem = new LootItem(rarity, Collections.singletonList(effectId));
                                 new Events(plugin).createLootItem(item, lootItem);
                                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1] + " and " + args[2]);
                                 sendIncompatibleEffectsWarning(player, lootItem, item);
@@ -192,11 +201,11 @@ public class Commands implements CommandExecutor, TabCompleter {
                 if(args.length == 2){
                     new Events(plugin).createLootItem(item, LootRarity.get(rarityID));
                 }
-                final List<Integer> effects = new ArrayList<>();
+                final List<EffectId> effects = new ArrayList<>();
                 if (args.length > 2) {
                     if (AcuteLoot.effectNames.containsKey(args[2])){
-                        effects.add(AcuteLoot.effectNames.get(args[2]));
-                        lootItem = new LootItem(rarityID, Collections.singletonList(AcuteLoot.effectNames.get(args[2])));
+                        effects.add(new EffectId(AcuteLoot.effectNames.get(args[2])));
+                        lootItem = new LootItem(rarityID, effects);
                         new Events(plugin).createLootItem(item, lootItem);
                     }
                     else {
@@ -302,6 +311,84 @@ public class Commands implements CommandExecutor, TabCompleter {
             player.sendMessage(AcuteLoot.CHAT_PREFIX + "You must be holding something");
         }
 
+    }
+
+    private void chestCommand(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        int numFoundChests = 0;
+        NamespacedKey key = new NamespacedKey(plugin, "chestMetadataKey");
+        // chestMetadataCode Version 1.0 = "1.0:currentTimeMillis():refillCooldown (minutes)"
+        // i.e. "1.0:1606604412:90"
+        String version = "1.0";
+        String currentTime = String.valueOf(System.currentTimeMillis());
+        String refillCooldown = "-1";
+        for (BlockState tileEntity : player.getLocation().getChunk().getTileEntities()){
+            if (tileEntity instanceof Chest){
+                if (((Chest) tileEntity).getPersistentDataContainer().has(key, PersistentDataType.STRING)){
+                    String chestMetadata = ((Chest) tileEntity).getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                }
+                else {
+                    if (args.length >= 2){
+                        //TODO: How to handle negative values? Currently will just always refill
+                        try {
+                            Integer.parseInt(args[1]);
+                            refillCooldown = args[1];
+                        }
+                        catch (NumberFormatException e){
+                            player.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown (minutes) must be an integer");
+                            return;
+                        }
+                    }
+                    String chestMetadataCode = String.format("%s:%s:%s", version, currentTime, refillCooldown);
+                    if (AcuteLoot.debug) player.sendMessage("Code: " + chestMetadataCode);
+                    ((Chest) tileEntity).getPersistentDataContainer().set(key, PersistentDataType.STRING, chestMetadataCode);
+                    tileEntity.update();
+                    BlockState state = tileEntity.getBlock().getState();
+
+                    if (state instanceof Chest) {
+                        Chest chest = (Chest) state;
+                        Inventory inventory = chest.getInventory();
+                        if (inventory instanceof DoubleChestInventory) {
+                            //TODO: Check if it's a double chest
+                            //TODO: Adjust numFoundChests accordingly
+                            //DoubleChest doubleChest = (DoubleChest) inventory.getHolder();
+                        }
+
+                    }
+                    tileEntity.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, tileEntity.getBlock().getLocation().add(.5, 1, .5), 100);
+                    numFoundChests++;
+                }
+            }
+        }
+        //TODO: Play sound
+        player.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.YELLOW + "============= " + ChatColor.GRAY + "Chest Creator"
+                + ChatColor.YELLOW + " =============");
+        if(numFoundChests == 0){
+            player.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "0" + ChatColor.GRAY
+                    + " non-AcuteLoot chests found in current chunk!");
+        }
+        else {
+            player.sendMessage(AcuteLoot.CHAT_PREFIX + "Chests created: " + ChatColor.AQUA + numFoundChests);
+            if (refillCooldown == "-1"){
+                player.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown: " + ChatColor.AQUA + "none"
+                        + ChatColor.GRAY + "*");
+                player.sendMessage(AcuteLoot.CHAT_PREFIX + "*Will only generate loot once, when first opened");
+            }
+            else{
+
+                int seconds = (Integer.parseInt(refillCooldown) * 60) % 60;
+                int minutes = Integer.parseInt(refillCooldown) % 60;
+                int hours   = Integer.parseInt(refillCooldown) / 60;
+                player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + "Refill cooldown: " + ChatColor.AQUA
+                        + "%dh:%dm:%ds", hours, minutes, seconds));
+            }
+        }
+    }
+
+    private void salvageCommand(CommandSender sender, String[] args) {
+        Player player = (Player) sender;
+        SalvagerGUI inv = new SalvagerGUI(plugin);
+        inv.openInventory(player);
     }
 
     public void sendIncompatibleEffectsWarning(Player player, LootItem lootItem, ItemStack item){
@@ -427,15 +514,58 @@ public class Commands implements CommandExecutor, TabCompleter {
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
                     }
                     return true;
-                } else {
+                }
+
+                // Chest
+                else if (args[0].equalsIgnoreCase("chest")) {
+                    if (sender instanceof Player) {
+                        if (hasPermission(sender, "acuteloot.chest")) {
+                            chestCommand(sender, args);
+                            return true;
+                        } else {
+                            sender.sendMessage(PERM_DENIED_MSG);
+                        }
+                    } else {
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
+                    }
+                    return true;
+                }
+
+                // Salvage
+                else if (args[0].equalsIgnoreCase("salvage")) {
+                    if(plugin.getConfig().getBoolean("salvager.enabled")){
+                        if (sender instanceof Player) {
+                            if (hasPermission(sender, "acuteloot.salvage")) {
+                                salvageCommand(sender, args);
+                                return true;
+                            } else {
+                                sender.sendMessage(PERM_DENIED_MSG);
+                            }
+                        } else {
+                            sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
+                        }
+                        return true;
+                    }
+                    else{
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Salvaging is not enabled");
+                        return true;
+                    }
+                }
+
+                // Invalid subcommand
+                else {
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Subcommand not found!");
                     return true;
                 }
-            } else {
-                // Root permission node/command (/al)
+
+            }
+
+            // Root permission node/command (/al)
+            else {
                 if (hasPermission(sender, "acuteloot") || sender instanceof ConsoleCommandSender) {
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot version: " + ChatColor.YELLOW + plugin.getDescription()
                                                                                                                 .getVersion());
+                    //TODO: Print lootCode version as well
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Use " + ChatColor.AQUA + "/al help" + ChatColor.GRAY + " to learn more.");
                 } else {
                     sender.sendMessage(PERM_DENIED_MSG);
@@ -446,4 +576,6 @@ public class Commands implements CommandExecutor, TabCompleter {
         }
         return false;
     }
+
+
 }

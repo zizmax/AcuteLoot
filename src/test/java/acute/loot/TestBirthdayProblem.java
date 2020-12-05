@@ -2,6 +2,9 @@ package acute.loot;
 
 import acute.loot.namegen.PermutationCounts;
 
+/**
+ * This class will run the birthday problem function for various inputs
+ */
 public class TestBirthdayProblem {
 
     public static void main(String[] args) {

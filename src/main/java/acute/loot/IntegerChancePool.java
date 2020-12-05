@@ -37,7 +37,7 @@ public class IntegerChancePool<T> {
     }
 
     public void add(T val, int relativeChance) {
-        if (relativeChance < 1) throw new IllegalArgumentException("Relative chance must be positive and non-zero.");
+        if (relativeChance < 1) throw new IllegalArgumentException("Relative chance must be positive.");
         elements.add(new Element<>(val, max, max + relativeChance));
         max += relativeChance;
     }
@@ -66,6 +66,10 @@ public class IntegerChancePool<T> {
     }
 
     public T drawWithPredicate(Function<T, Boolean> predicate) {
+        return filter(predicate).draw();
+    }
+
+    public IntegerChancePool<T> filter(Function<T, Boolean> predicate) {
         final List<Element<T>> effectiveElements = elements.stream()
                                                            .filter(e -> predicate.apply(e.val))
                                                            .collect(Collectors.toList());
@@ -74,8 +78,14 @@ public class IntegerChancePool<T> {
         for (Element<T> e : effectiveElements) {
             effectivePool.add(e.val, e.upper - e.lower);
         }
+        return effectivePool;
+    }
 
-        return effectivePool.draw();
+    public void removeWithPredicate(Function<T, Boolean> predicate) {
+        final IntegerChancePool<T> newPool = filter(x -> !predicate.apply(x)); // Get items that DO NOT match the predicate
+        elements.clear();
+        elements.addAll(newPool.elements);
+        max = newPool.max;
     }
 
     public int max() {

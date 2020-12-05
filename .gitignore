@@ -24,3 +24,5 @@ hs_err_pid*
 
 Ignored paths
 /target/
+Ignored paths
+api_example/target/

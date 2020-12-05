@@ -13,10 +13,10 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DivinerEffect extends LootSpecialEffect {
+public class DivinerEffect extends AcuteLootSpecialEffect {
 
-    public DivinerEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, id, validLootMaterials, plugin);
+    public DivinerEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, ns, id, validLootMaterials, plugin);
     }
 
     @Override
