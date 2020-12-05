@@ -1,6 +1,8 @@
 package acute.loot;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
@@ -36,4 +38,18 @@ public final class Util {
         return locations;
     }
 
+    public static Material validateMaterial(String materialString) {
+        if (materialString == null) return null;
+        materialString = materialString.trim();
+        if (!materialString.equals("")) {
+            Material material = null;
+            try {
+                material = Material.matchMaterial(materialString);
+            } catch (IllegalArgumentException | NullPointerException e) {
+                return null;
+            }
+            return material;
+        }
+        return null;
+    }
 }

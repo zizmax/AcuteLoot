@@ -3,6 +3,7 @@ package acute.loot;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -11,15 +12,18 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
 public class MidasEffect extends AcuteLootSpecialEffect {
     //TODO: Config option to only send block change packets, not actually change the blocks
     //FIXME: Does calling setType() work as intended for all types of blocks?
+    private final AcuteLoot plugin;
 
     public MidasEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, ns, id, validLootMaterials, plugin);
+        this.plugin = plugin;
     }
 
     @Override
@@ -35,11 +39,21 @@ public class MidasEffect extends AcuteLootSpecialEffect {
                 for (Entity entity : entities){
                     if (entity instanceof LivingEntity){
                         entity.playEffect(EntityEffect.ENTITY_POOF);
-                        entity.getWorld().playSound(entity.getLocation(), Sound.ITEM_ARMOR_EQUIP_GOLD,2,1);
-                        //TODO: Choose better sound. Is it worth creating a runnable to play multiple?
-                        for (int i = 0; i < AcuteLoot.random.nextInt(20); i++) {
+                        int fragmentsNum = AcuteLoot.random.nextInt(20);
+                        for (int i = 0; i < fragmentsNum; i++) {
                             entity.getWorld().dropItemNaturally(((LivingEntity) entity).getEyeLocation(), getGoldItemStack());
                         }
+                        new BukkitRunnable() {
+                            int count = 0;
+                            @Override
+                            public void run() {
+                                if(count == fragmentsNum){
+                                    this.cancel();
+                                }
+                                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP,1,AcuteLoot.random.nextFloat() + 1);
+                                count++;
+                            }
+                        }.runTaskTimer(plugin, 2, 2);
                         entity.remove();
                     }
                 }

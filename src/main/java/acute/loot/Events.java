@@ -182,20 +182,58 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
         // Populate loot chest
-        Random random = new Random();
+        Player player = event.getPlayer();
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Block block = event.getClickedBlock();
             if (block.getType() == Material.CHEST) {
                 Chest chest = (Chest) block.getState();
-                if (AcuteLoot.debug || chest.getLootTable() != null) {
-                    // Only naturally-generated chests have lootTables
-                    // And they only have the lootTable the very first time they are opened
+                NamespacedKey key = new NamespacedKey(plugin, "chestMetadataKey");
+                PersistentDataContainer container = chest.getPersistentDataContainer();
+                // Only naturally-generated chests have lootTables
+                // And they only have the lootTable the very first time they are opened
+                if (AcuteLoot.debug || chest.getLootTable() != null || container.has(key, PersistentDataType.STRING)) {
+                    if(container.has(key, PersistentDataType.STRING)){
+                        if (AcuteLoot.debug) player.sendMessage("Has metadata code: "
+                                + container.get(key, PersistentDataType.STRING));
+                        String[] chestMetadataCode = container.get(key, PersistentDataType.STRING).split(":");
+                        String version = chestMetadataCode[0];
+                        long timeStamp = Long.parseLong(chestMetadataCode[1]);
+                        int refillCooldown = Integer.parseInt(chestMetadataCode[2]);
+                        if(refillCooldown != -1){
+                            if(System.currentTimeMillis() < timeStamp + ((double) refillCooldown * 60000d)){
+                                double remainingCooldown = (timeStamp + ((double) refillCooldown * 60000d)
+                                        - System.currentTimeMillis());
+                                int seconds = (int) (remainingCooldown / 1000) % 60 ;
+                                int minutes = (int) ((remainingCooldown / (1000*60)) % 60);
+                                int hours   = (int) (remainingCooldown / (1000*60*60));
+                                player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + "Remaining cooldown: %dh:%dm:%ds",
+                                        hours, minutes, seconds));
+                                //TODO: Add config option for disabling printout
+                                return;
+                            }
+                            else {
+                                // Opened AcuteLoot chest with expired cooldown
+                                // Reset timestamp
+                                //TODO: Add sound?
+                                container.set(key, PersistentDataType.STRING, String.format("%s:%d:%d", version,
+                                        System.currentTimeMillis(), refillCooldown));
+                                chest.update();
+                            }
+                        }
+                        else {
+                            // Opened AcuteLoot chest with no cooldown
+                            // Remove persistentDataContainer
+                            container.remove(key);
+                            chest.update();
+                        }
+                    }
+
                     if (plugin.getConfig().getBoolean("loot-sources.chests.enabled")) {
                         double roll = AcuteLoot.random.nextDouble();
                         double chance = plugin.getConfig().getDouble("loot-sources.chests.chance") / 100.0;
                         if (AcuteLoot.debug) {
-                            event.getPlayer().sendMessage("Chance: " + chance);
-                            event.getPlayer().sendMessage("Roll: " + roll);
+                            player.sendMessage("Chance: " + chance);
+                            player.sendMessage("Roll: " + roll);
                         }
                         if (roll <= chance) {
                             List<Integer> emptySlots = new ArrayList<>(); // Array of the indexes of the empty slots
@@ -208,17 +246,17 @@ public class Events implements Listener {
                             int origEmptySlotsSize = emptySlots.size();
                             if (emptySlots.size() > 0) {
                                 ItemStack newLoot = createLootItem();
-                                slotIndex = random.nextInt(emptySlots.size());
+                                slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
                                 int slotToFill = emptySlots.get(slotIndex);
                                 chest.getInventory().setItem(slotToFill, newLoot);
                                 emptySlots.remove(slotIndex);
 
                                 for (int i = 1; i <= origEmptySlotsSize - 1; i++) {
                                     roll = AcuteLoot.random.nextDouble();
-                                    if (AcuteLoot.debug) event.getPlayer().sendMessage("Roll: " + roll);
+                                    if (AcuteLoot.debug) player.sendMessage("Roll: " + roll);
                                     if (roll <= chance) {
                                         newLoot = createLootItem();
-                                        slotIndex = random.nextInt(emptySlots.size());
+                                        slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
                                         slotToFill = emptySlots.get(slotIndex);
                                         chest.getInventory().setItem(slotToFill, newLoot);
                                         emptySlots.remove(slotIndex);
@@ -232,7 +270,6 @@ public class Events implements Listener {
                 }
             }
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR) {
-            Player player = event.getPlayer();
             ItemStack item = player.getInventory().getItemInMainHand();
             if (item.getType() != Material.AIR && item.getItemMeta().getLore() != null) {
                 if (plugin.getConfig().getBoolean("effects.enabled")) {
@@ -434,8 +471,20 @@ public class Events implements Listener {
             String effectName = effect.getDisplayName();
             lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
         }
+//       `for (AcuteLootSpecialEffect effect : loot.getEffects()) {
+//            if(effect.id() == 101){
+//                lore.add("DemoEffect");
+//            }
+//            else {
+//                String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
+//                lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
+//            }
+//        }
         meta.setLore(lore);
-        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
+        if(plugin.getConfig().getBoolean("global-loot-name-color"))
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
+        else
+            meta.setDisplayName(loot.rarity().getRarityColor() + name);
         item.setItemMeta(meta);
 
         return item;

@@ -35,8 +35,11 @@ use-permissions: true
 # Names that look like Japanese katakana syllables (not in .txt files)
 kana-namegen: true
 
-# Color of the names of all AcuteLoot. See below for color options
+# Only relevant if global-loot-name-color is true. See below for color options
 loot-name-color: "&3"
+
+# Should all AcuteLoot have the same name color? Colors match rarity colors when false
+global-loot-name-color: false
 
 # Color of the effects of all AcuteLoot. See below for color options
 loot-effect-color: "&d"
@@ -228,3 +231,45 @@ effects:
     water-splash:
       name: "Splash"
       chance: 30
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                           Salvager                                           | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+# WARNING: Salvager is in [BETA]
+# It's ~mostly~ tested, but there are no guarantees it won't break something
+# Enable at your own risk
+salvager:
+  enabled: false
+
+# This configuration section is quite complex and needs to be 100% accurate to avoid errors
+# Pay careful attention to spacing/indentation
+# If command is blank or missing, the item itself will be given to player
+# If command is provided, item itself will be deleted and command will execute as server
+salvager-drops:
+  100: # Rarity ID, MUST match a rarity ID above
+    output_1: # Output ID, can be anything
+      loot-types: "DIAMOND_SWORD" # MUST be valid material. Examples: https://www.digminecraft.com/lists/item_id_list_pc.php
+      drops: #
+        drop_1: # Drop ID, can be anything
+          material: "GOLD_INGOT" # MUST be valid material. Examples: https://www.digminecraft.com/lists/item_id_list_pc.php
+          name: "Get 100 coins"
+          command: "money add {PLAYER} 100"
+        drop_2:
+          material: "STICK"
+          name: "Special stick"
+    output_2:
+      loot-types: "BOW"
+      drops:
+        drop_1:
+          material: "STRING"
+          name: "Death string"
+          command: "kill {PLAYER}"
+        drop_2:
+          material: "STICK"
+          name: "Special Stick"
+          command: ""
+

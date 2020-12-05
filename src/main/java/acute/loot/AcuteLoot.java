@@ -286,6 +286,7 @@ public final class AcuteLoot extends JavaPlugin {
             if(debug) getLogger().info(effect.getName() + ": " + chance);
             effectChancePool.add(effect, chance);
             // Add "tab completer-safe" name to HashMap of effects
+            //FIXME: Append namespace for duplicate effect names across different namespaces
             effectNames.put(effect.getName(), effect.effectId().toString());
         }
 
@@ -311,9 +312,9 @@ public final class AcuteLoot extends JavaPlugin {
 
             // MoonBoots
             LootSpecialEffect.registerEffect(new MoonBootsEffect("moonboots", 20, Collections.singletonList(LootMaterial.BOOTS), this));
-            effectChancePool.add(LootSpecialEffect.get(20), 1);
+            effectChancePool.add(LootSpecialEffect.get(22), 1);
             // Add "tab completer-safe" name to HashMap of effects
-            effectNames.put("Moonboots", 20);
+            effectNames.put("Moonboots", 22);
             */
 
         }
