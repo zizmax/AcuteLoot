@@ -206,9 +206,10 @@ public class Events implements Listener {
                                 int seconds = (int) (remainingCooldown / 1000) % 60 ;
                                 int minutes = (int) ((remainingCooldown / (1000*60)) % 60);
                                 int hours   = (int) (remainingCooldown / (1000*60*60));
-                                player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + "Remaining cooldown: %dh:%dm:%ds",
-                                        hours, minutes, seconds));
-                                //TODO: Add config option for disabling printout
+                                if(plugin.getConfig().getBoolean("loot-sources.chests.show-cooldown-msg")){
+                                    player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + "Remaining cooldown: %dh:%dm:%ds",
+                                            hours, minutes, seconds));
+                                }
                                 return;
                             }
                             else {

@@ -64,6 +64,7 @@ loot-sources:
     # This is the chance for any loot to appear in chest as well as additional loot.
     # Example: 1 loot = 65% chance, 2 loot = 0.65 * 0.65 = 42.25% chance and so on
     chance: 65 #Percentage
+    show-cooldown-msg: true
 
 # This is the chance for the "next" enchantment for random loot (from fishing, chests and /al new command
 # All individual enchantments have an equal chance. i.e. Sharpness is just as common as Bane of Arthropods
