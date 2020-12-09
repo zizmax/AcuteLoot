@@ -1,6 +1,7 @@
 package acute.loot;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.util.Vector;
@@ -51,5 +52,16 @@ public final class Util {
             return material;
         }
         return null;
+    }
+
+    public static String getUIString(String messageName, AcuteLoot plugin){
+
+        if(plugin.getConfig().contains("msg." + messageName)) {
+            return ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("msg." + messageName));
+        }
+        else{
+            plugin.getLogger().warning("Config message error at: msg." + messageName);
+            return ChatColor.DARK_RED + "[" +ChatColor.BLACK + "Config Error" + ChatColor.DARK_RED+ "]";
+        }
     }
 }

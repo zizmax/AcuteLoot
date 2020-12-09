@@ -274,3 +274,30 @@ salvager-drops:
           name: "Special Stick"
           command: ""
 
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                           Messages                                           | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+msg:
+  salvage:
+    inv-name: "&6[&8AcuteLoot&6] &4Salvager"
+    no-item: "No item in salvage slot!"
+    not-salvagable: "Input not salvagable!"
+    already-salvaged: "Already salvaged!"
+    name: "&4Salvager"
+    cancel-button: "&cCancel"
+    help-name: "&8Salvager Help"
+    help-lore-1: "&dClick the &4Salvager &dto see output"
+    help-lore-2: "&dThen click the &agreen &dpane to confirm"
+    pre-salvage-button: "&7Click the &4Salvager &7first"
+    cancel: "Salvaged cancelled"
+
+  chests:
+    cooldown-remaining: "Remaining cooldown:"
+
+  generic:
+    not-acuteloot: "Item is not AcuteLoot!"
