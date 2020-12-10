@@ -100,22 +100,32 @@ public class Events implements Listener {
     @EventHandler
     public void onEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
-        if (!plugin.getConfig().getBoolean("use-permissions") || (plugin.getConfig().getBoolean("use-permissions") && player.hasPermission("acuteloot.enchant"))) {
-            Map<Enchantment, Integer> enchantments = event.getEnchantsToAdd();
-            int enchantRarity = getEnchantRarity(enchantments);
-            ItemStack item = event.getItem();
-            if (getLootCode(plugin, item) == null) {
-                double seed = AcuteLoot.random.nextDouble();
-                double chance = (seed + (enchantRarity / 300.0)) / 2.0;
-                item = createLootItem(item, chance);
-                if (AcuteLoot.debug) {
-                    player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType().toString());
-                    player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
-                    player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
-                    player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA + String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
-                    player.sendMessage(ChatColor.GOLD + "Seed: " + ChatColor.AQUA + String.format("%.2f%%", seed * 100.0));
-                    player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA + String.format("%.2f%%", chance * 100.0));
-                    player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta().getLore().get(0));
+        if (plugin.getConfig().getBoolean("loot-sources.enchanting.enabled")) {
+            double roll = AcuteLoot.random.nextDouble();
+            double chance = plugin.getConfig().getDouble("loot-sources.enchanting.chance") / 100.0;
+            if (AcuteLoot.debug) {
+                player.sendMessage("Roll: " + roll);
+                player.sendMessage("Raw chance: " + chance);
+            }
+            if (!plugin.getConfig().getBoolean("use-permissions") || (plugin.getConfig().getBoolean("use-permissions") && player.hasPermission("acuteloot.enchant"))) {
+                if (roll <= chance) {
+                    Map<Enchantment, Integer> enchantments = event.getEnchantsToAdd();
+                    int enchantRarity = getEnchantRarity(enchantments);
+                    ItemStack item = event.getItem();
+                    if (getLootCode(plugin, item) == null) {
+                        double seed = AcuteLoot.random.nextDouble();
+                        chance = (seed + (enchantRarity / 300.0)) / 2.0;
+                        item = createLootItem(item, chance);
+                        if (AcuteLoot.debug) {
+                            player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType().toString());
+                            player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
+                            player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
+                            player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA + String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
+                            player.sendMessage(ChatColor.GOLD + "Seed: " + ChatColor.AQUA + String.format("%.2f%%", seed * 100.0));
+                            player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA + String.format("%.2f%%", chance * 100.0));
+                            player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta().getLore().get(0));
+                        }
+                    }
                 }
             }
         }
@@ -467,23 +477,31 @@ public class Events implements Listener {
         NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, loot.lootCode());
 
-        // Add loot info to lore and display name
+        // Add loot info to lore
         lore.add(loot.rarity().getRarityColor() + loot.rarity().getName());
         for (LootSpecialEffect effect : loot.getEffects()) {
             //String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
             String effectName = effect.getDisplayName();
             lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
         }
-//       `for (AcuteLootSpecialEffect effect : loot.getEffects()) {
-//            if(effect.id() == 101){
-//                lore.add("DemoEffect");
-//            }
-//            else {
-//                String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
-//                lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
-//            }
-//        }
+
+        // Add category lore
+        if(plugin.getConfig().getBoolean("loot-category-lore.enabled")){
+            String category = lootMaterial.name().toLowerCase();
+            if(plugin.getConfig().contains("loot-category-lore." + category)){
+                List<String> loreLines = plugin.getConfig().getStringList("loot-category-lore." + category);
+                for (String line : loreLines){
+                    lore.add(ChatColor.translateAlternateColorCodes('&', line));
+                }
+            }
+            else{
+                plugin.getLogger().warning("ERROR: Failed to add lore from config: loot-category-lore." +
+                        lootMaterial.name());
+            }
+        }
         meta.setLore(lore);
+
+        // Set display name
         if(plugin.getConfig().getBoolean("global-loot-name-color"))
             meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
         else

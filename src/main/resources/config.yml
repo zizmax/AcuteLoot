@@ -55,7 +55,9 @@ debug: false
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 loot-sources:
-  # Remember, loot comes from enchanting as well!
+  enchanting:
+    enabled: true
+    chance: 100 #Percentage
   fishing:
     enabled: true
     chance: 10 #Percentage
@@ -66,10 +68,42 @@ loot-sources:
     chance: 65 #Percentage
     show-cooldown-msg: true
 
-# This is the chance for the "next" enchantment for random loot (from fishing, chests and /al new command
+# This is the chance for the "next" vanilla enchantment for random loot (from fishing, chests and /al new command
 # All individual enchantments have an equal chance. i.e. Sharpness is just as common as Bane of Arthropods
 # Example: 1 enchantment = 65% chance, 2 enchantments = 0.65 * 0.65 = 42.25% chance and so on
 enchantment-chance: 65 #Percentage
+
+loot-category-lore:
+  enabled: true
+  axe:
+    - "&7Axe"
+  boots:
+    - "&7Boots"
+  bow:
+    - "&7Bow"
+  chest_plate:
+    - "&7Chestplate"
+  fishing_rod:
+    - "&7Fishing Rod"
+  generic:
+    - "&7Generic"
+  helmet:
+    - "&7Helmet"
+  hoe:
+    - "&7Hoe"
+  pants:
+    - "&7Leggings"
+  pick:
+    - "&7Pick"
+  shovel:
+    - "&7Shovel"
+  sword:
+    - "&7Sword"
+  trident:
+    - "&7Trident"
+  unknown:
+    - "&7Unknown"
+
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
@@ -291,8 +325,9 @@ msg:
     name: "&4Salvager"
     cancel-button: "&cCancel"
     help-name: "&8Salvager Help"
-    help-lore-1: "&dClick the &4Salvager &dto see output"
-    help-lore-2: "&dThen click the &agreen &dpane to confirm"
+    help-lore:
+      - "&dClick the &4Salvager &dto see output"
+      - "&dThen click the &agreen &dpane to confirm"
     pre-salvage-button: "&7Click the &4Salvager &7first"
     cancel: "Salvaged cancelled"
 
