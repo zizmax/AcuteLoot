@@ -56,6 +56,10 @@ public class LootItem {
         return lootCodeV2();
     }
 
+    public static String currentLootcodeVersion() {
+        return "2.0";
+    }
+
     // A version 1 lootcode is of the form
     // #AL:$vn:$rarity:$effects:#
     // Where:
