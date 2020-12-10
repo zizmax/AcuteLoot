@@ -83,7 +83,7 @@ public class LootItem {
     // A version 2 lootcode is of the form
     // #AL:$vn:$rarity:$effects:#
     // Where:
-    // $vn is the string "1.0"
+    // $vn is the string "2.0"
     // $rarity is the integer rarity ID
     // $effects is an underscore '_' separated list of namespaced effect IDs, possible empty
     //
