@@ -43,9 +43,19 @@ public class SalvagerGUI implements Listener {
             inv.setItem(i, createItem(Material.BLACK_STAINED_GLASS_PANE," "));
 
         }
-        inv.setItem(8, createItem(Material.OAK_SIGN, Util.getUIString("salvage.help-name", plugin),
-                Util.getUIString("salvage.help-lore-1", plugin),
-                Util.getUIString("salvage.help-lore-2", plugin)));
+
+        inv.setItem(8, createItem(Material.OAK_SIGN, Util.getUIString("salvage.help-name", plugin)));
+
+        // Add help-lore from config
+        List<String> loreLines = plugin.getConfig().getStringList("msg.salvage.help-lore");
+        ItemMeta meta = inv.getItem(8).getItemMeta();
+        List<String> lore = new ArrayList();
+        for (String line : loreLines){
+            lore.add(org.bukkit.ChatColor.translateAlternateColorCodes('&', line));
+        }
+        meta.setLore(lore);
+        inv.getItem(8).setItemMeta(meta);
+
         //ChatColor.LIGHT_PURPLE + "Click the " + salvagerName + ChatColor.LIGHT_PURPLE + " to see output",
         //ChatColor.LIGHT_PURPLE + "Then click the " + ChatColor.GREEN + "green" + ChatColor.LIGHT_PURPLE + " pane to confirm"));
         inv.setItem(13, new ItemStack(Material.AIR));
@@ -114,16 +124,17 @@ public class SalvagerGUI implements Listener {
                             String outputIDNode = node + outputID + ".";
                             if (AcuteLoot.debug) plugin.getLogger().info("Output ID: " + outputID);
                             if (AcuteLoot.debug) plugin.getLogger().info("OutputIDNode: " + outputIDNode);
-                            String[] materialStrings = plugin.getConfig().getString(outputIDNode + "loot-types").split(",");
+                            List<String> materialStrings = plugin.getConfig().getStringList(outputIDNode + "loot-types");
                             for (String materialString : materialStrings) {
-                                Material material = Util.validateMaterial(materialString);
-                                if (material != null) {
-                                    if (material == inv.getItem(13).getType()) {
+                                materialString = materialString.toUpperCase();
+                                //TODO: Add check if string even exists in the enum, not only if null
+                                if (materialString != null) {
+                                    if (LootMaterial.lootMaterialForMaterial(inv.getItem(13).getType()).name().equals(materialString)) {
                                         for (String dropID : plugin.getConfig().getConfigurationSection(outputIDNode + "drops.").getKeys(false)) {
                                             String dropIDNode = outputIDNode + "drops." + dropID + ".";
                                             if (AcuteLoot.debug) plugin.getLogger().info("dropIDNode: " + dropIDNode);
                                             if (AcuteLoot.debug) plugin.getLogger().info("Material String: " + plugin.getConfig().getString(dropIDNode + "material"));
-                                            material = Util.validateMaterial(plugin.getConfig().getString(dropIDNode + "material"));
+                                            Material material = Util.validateMaterial(plugin.getConfig().getString(dropIDNode + "material"));
                                             if (material != null) {
                                                 int slot = inv.first(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
                                                 inv.setItem(slot, createItem(material, ChatColor.translateAlternateColorCodes('&', ChatColor.stripColor(plugin.getConfig().getString(dropIDNode + "name")))));

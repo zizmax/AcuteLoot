@@ -329,7 +329,6 @@ public class Commands implements CommandExecutor, TabCompleter {
                 }
                 else {
                     if (args.length >= 2){
-                        //TODO: How to handle negative values? Currently will just always refill
                         try {
                             Integer.parseInt(args[1]);
                             refillCooldown = args[1];

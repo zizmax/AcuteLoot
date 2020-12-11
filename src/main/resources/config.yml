@@ -287,8 +287,10 @@ salvager:
 salvager-drops:
   100: # Rarity ID, MUST match a rarity ID above
     output_1: # Output ID, can be anything
-      loot-types: "DIAMOND_SWORD" # MUST be valid material. Examples: https://www.digminecraft.com/lists/item_id_list_pc.php
-      drops: #
+      loot-types: # MUST be valid AcuteLoot material categories. See 'loot-category-lore' above for list
+        - "sword"
+        - "axe"
+      drops:
         drop_1: # Drop ID, can be anything
           material: "GOLD_INGOT" # MUST be valid material. Examples: https://www.digminecraft.com/lists/item_id_list_pc.php
           name: "Get 100 coins"
@@ -297,7 +299,7 @@ salvager-drops:
           material: "STICK"
           name: "Special stick"
     output_2:
-      loot-types: "BOW"
+      loot-types: "bow"
       drops:
         drop_1:
           material: "STRING"
