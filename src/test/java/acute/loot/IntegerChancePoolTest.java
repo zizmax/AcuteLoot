@@ -27,6 +27,18 @@ public class IntegerChancePoolTest {
         assertThat(pool.values(), containsInAnyOrder("test", "AcuteLoot", "hello, world"));
         assertThat(pool.max(), is(15));
 
+        assertThrows(IllegalArgumentException.class, () -> pool.add("TestTest", 0));
+        assertThrows(IllegalArgumentException.class, () -> pool.add("TestTest", -1));
+        assertThrows(IllegalArgumentException.class, () -> pool.add("TestTest", -1234));
+
+        pool.addDiscardingInvalid("TestTest", 0);
+        assertThat(pool.values(), containsInAnyOrder("test", "AcuteLoot", "hello, world"));
+        assertThat(pool.max(), is(15));
+
+        pool.addDiscardingInvalid("TestTest2", -3);
+        assertThat(pool.values(), containsInAnyOrder("test", "AcuteLoot", "hello, world"));
+        assertThat(pool.max(), is(15));
+
         pool.clear();
         assertThat(pool.values(), empty());
         assertThat(pool.max(), is(0));

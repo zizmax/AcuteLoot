@@ -284,7 +284,7 @@ public final class AcuteLoot extends JavaPlugin {
         for (LootSpecialEffect effect : LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).values()) {
             int chance = getConfig().getInt("effects." + effect.getName().replace("_", ".") + ".chance");
             if(debug) getLogger().info(effect.getName() + ": " + chance);
-            effectChancePool.add(effect, chance);
+            effectChancePool.addDiscardingInvalid(effect, chance);
             // Add "tab completer-safe" name to HashMap of effects
             //FIXME: Append namespace for duplicate effect names across different namespaces
             effectNames.put(effect.getName(), effect.effectId().toString());

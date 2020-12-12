@@ -42,6 +42,12 @@ public class IntegerChancePool<T> {
         max += relativeChance;
     }
 
+    public void addDiscardingInvalid(T val, int relativeChance) {
+        if (relativeChance > 0) {
+            add(val, relativeChance);
+        }
+    }
+
     public T draw() {
         if (elements.isEmpty()) throw new NoSuchElementException();
         return draw(random.nextInt(max));
