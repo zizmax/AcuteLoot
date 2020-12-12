@@ -299,7 +299,8 @@ salvager-drops:
           material: "STICK"
           name: "Special stick"
     output_2:
-      loot-types: "bow"
+      loot-types:
+        - "bow"
       drops:
         drop_1:
           material: "STRING"
