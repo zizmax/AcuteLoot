@@ -18,22 +18,24 @@ public class BowTeleportEffect extends AcuteLootSpecialEffect {
     @Override
     public void apply(Event origEvent) {
         if (origEvent instanceof EntityShootBowEvent) {
-            EntityShootBowEvent event = (EntityShootBowEvent) origEvent;
-            Player player = (Player) event.getEntity();
-            Arrow arrow = (Arrow) event.getProjectile();
-            arrow.addPassenger(player);
-            player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1, 1);
+            if (plugin.getConfig().getBoolean("effects.enderbow.enabled")) {
+                EntityShootBowEvent event = (EntityShootBowEvent) origEvent;
+                Player player = (Player) event.getEntity();
+                Arrow arrow = (Arrow) event.getProjectile();
+                arrow.addPassenger(player);
+                player.playSound(player.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1, 1);
 
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (arrow.isOnGround() || arrow.isDead()) {
-                        arrow.removePassenger(player);
-                        player.playSound(player.getLocation(), Sound.BLOCK_HONEY_BLOCK_FALL, 1, 1);
-                        cancel();
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        if (arrow.isOnGround() || arrow.isDead()) {
+                            arrow.removePassenger(player);
+                            player.playSound(player.getLocation(), Sound.BLOCK_HONEY_BLOCK_FALL, 1, 1);
+                            cancel();
+                        }
                     }
-                }
-            }.runTaskTimer(plugin, 0L, 0L);
+                }.runTaskTimer(plugin, 0L, 0L);
+            }
         }
     }
 

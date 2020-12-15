@@ -39,7 +39,7 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
         // -4: No bow and no arrows
 
         if(origEvent instanceof PlayerInteractEvent) {
-            if (plugin.getConfig().getDouble("effects.dead-eye.chance") > 0) {
+            if (plugin.getConfig().getBoolean("effects.dead-eye.enabled")) {
                 Player player = ((PlayerInteractEvent) origEvent).getPlayer();
                 ItemStack item = player.getInventory().getItemInMainHand();
                 if (deadEyeArrowsShot.get(player) != null && deadEyeArrowsShot.get(player) <= -1) {

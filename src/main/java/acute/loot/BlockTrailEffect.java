@@ -21,7 +21,7 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
             PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
 
             // Gardener effect
-            if (plugin.getConfig().getDouble("effects.gardener.chance") > 0) {
+            if (plugin.getConfig().getBoolean("effects.gardener.enabled")) {
                 Location flower_trail = event.getFrom();
                 Material soilBlock = flower_trail.clone().subtract(0, 1, 0).getBlock().getType();
                 if (soilBlock.equals(Material.DIRT) ||

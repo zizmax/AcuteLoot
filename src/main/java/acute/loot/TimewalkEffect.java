@@ -26,7 +26,7 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
     public void apply(Event origEvent) {
         if (origEvent instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
-            if (plugin.getConfig().getDouble("effects.timewalker.chance") > 0) {
+            if (plugin.getConfig().getBoolean("effects.timewalker.enabled")) {
                 Player player = ((PlayerMoveEvent) origEvent).getPlayer();
                 ItemStack boots = player.getInventory().getBoots();
                 ItemMeta meta = boots.getItemMeta();

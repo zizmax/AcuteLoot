@@ -189,10 +189,12 @@ effects:
   gardener: # Applicable only to boots
     name: "Gardener"
     chance: 90
+    enabled: true
   timewalker: #Applicable only to boots
     time-shift: 150 # Measured in ticks. E.g. 150 / 20 = 7.5 seconds (20 ticks/second under normal conditions)
     name: "Time Walker"
     chance: 50 # This is the second effect for boots, after gardener.
+    enabled: true
     durability-modifier: 1
 
   # Bows
@@ -200,6 +202,7 @@ effects:
     # Launches the shooter like an arrow
     name: "Enderbow"
     chance: 5
+    enabled: true
   dead-eye:
     effect-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
     cooldown-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
@@ -207,18 +210,21 @@ effects:
     durability-modifier: 1
     name: "Dead Eye"
     chance: 2
+    enabled: true
   medusa:
     affect-players: true # Should players hit by these arrows turn to stone and die?
     death-message: "turned to stone" # Example: [player] turned to stone
     drop-loot: true # Should mobs drop their inventory when they are hit?
     name: "Gorgo"
     chance: 2
+    enabled: true
 
   # Helmets
   xp-boost: # Applicable only to helmets
     boost-amount: 1 # Can be changed, measured in raw XP (integer), not a percentage/multiplier
     name: "XP Boost"
     chance: 1 # Changing this won't do anything currently because it is the only effect for helmets
+    enabled: true
 
   # Bow and Crossbow Particle Effects
   bows:
@@ -226,18 +232,23 @@ effects:
       # Heals target equal to amount of damage dealt, including player
       name: "Love"
       chance: 5
+      enabled: true
     purple-spark:
       name: "Cursed"
       chance: 20
+      enabled: true
     lava:
       name: "Lava"
       chance: 10
+      enabled: true
     drip:
       name: "Linger"
       chance: 30
+      enabled: true
     sparkle:
       name: "Sparkle"
       chance: 30
+      enabled: true
 
   # Weapons Particle Effects (swords, axes)
   weapons:
@@ -245,27 +256,35 @@ effects:
     laser:
       name: "Laser"
       chance: 4
+      enabled: true
     note:
       name: "Music"
       chance: 4
+      enabled: true
     lava:
       name: "Lava"
       chance: 2
+      enabled: true
     enchanting-table:
       name: "Mythic"
       chance: 10
+      enabled: true
     potion-effect:
       name: "Loopy"
       chance: 10
+      enabled: true
     nautilus:
       name: "Magic"
       chance: 10
+      enabled: true
     slime:
       name: "Sticky"
       chance: 30
+      enabled: true
     water-splash:
       name: "Splash"
       chance: 30
+      enabled: true
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #

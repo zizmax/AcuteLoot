@@ -15,7 +15,7 @@ public class XPBoostEffect extends AcuteLootSpecialEffect {
     @Override
     public void apply(Event origEvent) {
         if (origEvent instanceof PlayerExpChangeEvent) {
-            if (plugin.getConfig().getDouble("effects.xp-boost.chance") > 0) {
+            if (plugin.getConfig().getBoolean("effects.xp-boost.enabled")) {
                 PlayerExpChangeEvent event = (PlayerExpChangeEvent) origEvent;
                 final Player player = event.getPlayer();
                 final int xpBoostAmount = plugin.getConfig().getInt("effects.xp-boost.boost-amount");
