@@ -22,7 +22,8 @@ public class SalvagerGUI implements Listener {
     private final Inventory inv;
     private final AcuteLoot plugin;
     private ItemStack salvaged;
-    private HashMap<Integer, String> commandsToRun;
+    private List<String> commandsToRun;
+    private List<Integer> slotsToGive;
 
     //FIXME: What happens to items if player dies or gets teleported while looking at SalvageGUI?
     //FIXME: ...if InventoryCloseEvent is triggered, just catch it there. Otherwise will need to cover all events.
@@ -31,14 +32,13 @@ public class SalvagerGUI implements Listener {
     public SalvagerGUI(AcuteLoot plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         inv = Bukkit.createInventory(null, 54, Util.getUIString("salvage.inv-name", plugin));
-        ItemStack salvaged = null;
-        HashMap<Integer, String> commandsToRun = new HashMap<Integer, String>();
         this.plugin = plugin;
         configureItems();
     }
 
     // You can call this whenever you want to put the items in
     public void configureItems() {
+        salvaged = null;
         for (int i = 0; i < 27; i++) {
             inv.setItem(i, createItem(Material.BLACK_STAINED_GLASS_PANE," "));
 
@@ -102,7 +102,9 @@ public class SalvagerGUI implements Listener {
             event.setCancelled(true);
             if (inv.getItem(13) != null) {
                 if (salvaged == null) {
-                    commandsToRun = new HashMap<>();
+                    commandsToRun = new ArrayList<>();
+                    slotsToGive = new ArrayList<>();
+
                     if (Events.getLootCode(plugin, inv.getItem(13)) != null) {
                         for (String key : plugin.getConfig().getConfigurationSection("salvager-drops").getKeys(false)) {
                             int id;
@@ -138,10 +140,16 @@ public class SalvagerGUI implements Listener {
                                             if (material != null) {
                                                 int slot = inv.first(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
                                                 inv.setItem(slot, createItem(material, ChatColor.translateAlternateColorCodes('&', ChatColor.stripColor(plugin.getConfig().getString(dropIDNode + "name")))));
-                                                if (plugin.getConfig().getString(dropIDNode + "command") != null
-                                                        && plugin.getConfig().getString(dropIDNode + "command") != "") {
-                                                    if (AcuteLoot.debug) plugin.getLogger().info("Found command: " + plugin.getConfig().getString(dropIDNode + "command") + "|");
-                                                    commandsToRun.put(slot, plugin.getConfig().getString(dropIDNode + "command"));
+                                                if (plugin.getConfig().contains(dropIDNode + "commands")) {
+                                                    List<String> commands = plugin.getConfig().getStringList(dropIDNode + "commands");
+                                                    for (String command : commands) {
+                                                        if (AcuteLoot.debug)
+                                                            plugin.getLogger().info("Found command: " + command);
+                                                        commandsToRun.add(command);
+                                                    }
+                                                }
+                                                if(plugin.getConfig().getBoolean(dropIDNode + "give-item")){
+                                                    slotsToGive.add(slot);
                                                 }
                                                 player.playSound(player.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1, 1);
                                                 inv.setItem(53, createItem(Material.LIME_STAINED_GLASS_PANE,ChatColor.GREEN + "Confirm"));
@@ -178,21 +186,21 @@ public class SalvagerGUI implements Listener {
             if (salvaged != null && salvaged.equals(inv.getItem(13) )){
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 inv.setItem(13, null);
-                for (int i = 27; i < 45; i++) {
-                    if(inv.getItem(i) != null) {
-                        if(commandsToRun.get(i) == null && inv.getItem(i).getType() != Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
-                            player.getInventory().addItem(inv.getItem(i));
-                        }
-                        inv.setItem(i, createItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, " "));
+                for (int slot : slotsToGive) {
+                    if(inv.getItem(slot) != null) {
+                        player.getInventory().addItem(inv.getItem(slot));
+                        inv.setItem(slot, createItem(Material.LIGHT_GRAY_STAINED_GLASS_PANE, " "));
                     }
                 }
-                for (String command : commandsToRun.values()){
-                    if (AcuteLoot.debug) plugin.getLogger().info("AcuteLoot running: " + command);
+                for (String command : commandsToRun){
+                    if (AcuteLoot.debug) plugin.getLogger().info("AcuteLoot dispatching: " + command);
                     String parsedCommand = command.replace("{PLAYER}", player.getName());
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parsedCommand);
                 }
+                slotsToGive.clear();
                 commandsToRun.clear();
                 event.setCancelled(true);
+                configureItems();
             }
             else{
                 denyUIClick(player, Util.getUIString("salvage.no-item", plugin));
