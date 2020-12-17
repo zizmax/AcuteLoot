@@ -30,7 +30,8 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
 
     @Override
     public void apply(Event origEvent) {
-        if (origEvent instanceof EntityShootBowEvent) {
+        if (plugin.getConfig().getBoolean("effects." + this.getName().replace("_", ".") + ".enabled")) {
+            if (origEvent instanceof EntityShootBowEvent) {
             EntityShootBowEvent event = (EntityShootBowEvent) origEvent;
             Arrow arrow = (Arrow) event.getProjectile();
             World world = arrow.getWorld();
@@ -48,21 +49,21 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
                     }
                 }
             }.runTaskTimer(plugin, 0L, 0L);
-        } else if (origEvent instanceof EntityDamageByEntityEvent) {
-            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
-            if (event.getEntity() instanceof LivingEntity && event.getDamager() instanceof Arrow) {
-                LivingEntity target = (LivingEntity) event.getEntity();
-                if (particle == Particle.HEART) {
-                    Arrow arrow = (Arrow) event.getDamager();
-                    if (arrow.getShooter() instanceof Player) {
-                        Player player = (Player) arrow.getShooter();
-                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
+            } else if (origEvent instanceof EntityDamageByEntityEvent) {
+                EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
+                if (event.getEntity() instanceof LivingEntity && event.getDamager() instanceof Arrow) {
+                    LivingEntity target = (LivingEntity) event.getEntity();
+                    if (particle == Particle.HEART) {
+                        Arrow arrow = (Arrow) event.getDamager();
+                        if (arrow.getShooter() instanceof Player) {
+                            Player player = (Player) arrow.getShooter();
+                            player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
+                        }
+                        target.setHealth(healEntity(target, event.getFinalDamage()));
+                        event.setDamage(0);
                     }
-                    target.setHealth(healEntity(target, event.getFinalDamage()));
-                    event.setDamage(0);
                 }
             }
-
         }
     }
 }
