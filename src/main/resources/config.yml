@@ -313,10 +313,15 @@ salvager-drops:
         drop_1: # Drop ID, can be anything
           material: "GOLD_INGOT" # MUST be valid material. Examples: https://www.digminecraft.com/lists/item_id_list_pc.php
           name: "Get 100 coins"
-          command: "money add {PLAYER} 100"
+          give-item: false # Should item be given to player or disappear? Commands will run either way
+          commands: # If you don't want/need a command, just delete this section.
+            - "money add {PLAYER} 100"
+            - "say {PLAYER} got 100 coins!"
+            - "say Salvage your AcuteLoot for money!"
         drop_2:
           material: "STICK"
           name: "Special stick"
+          give-item: true
     output_2:
       loot-types:
         - "bow"
@@ -324,11 +329,15 @@ salvager-drops:
         drop_1:
           material: "STRING"
           name: "Death string"
-          command: "kill {PLAYER}"
+          give-item: true
+          commands:
+            - "kill {PLAYER}"
         drop_2:
           material: "STICK"
           name: "Special Stick"
-          command: ""
+          give-item: true
+          commands:
+            - "" # You can also just leave it empty and it won't do anything
 
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
