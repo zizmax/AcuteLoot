@@ -185,6 +185,7 @@ public class Events implements Listener {
         if(event.getEntity().hasMetadata("turnedToStone")) {
             String message = plugin.getConfig().getString("effects.medusa.death-message");
             event.setDeathMessage(event.getEntity().getDisplayName() + " " + message);
+            event.getEntity().removeMetadata("turnedToStone", plugin);
         }
     }
 

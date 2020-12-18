@@ -48,8 +48,8 @@ public class MedusaEffect extends AcuteLootSpecialEffect{
                     if (event.getEntity() instanceof Player) {
                         Player player = (Player) event.getEntity();
                         if (plugin.getConfig().getBoolean("effects.medusa.affect-players")) {
-                            player.setHealth(0);
                             player.setMetadata("turnedToStone", new FixedMetadataValue(plugin, true));
+                            player.setHealth(0);
                         } else return;
                     } else {
                         if (plugin.getConfig().getBoolean("effects.medusa.drop-loot")) {
