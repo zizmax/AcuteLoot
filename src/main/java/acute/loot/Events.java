@@ -334,7 +334,7 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerFish(PlayerFishEvent event) {
         Entity caught = event.getCaught();
-        if (caught instanceof Item) {
+        if (caught instanceof Item && event.getExpToDrop() > 0) {
             if (plugin.getConfig().getBoolean("loot-sources.fishing.enabled")) {
                 double roll = AcuteLoot.random.nextDouble();
                 double chance = plugin.getConfig().getDouble("loot-sources.fishing.chance") / 100.0;
