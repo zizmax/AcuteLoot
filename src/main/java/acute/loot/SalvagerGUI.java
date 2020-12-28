@@ -104,7 +104,6 @@ public class SalvagerGUI implements Listener {
                 if (salvaged == null) {
                     commandsToRun = new ArrayList<>();
                     slotsToGive = new ArrayList<>();
-
                     if (Events.getLootCode(plugin, inv.getItem(13)) != null) {
                         for (String key : plugin.getConfig().getConfigurationSection("salvager-drops").getKeys(false)) {
                             int id;
@@ -120,7 +119,8 @@ public class SalvagerGUI implements Listener {
                             }
 
                         }
-                        String node = "salvager-drops.100.";
+                        LootItem lootItem = new LootItem(Events.getLootCode(plugin, inv.getItem(13)));
+                        String node = "salvager-drops." + lootItem.rarityRaw() + ".";
                         if (AcuteLoot.debug) player.sendMessage(String.valueOf(plugin.getConfig().getConfigurationSection(node).getKeys(false)));
                         for (String outputID : plugin.getConfig().getConfigurationSection(node).getKeys(false)) {
                             String outputIDNode = node + outputID + ".";
