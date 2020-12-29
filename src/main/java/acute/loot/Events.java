@@ -7,6 +7,7 @@ import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
@@ -198,88 +199,99 @@ public class Events implements Listener {
             Block block = event.getClickedBlock();
             if (block.getType() == Material.CHEST) {
                 Chest chest = (Chest) block.getState();
-                NamespacedKey key = new NamespacedKey(plugin, "chestMetadataKey");
-                PersistentDataContainer container = chest.getPersistentDataContainer();
-                // Only naturally-generated chests have lootTables
-                // And they only have the lootTable the very first time they are opened
-                if (AcuteLoot.debug || chest.getLootTable() != null || container.has(key, PersistentDataType.STRING)) {
-                    if(container.has(key, PersistentDataType.STRING)){
-                        if (AcuteLoot.debug) player.sendMessage("Has metadata code: "
-                                + container.get(key, PersistentDataType.STRING));
-                        String[] chestMetadataCode = container.get(key, PersistentDataType.STRING).split(":");
-                        String version = chestMetadataCode[0];
-                        long timeStamp = Long.parseLong(chestMetadataCode[1]);
-                        int refillCooldown = Integer.parseInt(chestMetadataCode[2]);
-                        if(refillCooldown != -1){
-                            if(System.currentTimeMillis() < timeStamp + ((double) refillCooldown * 60000d)){
-                                double remainingCooldown = (timeStamp + ((double) refillCooldown * 60000d)
-                                        - System.currentTimeMillis());
-                                int seconds = (int) (remainingCooldown / 1000) % 60 ;
-                                int minutes = (int) ((remainingCooldown / (1000*60)) % 60);
-                                int hours   = (int) (remainingCooldown / (1000*60*60));
-                                if(plugin.getConfig().getBoolean("loot-sources.chests.show-cooldown-msg")){
-                                    player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX
-                                                    + Util.getUIString("chests.cooldown-remaining", plugin)
-                                                    + " %d:%d:%d",
-                                            hours, minutes, seconds));
+                if (!player.getWorld().getBlockAt(chest.getLocation().add(0,1,0)).getType().isOccluding()){
+                    // Chests can only be opened when no opaque (occluding) block exists above
+                    // Without this check AL chest-filling logic would run even if chest never actually opened
+                    NamespacedKey key = new NamespacedKey(plugin, "chestMetadataKey");
+                    PersistentDataContainer container = chest.getPersistentDataContainer();
+                    // Only naturally-generated chests have lootTables
+                    // And they only have the lootTable the very first time they are opened
+                    if (AcuteLoot.debug || chest.getLootTable() != null || container.has(key, PersistentDataType.STRING)) {
+                        if(container.has(key, PersistentDataType.STRING)){
+                            if (AcuteLoot.debug) player.sendMessage("Has metadata code: "
+                                    + container.get(key, PersistentDataType.STRING));
+                            String[] chestMetadataCode = container.get(key, PersistentDataType.STRING).split(":");
+                            String version = chestMetadataCode[0];
+                            long timeStamp = Long.parseLong(chestMetadataCode[1]);
+                            int refillCooldown = Integer.parseInt(chestMetadataCode[2]);
+                            if(refillCooldown != -1){
+                                if(System.currentTimeMillis() < timeStamp + ((double) refillCooldown * 60000d)){
+                                    double remainingCooldown = (timeStamp + ((double) refillCooldown * 60000d)
+                                            - System.currentTimeMillis());
+                                    int seconds = (int) (remainingCooldown / 1000) % 60 ;
+                                    int minutes = (int) ((remainingCooldown / (1000*60)) % 60);
+                                    int hours   = (int) (remainingCooldown / (1000*60*60));
+                                    if(plugin.getConfig().getBoolean("loot-sources.chests.show-cooldown-msg")){
+                                        player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX
+                                                        + Util.getUIString("chests.cooldown-remaining", plugin)
+                                                        + " %d:%d:%d",
+                                                hours, minutes, seconds));
+                                    }
+                                    return;
                                 }
-                                return;
+                                else {
+                                    // Opened AcuteLoot chest with expired cooldown
+                                    // Reset timestamp
+                                    //TODO: Add sound?
+                                    container.set(key, PersistentDataType.STRING, String.format("%s:%d:%d", version,
+                                            System.currentTimeMillis(), refillCooldown));
+                                    chest.update();
+                                }
                             }
                             else {
-                                // Opened AcuteLoot chest with expired cooldown
-                                // Reset timestamp
-                                //TODO: Add sound?
-                                container.set(key, PersistentDataType.STRING, String.format("%s:%d:%d", version,
-                                        System.currentTimeMillis(), refillCooldown));
+                                // Opened AcuteLoot chest with no cooldown
+                                // Remove persistentDataContainer
+                                container.remove(key);
                                 chest.update();
                             }
                         }
-                        else {
-                            // Opened AcuteLoot chest with no cooldown
-                            // Remove persistentDataContainer
-                            container.remove(key);
-                            chest.update();
-                        }
-                    }
 
-                    if (plugin.getConfig().getBoolean("loot-sources.chests.enabled")) {
-                        double roll = AcuteLoot.random.nextDouble();
-                        double chance = plugin.getConfig().getDouble("loot-sources.chests.chance") / 100.0;
-                        if (AcuteLoot.debug) {
-                            player.sendMessage("Chance: " + chance);
-                            player.sendMessage("Roll: " + roll);
-                        }
-                        if (roll <= chance) {
-                            List<Integer> emptySlots = new ArrayList<>(); // Array of the indexes of the empty slots
-                            int slotIndex = 0;
-                            for (ItemStack itemStack : chest.getInventory().getContents()) {
-                                // Only add null (empty) slots so they can later be filled with loot
-                                if (itemStack == null) emptySlots.add(slotIndex);
-                                slotIndex++;
-                            }
-                            int origEmptySlotsSize = emptySlots.size();
-                            if (emptySlots.size() > 0) {
-                                ItemStack newLoot = createLootItem();
-                                slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
-                                int slotToFill = emptySlots.get(slotIndex);
-                                chest.getInventory().setItem(slotToFill, newLoot);
-                                emptySlots.remove(slotIndex);
-
-                                for (int i = 1; i <= origEmptySlotsSize - 1; i++) {
-                                    roll = AcuteLoot.random.nextDouble();
-                                    if (AcuteLoot.debug) player.sendMessage("Roll: " + roll);
+                        if (plugin.getConfig().getBoolean("loot-sources.chests.enabled")) {
+                            // Runs chest-filling logic on next tick to account for items placed by vanilla loot table
+                            plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+                                @Override
+                                public void run() {
+                                    double roll = AcuteLoot.random.nextDouble();
+                                    double chance = plugin.getConfig().getDouble("loot-sources.chests.chance") / 100.0;
+                                    if (AcuteLoot.debug) {
+                                        player.sendMessage("Chance: " + chance);
+                                        player.sendMessage("Roll: " + roll);
+                                    }
                                     if (roll <= chance) {
-                                        newLoot = createLootItem();
-                                        slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
-                                        slotToFill = emptySlots.get(slotIndex);
-                                        chest.getInventory().setItem(slotToFill, newLoot);
-                                        emptySlots.remove(slotIndex);
-                                    } else {
-                                        break;
+                                        List<Integer> emptySlots = new ArrayList<>(); // Array of the empty slot indices
+                                        int slotIndex = 0;
+                                        for (ItemStack itemStack : chest.getInventory().getContents()) {
+                                            // Only add null (empty) slots so they can later be filled with loot
+                                            if (itemStack == null) emptySlots.add(slotIndex);
+                                            slotIndex++;
+                                        }
+                                        int origEmptySlotsSize = emptySlots.size();
+                                        if (emptySlots.size() > 0) {
+                                            ItemStack newLoot = createLootItem();
+                                            slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
+                                            int slotToFill = emptySlots.get(slotIndex);
+                                            chest.getInventory().setItem(slotToFill, newLoot);
+                                            emptySlots.remove(slotIndex);
+
+                                            for (int i = 1; i <= origEmptySlotsSize - 1; i++) {
+                                                roll = AcuteLoot.random.nextDouble();
+                                                if (AcuteLoot.debug) player.sendMessage("Roll: " + roll);
+                                                if (roll <= chance) {
+                                                    newLoot = createLootItem();
+                                                    slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
+                                                    slotToFill = emptySlots.get(slotIndex);
+                                                    chest.getInventory().setItem(slotToFill, newLoot);
+                                                    emptySlots.remove(slotIndex);
+                                                } else {
+                                                    break;
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            });
                         }
+
                     }
                 }
             }
@@ -331,7 +343,8 @@ public class Events implements Listener {
          */
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
+    // Priority HIGH to avoid conflicts with other plugins that modify fishing
     public void onPlayerFish(PlayerFishEvent event) {
         Entity caught = event.getCaught();
         if (caught instanceof Item && event.getExpToDrop() > 0) {
