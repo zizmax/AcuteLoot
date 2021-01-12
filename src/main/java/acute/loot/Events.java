@@ -77,14 +77,15 @@ public class Events implements Listener {
     @EventHandler
     public void anvilListener(PrepareAnvilEvent event) {
         AnvilInventory inv = event.getInventory();
-        if (event.getViewers().isEmpty() || inv.getItem(0) == null) return;
+        if (event.getViewers().isEmpty() || inv.getItem(0) == null || Events.getLootCode(plugin, inv.getItem(0)) == null) return;
         if (inv.getItem(0).hasItemMeta() && inv.getItem(0).getItemMeta().hasDisplayName()) {
             String origName = getDisplayName(inv.getItem(0));
             ItemStack result = event.getResult();
 
             if (result != null && !result.getType().equals(Material.AIR) && origName.contains(String.valueOf('§'))) {
+                String newName = origName.substring(0,2) + result.getItemMeta().getDisplayName();
                 ItemMeta meta = result.getItemMeta();
-                meta.setDisplayName(origName);
+                meta.setDisplayName(newName);
                 result.setItemMeta(meta);
                 event.setResult(result);
             }
