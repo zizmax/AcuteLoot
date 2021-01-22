@@ -34,3 +34,7 @@ permissions:
     default: op
   acuteloot.name:
     default: op
+  acuteloot.salvage:
+    default: op
+  acuteloot.salvage-force-open:
+    default: op

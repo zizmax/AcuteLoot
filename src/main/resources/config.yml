@@ -361,6 +361,7 @@ msg:
       - "&dThen click the &agreen &dpane to confirm"
     pre-salvage-button: "&7Click the &4Salvager &7first"
     cancel: "Salvaged cancelled"
+    not-single-item: "Stack size must be 1!"
 
   chests:
     cooldown-remaining: "Remaining cooldown:"

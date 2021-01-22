@@ -80,7 +80,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al name [generator]" + ChatColor.GRAY + " Name item using generator");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al stats" + ChatColor.GRAY + " Stats about an item or general stats");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al chest [minutes]" + ChatColor.GRAY + " Set AL chests");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al salvage" + ChatColor.GRAY + " Open the salvaging GUI");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al salvage [player]" + ChatColor.GRAY + " Open the salvaging GUI");
     }
 
     private void reloadCommand(CommandSender sender) {
@@ -385,9 +385,20 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     private void salvageCommand(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
-        SalvagerGUI inv = new SalvagerGUI(plugin);
-        inv.openInventory(player);
+        if (args.length >= 2){
+            if (sender.getServer().getPlayerExact(args[1]) != null){
+                SalvagerGUI inv = new SalvagerGUI(plugin);
+                inv.openInventory(sender.getServer().getPlayerExact(args[1]));
+            }
+            else {
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Player is not online!");
+            }
+        }
+        else {
+            Player player = (Player) sender;
+            SalvagerGUI inv = new SalvagerGUI(plugin);
+            inv.openInventory(player);
+        }
     }
 
     public void sendIncompatibleEffectsWarning(Player player, LootItem lootItem, ItemStack item){
@@ -533,7 +544,16 @@ public class Commands implements CommandExecutor, TabCompleter {
                 // Salvage
                 else if (args[0].equalsIgnoreCase("salvage")) {
                     if(plugin.getConfig().getBoolean("salvager.enabled")){
-                        if (sender instanceof Player) {
+                        if(args.length >= 2) {
+                            if (hasPermission(sender, "acuteloot.salvage-force-open")) {
+                                salvageCommand(sender, args);
+                                return true;
+                            }
+                            else {
+                                sender.sendMessage(PERM_DENIED_MSG);
+                            }
+                        }
+                        else if(sender instanceof Player) {
                             if (hasPermission(sender, "acuteloot.salvage")) {
                                 salvageCommand(sender, args);
                                 return true;

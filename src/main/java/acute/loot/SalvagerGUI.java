@@ -104,73 +104,80 @@ public class SalvagerGUI implements Listener {
                 if (salvaged == null) {
                     commandsToRun = new ArrayList<>();
                     slotsToGive = new ArrayList<>();
-                    if (Events.getLootCode(plugin, inv.getItem(13)) != null) {
-                        for (String key : plugin.getConfig().getConfigurationSection("salvager-drops").getKeys(false)) {
-                            int id;
-                            try {
-                                id = Integer.parseInt(key);
-                            } catch (Exception e) {
-                                player.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.RED + "Error: " + ChatColor.GRAY
-                                        + "Rarity ID error in salvager config. Contact server admin.");
-                                plugin.getLogger().severe("Salvager config error on rarity ID: " + key);
-                                plugin.getLogger().severe("Are you sure the ID is an integer?");
-                                event.setCancelled(true);
-                                return;
-                            }
+                    if(inv.getItem(13).getAmount() == 1) {
+                        if (Events.getLootCode(plugin, inv.getItem(13)) != null) {
+                            for (String key : plugin.getConfig().getConfigurationSection("salvager-drops").getKeys(false)) {
+                                int id;
+                                try {
+                                    id = Integer.parseInt(key);
+                                } catch (Exception e) {
+                                    player.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.RED + "Error: " + ChatColor.GRAY
+                                            + "Rarity ID error in salvager config. Contact server admin.");
+                                    plugin.getLogger().severe("Salvager config error on rarity ID: " + key);
+                                    plugin.getLogger().severe("Are you sure the ID is an integer?");
+                                    event.setCancelled(true);
+                                    return;
+                                }
 
-                        }
-                        LootItem lootItem = new LootItem(Events.getLootCode(plugin, inv.getItem(13)));
-                        String node = "salvager-drops." + lootItem.rarityRaw() + ".";
-                        if (AcuteLoot.debug) player.sendMessage(String.valueOf(plugin.getConfig().getConfigurationSection(node).getKeys(false)));
-                        for (String outputID : plugin.getConfig().getConfigurationSection(node).getKeys(false)) {
-                            String outputIDNode = node + outputID + ".";
-                            if (AcuteLoot.debug) plugin.getLogger().info("Output ID: " + outputID);
-                            if (AcuteLoot.debug) plugin.getLogger().info("OutputIDNode: " + outputIDNode);
-                            List<String> materialStrings = plugin.getConfig().getStringList(outputIDNode + "loot-types");
-                            for (String materialString : materialStrings) {
-                                materialString = materialString.toUpperCase();
-                                //TODO: Add check if string even exists in the enum, not only if null
-                                if (materialString != null) {
-                                    if (LootMaterial.lootMaterialForMaterial(inv.getItem(13).getType()).name().equals(materialString)) {
-                                        for (String dropID : plugin.getConfig().getConfigurationSection(outputIDNode + "drops.").getKeys(false)) {
-                                            String dropIDNode = outputIDNode + "drops." + dropID + ".";
-                                            if (AcuteLoot.debug) plugin.getLogger().info("dropIDNode: " + dropIDNode);
-                                            if (AcuteLoot.debug) plugin.getLogger().info("Material String: " + plugin.getConfig().getString(dropIDNode + "material"));
-                                            Material material = Util.validateMaterial(plugin.getConfig().getString(dropIDNode + "material"));
-                                            if (material != null) {
-                                                int slot = inv.first(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-                                                inv.setItem(slot, createItem(material, ChatColor.translateAlternateColorCodes('&', ChatColor.stripColor(plugin.getConfig().getString(dropIDNode + "name")))));
-                                                if (plugin.getConfig().contains(dropIDNode + "commands")) {
-                                                    List<String> commands = plugin.getConfig().getStringList(dropIDNode + "commands");
-                                                    for (String command : commands) {
-                                                        if (AcuteLoot.debug)
-                                                            plugin.getLogger().info("Found command: " + command);
-                                                        commandsToRun.add(command);
+                            }
+                            LootItem lootItem = new LootItem(Events.getLootCode(plugin, inv.getItem(13)));
+                            String node = "salvager-drops." + lootItem.rarityRaw() + ".";
+                            if (AcuteLoot.debug)
+                                player.sendMessage(String.valueOf(plugin.getConfig().getConfigurationSection(node).getKeys(false)));
+                            for (String outputID : plugin.getConfig().getConfigurationSection(node).getKeys(false)) {
+                                String outputIDNode = node + outputID + ".";
+                                if (AcuteLoot.debug) plugin.getLogger().info("Output ID: " + outputID);
+                                if (AcuteLoot.debug) plugin.getLogger().info("OutputIDNode: " + outputIDNode);
+                                List<String> materialStrings = plugin.getConfig().getStringList(outputIDNode + "loot-types");
+                                for (String materialString : materialStrings) {
+                                    materialString = materialString.toUpperCase();
+                                    //TODO: Add check if string even exists in the enum, not only if null
+                                    if (materialString != null) {
+                                        if (LootMaterial.lootMaterialForMaterial(inv.getItem(13).getType()).name().equals(materialString)) {
+                                            for (String dropID : plugin.getConfig().getConfigurationSection(outputIDNode + "drops.").getKeys(false)) {
+                                                String dropIDNode = outputIDNode + "drops." + dropID + ".";
+                                                if (AcuteLoot.debug)
+                                                    plugin.getLogger().info("dropIDNode: " + dropIDNode);
+                                                if (AcuteLoot.debug)
+                                                    plugin.getLogger().info("Material String: " + plugin.getConfig().getString(dropIDNode + "material"));
+                                                Material material = Util.validateMaterial(plugin.getConfig().getString(dropIDNode + "material"));
+                                                if (material != null) {
+                                                    int slot = inv.first(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
+                                                    inv.setItem(slot, createItem(material, ChatColor.translateAlternateColorCodes('&', ChatColor.stripColor(plugin.getConfig().getString(dropIDNode + "name")))));
+                                                    if (plugin.getConfig().contains(dropIDNode + "commands")) {
+                                                        List<String> commands = plugin.getConfig().getStringList(dropIDNode + "commands");
+                                                        for (String command : commands) {
+                                                            if (AcuteLoot.debug)
+                                                                plugin.getLogger().info("Found command: " + command);
+                                                            commandsToRun.add(command);
+                                                        }
                                                     }
+                                                    if (plugin.getConfig().getBoolean(dropIDNode + "give-item")) {
+                                                        slotsToGive.add(slot);
+                                                    }
+                                                    player.playSound(player.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1, 1);
+                                                    inv.setItem(53, createItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Confirm"));
+                                                    salvaged = inv.getItem(13);
+                                                } else {
+                                                    //FIXME: Better error string for players and admins
+                                                    player.sendMessage("Error on drop output material! ID:" + dropIDNode);
                                                 }
-                                                if(plugin.getConfig().getBoolean(dropIDNode + "give-item")){
-                                                    slotsToGive.add(slot);
-                                                }
-                                                player.playSound(player.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1, 1);
-                                                inv.setItem(53, createItem(Material.LIME_STAINED_GLASS_PANE,ChatColor.GREEN + "Confirm"));
-                                                salvaged = inv.getItem(13);
-                                            } else {
-                                                //FIXME: Better error string for players and admins
-                                                player.sendMessage("Error on drop output material! ID:" + dropIDNode);
                                             }
                                         }
+                                    } else {
+                                        //FIXME: Better error string for players and admins
+                                        player.sendMessage("Error on loot-type material! ID:" + outputIDNode);
                                     }
-                                } else {
-                                    //FIXME: Better error string for players and admins
-                                    player.sendMessage("Error on loot-type material! ID:" + outputIDNode);
                                 }
                             }
-                        }
-                        if (salvaged == null){
-                            denyUIClick(player, Util.getUIString("salvage.not-salvagable", plugin));
+                            if (salvaged == null) {
+                                denyUIClick(player, Util.getUIString("salvage.not-salvagable", plugin));
+                            }
+                        } else {
+                            denyUIClick(player, Util.getUIString("generic.not-acuteloot", plugin));
                         }
                     } else {
-                        denyUIClick(player, Util.getUIString("generic.not-acuteloot", plugin));
+                        denyUIClick(player, Util.getUIString("salvage.not-single-item", plugin));
                     }
                 } else {
                     denyUIClick(player, Util.getUIString("salvage.already-salvaged", plugin));
