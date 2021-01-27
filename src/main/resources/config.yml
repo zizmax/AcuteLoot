@@ -368,3 +368,11 @@ msg:
 
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
+
+well:
+  enabled: true
+  world: "world"
+  x: 100
+  y: 70
+  z: 100
+  max-distance: 1.5
