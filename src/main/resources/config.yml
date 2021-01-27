@@ -366,6 +366,7 @@ msg:
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
 
+
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
 # |                                                                                              | #
@@ -436,3 +437,11 @@ name-generators:
 
 # Force generated names to start with capital letters
 capitalize-names: true
+
+well:
+  enabled: true
+  world: "world"
+  x: 100
+  y: 70
+  z: 100
+  max-distance: 1.5
