@@ -4,11 +4,16 @@ import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 import acute.loot.Util;
 
+import java.util.Collections;
 import java.util.List;
 
 public class FixedListNameGenerator implements NameGenerator {
 
     private final List<String> names;
+
+    public FixedListNameGenerator(String constantName) {
+        this(Collections.singletonList(constantName));
+    }
 
     public FixedListNameGenerator(List<String> names) {
         this.names = names;
