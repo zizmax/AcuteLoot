@@ -82,9 +82,12 @@ public class NameGeneratorTest {
 
         final Map<String, NameGenerator> variableMap = new HashMap<>();
         // todo fix for test environment
-        variableMap.put("prefix", FixedListNameGenerator.defaultPrefixPool());
-        variableMap.put("suffix", FixedListNameGenerator.defaultSuffixPool());
-        variableMap.put("kana", FixedListNameGenerator.kanaPool());
+        final FixedListNameGenerator prefixPool = FixedListNameGenerator.fromNamesFile("src/main/resources/names/prefixes.txt");
+        final FixedListNameGenerator suffixPool = FixedListNameGenerator.fromNamesFile("src/main/resources/names/suffixes.txt");
+        final FixedListNameGenerator kanaPool = FixedListNameGenerator.fromNamesFile("src/main/resources/names/kana.txt");
+        variableMap.put("prefix", prefixPool);
+        variableMap.put("suffix", suffixPool);
+        variableMap.put("kana", kanaPool);
         variableMap.put("item_name", materialBuilder.prefix("src/main/resources/names/").build());
         variableMap.put("fixed", materialBuilder.prefix("src/main/resources/names/fixed/").build());
 
@@ -102,7 +105,7 @@ public class NameGeneratorTest {
                 is(new CompoundNameGenerator(materialBuilder.prefix("src/main/resources/names/").build())));
 
         final NameGenerator prefixGenerator = new CompoundNameGenerator(
-                FixedListNameGenerator.defaultPrefixPool(),
+                prefixPool,
                 materialBuilder.prefix("src/main/resources/names/").build()
         );
         assertThat(NameGenerator.compile("[prefix] [item_name]", variableMap), is(prefixGenerator));
@@ -110,15 +113,15 @@ public class NameGeneratorTest {
         final NameGenerator suffixGenerator = new CompoundNameGenerator(
                 materialBuilder.prefix("src/main/resources/names/").build(),
                 new FixedListNameGenerator("of"),
-                FixedListNameGenerator.defaultSuffixPool()
+                suffixPool
         );
         assertThat(NameGenerator.compile("[item_name] of [suffix]", variableMap), is(suffixGenerator));
 
         final NameGenerator prefixSuffixGenerator = new CompoundNameGenerator(
-                FixedListNameGenerator.defaultPrefixPool(),
+                prefixPool,
                 materialBuilder.prefix("src/main/resources/names/").build(),
                 new FixedListNameGenerator("de"),
-                FixedListNameGenerator.defaultSuffixPool()
+                suffixPool
         );
         assertThat(NameGenerator.compile("[prefix] [item_name] de [suffix]", variableMap), is(prefixSuffixGenerator));
 
@@ -127,7 +130,7 @@ public class NameGeneratorTest {
         assertThat(NameGenerator.compile("[fixed]", variableMap), is(fixedNameGenerator));
 
         final NameGenerator jpKanaNameGenerator = new CompoundNameGenerator(
-                new RepeatedNameGenerator(FixedListNameGenerator.kanaPool(), 2, 5));
+                new RepeatedNameGenerator(kanaPool, 2, 5));
         assertThat(NameGenerator.compile("[kana](2-5)", variableMap), is(jpKanaNameGenerator));
     }
 
