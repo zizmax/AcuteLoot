@@ -5,19 +5,19 @@ import acute.loot.LootRarity;
 
 public class FixedNameGenerator implements NameGenerator {
 
-    private final NamePool namePool;
+    private final MaterialNamePool namePool;
 
-    public FixedNameGenerator(NamePool namePool) {
+    public FixedNameGenerator(MaterialNamePool namePool) {
         this.namePool = namePool;
     }
 
     @Override
     public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        return namePool.drawName(lootMaterial);
+        return namePool.drawName(lootMaterial, rarity);
     }
 
     public static FixedNameGenerator defaultGenerator() {
-        final NamePool namePool = new NamePool.FileBuilder()
+        final MaterialNamePool namePool = new MaterialNamePool.FileBuilder()
                 .swordFile("plugins/AcuteLoot/names/fixed/swords.txt")
                 .bowFile("plugins/AcuteLoot/names/fixed/bows.txt")
                 .pickFile("plugins/AcuteLoot/names/fixed/picks.txt")
@@ -40,7 +40,7 @@ public class FixedNameGenerator implements NameGenerator {
         long count = 0;
         for (LootMaterial mat : LootMaterial.values()) {
             try {
-                count += namePool.getNames(mat).size();
+                count += namePool.getNames(mat, null).size();
             } catch (IllegalArgumentException e) {
                 // Material not supported, so no names
             }

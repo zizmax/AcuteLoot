@@ -1,6 +1,6 @@
 package acute.loot;
 
-import acute.loot.namegen.NamePool;
+import acute.loot.namegen.MaterialNamePool;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,16 +18,16 @@ public class LootRarity {
 
     private final List<String> prefixNames;
     private final List<String> suffixNames;
-    private final NamePool namePool;
+    private final MaterialNamePool namePool;
 
     private static final Map<Integer, LootRarity> rarities = new HashMap<>();
 
     public LootRarity(int id, String name, double effectChance, String rarityColor) {
-        this(id, name, effectChance, new NamePool.FileBuilder().defaultNameFiles().build(), rarityColor,
-                NamePool.FileBuilder.DEFAULT_PREFIX_NAME_FILE, NamePool.FileBuilder.DEFAULT_SUFFIX_NAME_FILE);
+        this(id, name, effectChance, new MaterialNamePool.FileBuilder().defaultNameFiles().build(), rarityColor,
+                MaterialNamePool.FileBuilder.DEFAULT_PREFIX_NAME_FILE, MaterialNamePool.FileBuilder.DEFAULT_SUFFIX_NAME_FILE);
     }
 
-    public LootRarity(int id, String name, double effectChance, NamePool namePool, String rarityColor,
+    public LootRarity(int id, String name, double effectChance, MaterialNamePool namePool, String rarityColor,
                       String prefixNameFile, String suffixNameFile) {
         this.id = id;
         this.name = name;
@@ -65,7 +65,7 @@ public class LootRarity {
     }
 
     public List<String> namesForMaterial(LootMaterial lootMaterial) {
-        return namePool.getNames(lootMaterial);
+        return namePool.getNames(lootMaterial, this);
     }
 
     public List<String> getPrefixNames() {
