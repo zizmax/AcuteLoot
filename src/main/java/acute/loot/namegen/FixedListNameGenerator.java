@@ -4,15 +4,16 @@ import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 import acute.loot.Util;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class FixedListNameGenerator implements NameGenerator {
 
     private final List<String> names;
 
-    public FixedListNameGenerator(String constantName) {
-        this(Collections.singletonList(constantName));
+    public FixedListNameGenerator(String... names) {
+        this(Arrays.asList(names));
     }
 
     public FixedListNameGenerator(List<String> names) {
@@ -48,4 +49,17 @@ public class FixedListNameGenerator implements NameGenerator {
     public static final String DEFAULT_PREFIX_NAME_FILE = "plugins/AcuteLoot/names/prefixes.txt";
     public static final String DEFAULT_SUFFIX_NAME_FILE = "plugins/AcuteLoot/names/suffixes.txt";
     public static final String KANA_NAME_FILE = "plugins/AcuteLoot/names/kana.txt";
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FixedListNameGenerator that = (FixedListNameGenerator) o;
+        return Objects.equals(names, that.names);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(names);
+    }
 }
