@@ -3,14 +3,10 @@ package acute.loot.namegen;
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import static acute.loot.namegen.NamePool.readNames;
 
 public class MaterialNamePool implements NamePool {
 
@@ -65,17 +61,6 @@ public class MaterialNamePool implements NamePool {
 
             default:
                 throw new IllegalArgumentException("Loot material " + lootMaterial + " not implemented.");
-        }
-    }
-
-    private static List<String> readNames(String file) {
-        if (file == null) return Collections.emptyList();
-
-        try (Stream<String> stream = Files.lines(Paths.get(file))) {
-            return stream.collect(Collectors.toList());
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Collections.emptyList();
         }
     }
 
@@ -230,9 +215,6 @@ public class MaterialNamePool implements NamePool {
         public static final String DEFAULT_CHEST_PLATE_NAME_FILE = PREFIX + "names/chest_plates.txt";
         public static final String DEFAULT_HELMET_NAME_FILE = PREFIX + "names/helmets.txt";
         public static final String DEFAULT_GENERIC_NAME_FILE = PREFIX + "names/generic.txt";
-        public static final String DEFAULT_PREFIX_NAME_FILE = PREFIX + "names/prefixes.txt";
-        public static final String DEFAULT_SUFFIX_NAME_FILE = PREFIX + "names/suffixes.txt";
-
     }
 
 }

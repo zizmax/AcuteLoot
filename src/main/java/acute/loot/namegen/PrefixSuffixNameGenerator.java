@@ -1,34 +1,30 @@
 package acute.loot.namegen;
 
-import acute.loot.LootMaterial;
-import acute.loot.LootRarity;
-import acute.loot.Util;
+import java.util.Arrays;
 
-public class PrefixSuffixNameGenerator implements NameGenerator {
-
-    private final TriFunction<String, String, String, String> combiner;
-
-    public PrefixSuffixNameGenerator(TriFunction<String, String, String, String> combiner) {
-        this.combiner = combiner;
-    }
-
-    @Override
-    public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        final String name = Util.drawRandom(rarity.namesForMaterial(lootMaterial));
-        final String prefix = Util.drawRandom(rarity.getPrefixNames());
-        final String suffix = Util.drawRandom(rarity.getSuffixNames());
-        return combiner.apply(prefix, name, suffix);
-    }
+public class PrefixSuffixNameGenerator {
 
     public static NameGenerator getPrefixGenerator() {
-        return new PrefixSuffixNameGenerator((p, n, s) -> p + " " + n);
+        return new CompoundNameGenerator(Arrays.asList(
+                new NamePoolNameGenerator(FixedListNamePool.defaultPrefixPool()),
+                new NamePoolNameGenerator(new MaterialNamePool.FileBuilder().defaultNameFiles().build())
+        ));
     }
 
     public static NameGenerator getSuffixGenerator(String conjunction) {
-        return new PrefixSuffixNameGenerator((p, n, s) -> n + " " + conjunction + " " + s);
+        return new CompoundNameGenerator(Arrays.asList(
+                new NamePoolNameGenerator(new MaterialNamePool.FileBuilder().defaultNameFiles().build()),
+                new ConstantNameGenerator(conjunction),
+                new NamePoolNameGenerator(FixedListNamePool.defaultSuffixPool())
+        ));
     }
 
     public static NameGenerator getPrefixSuffixGenerator(String conjunction) {
-        return new PrefixSuffixNameGenerator((p, n, s) -> p + " " + n + " " + conjunction + " " + s);
+        return new CompoundNameGenerator(Arrays.asList(
+                new NamePoolNameGenerator(FixedListNamePool.defaultPrefixPool()),
+                new NamePoolNameGenerator(new MaterialNamePool.FileBuilder().defaultNameFiles().build()),
+                new ConstantNameGenerator(conjunction),
+                new NamePoolNameGenerator(FixedListNamePool.defaultSuffixPool())
+        ));
     }
 }
