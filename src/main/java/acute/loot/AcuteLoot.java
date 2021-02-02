@@ -193,18 +193,18 @@ public final class AcuteLoot extends JavaPlugin {
         // jp, fixed -> 5% each
         nameGenChancePool.clear();
         final String conjunction = getConfig().getString("conjunction");
-        nameGenChancePool.add(PrefixSuffixNameGenerator.getPrefixGenerator(), 6);
-        nameGeneratorNames.put("prefixGenerator", PrefixSuffixNameGenerator.getPrefixGenerator());
-        nameGenChancePool.add(PrefixSuffixNameGenerator.getSuffixGenerator(conjunction), 6);
-        nameGeneratorNames.put("suffixGenerator", PrefixSuffixNameGenerator.getSuffixGenerator(conjunction));
-        nameGenChancePool.add(PrefixSuffixNameGenerator.getPrefixSuffixGenerator(conjunction), 6);
-        nameGeneratorNames.put("prefixSuffixGenerator", PrefixSuffixNameGenerator.getPrefixSuffixGenerator(conjunction));
+        nameGenChancePool.add(DefaultNameGenerators.getPrefixGenerator(), 6);
+        nameGeneratorNames.put("prefixGenerator", DefaultNameGenerators.getPrefixGenerator());
+        nameGenChancePool.add(DefaultNameGenerators.getSuffixGenerator(conjunction), 6);
+        nameGeneratorNames.put("suffixGenerator", DefaultNameGenerators.getSuffixGenerator(conjunction));
+        nameGenChancePool.add(DefaultNameGenerators.getPrefixSuffixGenerator(conjunction), 6);
+        nameGeneratorNames.put("prefixSuffixGenerator", DefaultNameGenerators.getPrefixSuffixGenerator(conjunction));
         if (getConfig().getBoolean("kana-namegen")) {
-            nameGenChancePool.add(JPKanaNameGenerator.jpKanaNameGenerator, 1);
-            nameGeneratorNames.put("kanaGenerator", JPKanaNameGenerator.jpKanaNameGenerator);
+            nameGenChancePool.add(DefaultNameGenerators.jpKanaNameGenerator, 1);
+            nameGeneratorNames.put("kanaGenerator", DefaultNameGenerators.jpKanaNameGenerator);
         }
-        nameGenChancePool.add(FixedNameGenerator.defaultGenerator(), 1);
-        nameGeneratorNames.put("fixedGenerator", FixedNameGenerator.defaultGenerator());
+        nameGenChancePool.add(DefaultNameGenerators.fixedNameGenerator(), 1);
+        nameGeneratorNames.put("fixedGenerator", DefaultNameGenerators.fixedNameGenerator());
 
 
         // Set up rarities (changes in id's must be updated further down as well)
