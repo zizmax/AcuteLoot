@@ -4,6 +4,7 @@ import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompoundNameGenerator implements NameGenerator {
 
@@ -15,14 +16,9 @@ public class CompoundNameGenerator implements NameGenerator {
 
     @Override
     public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        final StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < parts.size(); i++) {
-            if (i != 0) {
-                stringBuilder.append(' ');
-            }
-            stringBuilder.append(parts.get(i).generate(lootMaterial, rarity));
-        }
-        return stringBuilder.toString();
+        return parts.stream()
+                    .map(part -> part.generate(lootMaterial, rarity))
+                    .collect(Collectors.joining(" "));
     }
 
     @Override

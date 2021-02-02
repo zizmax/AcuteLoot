@@ -2,13 +2,14 @@ package acute.loot.namegen;
 
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
+import acute.loot.Util;
 
 import java.util.List;
 import java.util.Objects;
 
-import static acute.loot.namegen.NamePool.readNames;
+import static acute.loot.namegen.NameGenerator.readNames;
 
-public class MaterialNamePool implements NamePool {
+public class MaterialNameGenerator implements NameGenerator {
 
     private final List<String> swordNames;
     private final List<String> pickNames;
@@ -25,7 +26,7 @@ public class MaterialNamePool implements NamePool {
     private final List<String> tridentNames;
     private final List<String> genericNames;
 
-    public MaterialNamePool(FileBuilder builder) {
+    public MaterialNameGenerator(FileBuilder builder) {
         this.swordNames = readNames(builder.swordFile);
         this.pickNames = readNames(builder.pickFile);
         this.bowNames = readNames(builder.bowFile);
@@ -42,7 +43,7 @@ public class MaterialNamePool implements NamePool {
         this.genericNames = readNames(builder.genericFile);
     }
 
-    public List<String> getNames(LootMaterial lootMaterial, LootRarity lootRarity) {
+    public List<String> getNamesForMaterial(LootMaterial lootMaterial) {
         switch (lootMaterial) {
             case SWORD:       return swordNames;
             case PICK:        return pickNames;
@@ -65,10 +66,21 @@ public class MaterialNamePool implements NamePool {
     }
 
     @Override
+    public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+        return Util.drawRandom(getNamesForMaterial(lootMaterial));
+    }
+
+    @Override
+    public long countNumberOfNames() {
+        // TODO
+        return 0;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MaterialNamePool namePool = (MaterialNamePool) o;
+        MaterialNameGenerator namePool = (MaterialNameGenerator) o;
         return swordNames.equals(namePool.swordNames) &&
                 pickNames.equals(namePool.pickNames) &&
                 bowNames.equals(namePool.bowNames) &&
@@ -108,8 +120,8 @@ public class MaterialNamePool implements NamePool {
 
         public FileBuilder() {}
 
-        public MaterialNamePool build() {
-            return new MaterialNamePool(this);
+        public MaterialNameGenerator build() {
+            return new MaterialNameGenerator(this);
         }
 
         public FileBuilder swordFile(String swordFile) {

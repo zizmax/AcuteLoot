@@ -21,7 +21,7 @@ public class RepeatedNameGenerator implements NameGenerator {
 
     @Override
     public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        int length = minRepetitions + AcuteLoot.random.nextInt((maxRepetitions + 1) - minRepetitions);
+        final int length = minRepetitions + AcuteLoot.random.nextInt((maxRepetitions + 1) - minRepetitions);
         return IntStream.range(0, length)
                         .mapToObj(i -> baseGenerator.generate(lootMaterial, rarity))
                         .collect(Collectors.joining());
