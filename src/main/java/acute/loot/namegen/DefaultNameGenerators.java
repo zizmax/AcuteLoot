@@ -1,50 +1,40 @@
 package acute.loot.namegen;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultNameGenerators {
-    public static final NameGenerator jpKanaNameGenerator = new RepeatedNameGenerator(FixedListNameGenerator.kanaPool(), 2, 5);
+
+    private static final Map<String, NameGenerator> variableMap;
+
+    static {
+        variableMap = new HashMap<>();
+        variableMap.put("prefix", FixedListNameGenerator.defaultPrefixPool());
+        variableMap.put("suffix", FixedListNameGenerator.defaultSuffixPool());
+        variableMap.put("kana", FixedListNameGenerator.kanaPool());
+        variableMap.put("item_name", new MaterialNameGenerator.FileBuilder().defaultNameFiles()
+                                                                            .defaultPrefix()
+                                                                            .build());
+        variableMap.put("fixed", new MaterialNameGenerator.FileBuilder().defaultNameFiles()
+                                                                        .prefix("plugins/AcuteLoot/names/fixed/")
+                                                                        .build());
+    }
+
+    public static final NameGenerator jpKanaNameGenerator = NameGenerator.compile("[kana](2-5)", variableMap);
 
     public static NameGenerator getPrefixGenerator() {
-        return new CompoundNameGenerator(Arrays.asList(
-                FixedListNameGenerator.defaultPrefixPool(),
-                new MaterialNameGenerator.FileBuilder().defaultNameFiles().build()
-        ));
+        return NameGenerator.compile("[prefix] [item_name]", variableMap);
     }
 
     public static NameGenerator getSuffixGenerator(String conjunction) {
-        return new CompoundNameGenerator(Arrays.asList(
-                new MaterialNameGenerator.FileBuilder().defaultNameFiles().build(),
-                new ConstantNameGenerator(conjunction),
-                FixedListNameGenerator.defaultSuffixPool()
-        ));
+        return NameGenerator.compile(String.format("[item_name] %s [suffix]", conjunction), variableMap);
     }
 
     public static NameGenerator getPrefixSuffixGenerator(String conjunction) {
-        return new CompoundNameGenerator(Arrays.asList(
-                FixedListNameGenerator.defaultPrefixPool(),
-                new MaterialNameGenerator.FileBuilder().defaultNameFiles().build(),
-                new ConstantNameGenerator(conjunction),
-                FixedListNameGenerator.defaultSuffixPool()
-        ));
+        return NameGenerator.compile(String.format("[prefix] [item_name] %s [suffix]", conjunction), variableMap);
     }
 
     public static NameGenerator fixedNameGenerator() {
-        return new MaterialNameGenerator.FileBuilder()
-                .swordFile("plugins/AcuteLoot/names/fixed/swords.txt")
-                .bowFile("plugins/AcuteLoot/names/fixed/bows.txt")
-                .pickFile("plugins/AcuteLoot/names/fixed/picks.txt")
-                .axeFile("plugins/AcuteLoot/names/fixed/axes.txt")
-                .shovelFile("plugins/AcuteLoot/names/fixed/shovels.txt")
-                .hoeFile("plugins/AcuteLoot/names/fixed/hoes.txt")
-                .crossbowFile("plugins/AcuteLoot/names/fixed/crossbows.txt")
-                .fishingRodFile("plugins/AcuteLoot/names/fixed/fishing_rods.txt")
-                .tridentFile("plugins/AcuteLoot/names/fixed/tridents.txt")
-                .bootsFile("plugins/AcuteLoot/names/fixed/boots.txt")
-                .pantsFile("plugins/AcuteLoot/names/fixed/leggings.txt")
-                .chestPlateFile("plugins/AcuteLoot/names/fixed/chest_plates.txt")
-                .helmetFile("plugins/AcuteLoot/names/fixed/helmets.txt")
-                .genericFile("plugins/AcuteLoot/names/fixed/generic.txt")
-                .build();
+        return NameGenerator.compile("[fixed]", variableMap);
     }
 }

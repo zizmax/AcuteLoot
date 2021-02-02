@@ -27,20 +27,20 @@ public class MaterialNameGenerator implements NameGenerator {
     private final List<String> genericNames;
 
     public MaterialNameGenerator(FileBuilder builder) {
-        this.swordNames = readNames(builder.swordFile);
-        this.pickNames = readNames(builder.pickFile);
-        this.bowNames = readNames(builder.bowFile);
-        this.helmetNames = readNames(builder.helmetFile);
-        this.bootsNames = readNames(builder.bootsFile);
-        this.crossbowNames = readNames(builder.crossbowFile);
-        this.shovelNames = readNames(builder.shovelFile);
-        this.hoeNames = readNames(builder.hoeFile);
-        this.axeNames = readNames(builder.axeFile);
-        this.pantsNames = readNames(builder.pantsFile);
-        this.chestPlateNames = readNames(builder.chestPlateFile);
-        this.fishingRodNames = readNames(builder.fishingRodFile);
-        this.tridentNames = readNames(builder.tridentFile);
-        this.genericNames = readNames(builder.genericFile);
+        this.swordNames      = readNames(builder.prefix + builder.swordFile);
+        this.pickNames       = readNames(builder.prefix + builder.pickFile);
+        this.bowNames        = readNames(builder.prefix + builder.bowFile);
+        this.helmetNames     = readNames(builder.prefix + builder.helmetFile);
+        this.bootsNames      = readNames(builder.prefix + builder.bootsFile);
+        this.crossbowNames   = readNames(builder.prefix + builder.crossbowFile);
+        this.shovelNames     = readNames(builder.prefix + builder.shovelFile);
+        this.hoeNames        = readNames(builder.prefix + builder.hoeFile);
+        this.axeNames        = readNames(builder.prefix + builder.axeFile);
+        this.pantsNames      = readNames(builder.prefix + builder.pantsFile);
+        this.chestPlateNames = readNames(builder.prefix + builder.chestPlateFile);
+        this.fishingRodNames = readNames(builder.prefix + builder.fishingRodFile);
+        this.tridentNames    = readNames(builder.prefix + builder.tridentFile);
+        this.genericNames    = readNames(builder.prefix + builder.genericFile);
     }
 
     public List<String> getNamesForMaterial(LootMaterial lootMaterial) {
@@ -118,6 +118,8 @@ public class MaterialNameGenerator implements NameGenerator {
         private String tridentFile;
         private String genericFile;
 
+        private String prefix = "";
+
         public FileBuilder() {}
 
         public MaterialNameGenerator build() {
@@ -194,6 +196,16 @@ public class MaterialNameGenerator implements NameGenerator {
             return this;
         }
 
+        public FileBuilder prefix(String prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+
+        public FileBuilder defaultPrefix() {
+            this.prefix = DEFAULT_PREFIX;
+            return this;
+        }
+
         public FileBuilder defaultNameFiles() {
             return swordFile(DEFAULT_SWORD_NAME_FILE)
                     .bowFile(DEFAULT_BOW_NAME_FILE)
@@ -212,21 +224,21 @@ public class MaterialNameGenerator implements NameGenerator {
 
         }
 
-        public static final String PREFIX = "plugins/AcuteLoot/";
-        public static final String DEFAULT_SWORD_NAME_FILE = PREFIX + "names/swords.txt";
-        public static final String DEFAULT_BOW_NAME_FILE = PREFIX + "names/bows.txt";
-        public static final String DEFAULT_PICK_NAME_FILE = PREFIX + "names/picks.txt";
-        public static final String DEFAULT_AXE_NAME_FILE = PREFIX + "names/axes.txt";
-        public static final String DEFAULT_SHOVEL_NAME_FILE = PREFIX + "names/shovels.txt";
-        public static final String DEFAULT_HOE_NAME_FILE = PREFIX + "names/hoes.txt";
-        public static final String DEFAULT_CROSSBOW_NAME_FILE = PREFIX + "names/crossbows.txt";
-        public static final String DEFAULT_FISHING_ROD_NAME_FILE = PREFIX + "names/fishing_rods.txt";
-        public static final String DEFAULT_TRIDENT_NAME_FILE = PREFIX + "names/tridents.txt";
-        public static final String DEFAULT_BOOTS_NAME_FILE = PREFIX + "names/boots.txt";
-        public static final String DEFAULT_LEGGINGS_NAME_FILE = PREFIX + "names/leggings.txt";
-        public static final String DEFAULT_CHEST_PLATE_NAME_FILE = PREFIX + "names/chest_plates.txt";
-        public static final String DEFAULT_HELMET_NAME_FILE = PREFIX + "names/helmets.txt";
-        public static final String DEFAULT_GENERIC_NAME_FILE = PREFIX + "names/generic.txt";
+        public static final String DEFAULT_PREFIX = "plugins/AcuteLoot/names/";
+        public static final String DEFAULT_SWORD_NAME_FILE = "swords.txt";
+        public static final String DEFAULT_BOW_NAME_FILE = "bows.txt";
+        public static final String DEFAULT_PICK_NAME_FILE = "picks.txt";
+        public static final String DEFAULT_AXE_NAME_FILE = "axes.txt";
+        public static final String DEFAULT_SHOVEL_NAME_FILE = "shovels.txt";
+        public static final String DEFAULT_HOE_NAME_FILE = "hoes.txt";
+        public static final String DEFAULT_CROSSBOW_NAME_FILE = "crossbows.txt";
+        public static final String DEFAULT_FISHING_ROD_NAME_FILE = "fishing_rods.txt";
+        public static final String DEFAULT_TRIDENT_NAME_FILE = "tridents.txt";
+        public static final String DEFAULT_BOOTS_NAME_FILE = "boots.txt";
+        public static final String DEFAULT_LEGGINGS_NAME_FILE = "leggings.txt";
+        public static final String DEFAULT_CHEST_PLATE_NAME_FILE = "chest_plates.txt";
+        public static final String DEFAULT_HELMET_NAME_FILE = "helmets.txt";
+        public static final String DEFAULT_GENERIC_NAME_FILE = "generic.txt";
     }
 
 }
