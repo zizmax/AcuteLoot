@@ -27,8 +27,6 @@ public class NameGeneratorTest {
         testHelper.reset();
     }
 
-    // todo test permutation counts
-
     @Test
     @DisplayName("Name generators correct")
     public void nameGeneratorsCorrect() {
@@ -132,6 +130,32 @@ public class NameGeneratorTest {
         final NameGenerator jpKanaNameGenerator = new CompoundNameGenerator(
                 new RepeatedNameGenerator(kanaPool, 2, 5));
         assertThat(NameGenerator.compile("[kana](2-5)", variableMap), is(jpKanaNameGenerator));
+    }
+
+    @Test
+    @DisplayName("Count number of names correct")
+    public void permutationCountsCorrect() {
+        final FixedListNameGenerator constantGenerator = new FixedListNameGenerator("Test");
+        final FixedListNameGenerator listGenerator = new FixedListNameGenerator("Foo", "Bar");
+        final RepeatedNameGenerator repeatedGenerator = new RepeatedNameGenerator(listGenerator, 1, 3);
+        final CompoundNameGenerator compoundGenerator = new CompoundNameGenerator(listGenerator, constantGenerator, repeatedGenerator);
+
+        final TransformationNameGenerator uppercaser = TransformationNameGenerator.uppercaser(new FixedListNameGenerator("hello", "world"));
+        final TransformationNameGenerator compoundUppercaser = TransformationNameGenerator.uppercaser(compoundGenerator);
+
+        assertThat(constantGenerator.countNumberOfNames(), is(1L));
+        assertThat(listGenerator.countNumberOfNames(), is(2L));
+        assertThat(repeatedGenerator.countNumberOfNames(), is(2 + 4 + 8L));
+        assertThat(compoundGenerator.countNumberOfNames(), is(28L));
+        assertThat(uppercaser.countNumberOfNames(), is(2L));
+        assertThat(compoundUppercaser.countNumberOfNames(), is(compoundGenerator.countNumberOfNames()));
+
+        AcuteLoot.nameGenChancePool.add(constantGenerator, 1);
+        AcuteLoot.nameGenChancePool.add(listGenerator, 1);
+        AcuteLoot.nameGenChancePool.add(repeatedGenerator, 1);
+        AcuteLoot.nameGenChancePool.add(compoundGenerator, 1);
+        assertThat(PermutationCounts.totalPermutations(), is(1 + 2 + 14 + 28L));
+        AcuteLoot.nameGenChancePool.clear();
     }
 
 }

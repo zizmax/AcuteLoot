@@ -72,8 +72,13 @@ public class MaterialNameGenerator implements NameGenerator {
 
     @Override
     public long countNumberOfNames() {
-        // TODO
-        return 0;
+        long sum = 0;
+        for (LootMaterial material : LootMaterial.values()) {
+            try {
+                sum += getNamesForMaterial(material).size();
+            } catch (IllegalArgumentException ignored) {} // Material not supported, ignore
+        }
+        return sum;
     }
 
     @Override
