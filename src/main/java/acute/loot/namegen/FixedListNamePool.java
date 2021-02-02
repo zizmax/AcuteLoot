@@ -30,6 +30,11 @@ public class FixedListNamePool implements NamePool {
         return fromNamesFile(DEFAULT_SUFFIX_NAME_FILE);
     }
 
-    public static final String DEFAULT_PREFIX_NAME_FILE = "plugins/AcuteLoot/" + "names/prefixes.txt";
-    public static final String DEFAULT_SUFFIX_NAME_FILE = "plugins/AcuteLoot/" + "names/suffixes.txt";
+    public static FixedListNamePool kanaPool() {
+        return fromNamesFile(KANA_NAME_FILE);
+    }
+
+    public static final String DEFAULT_PREFIX_NAME_FILE = "plugins/AcuteLoot/names/prefixes.txt";
+    public static final String DEFAULT_SUFFIX_NAME_FILE = "plugins/AcuteLoot/names/suffixes.txt";
+    public static final String KANA_NAME_FILE = "plugins/AcuteLoot/names/kana.txt";
 }
