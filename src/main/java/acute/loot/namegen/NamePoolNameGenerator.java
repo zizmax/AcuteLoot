@@ -15,4 +15,10 @@ public class NamePoolNameGenerator implements NameGenerator {
     public String generate(LootMaterial lootMaterial, LootRarity rarity) {
         return namePool.drawName(lootMaterial, rarity);
     }
+
+    @Override
+    public long countNumberOfNames() {
+        // TODO
+        return 0;
+    }
 }

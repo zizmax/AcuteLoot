@@ -26,4 +26,11 @@ public class RepeatedNameGenerator implements NameGenerator {
                         .mapToObj(i -> baseGenerator.generate(lootMaterial, rarity))
                         .collect(Collectors.joining());
     }
+
+    @Override
+    public long countNumberOfNames() {
+        return IntStream.rangeClosed(minRepetitions, maxRepetitions)
+                        .mapToLong(i -> (long) Math.pow(baseGenerator.countNumberOfNames(), i))
+                        .sum();
+    }
 }

@@ -15,4 +15,9 @@ public class ConstantNameGenerator implements NameGenerator {
     public String generate(LootMaterial lootMaterial, LootRarity rarity) {
         return constantName;
     }
+
+    @Override
+    public long countNumberOfNames() {
+        return 1;
+    }
 }

@@ -24,4 +24,9 @@ public class CompoundNameGenerator implements NameGenerator {
         }
         return stringBuilder.toString();
     }
+
+    @Override
+    public long countNumberOfNames() {
+        return parts.stream().mapToLong(NameGenerator::countNumberOfNames).reduce(1, (a, b) -> a * b);
+    }
 }

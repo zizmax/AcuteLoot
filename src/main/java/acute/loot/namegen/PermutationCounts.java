@@ -14,49 +14,8 @@ public final class PermutationCounts {
     private PermutationCounts() {
     }
 
-    public static long totalPermutations(boolean kanaEnabled) {
-        long count = Arrays.stream(LootMaterial.values())
-                           .mapToLong(PermutationCounts::prefixSuffixPermutations)
-                           .sum();
-        count += fixedPermutations();
-        if (kanaEnabled) count += jpKanaPermutation();
-        return count;
-    }
-
-    public static long jpKanaPermutation() {
-        return JPKanaNameGenerator.jpKanaNameGenerator.numberOfNames();
-    }
-
-    public static long fixedPermutations() {
-        return FixedNameGenerator.defaultGenerator().numberOfNames();
-    }
-
-    public static long prefixSuffixPermutations(LootMaterial material) {
-        return prefixSuffixPermutations(material, AcuteLoot.rarityChancePool.values());
-    }
-
-    public static long prefixSuffixPermutations(LootMaterial material, List<LootRarity> rarities) {
-        if (material == LootMaterial.UNKNOWN) return 0;
-
-        final long prefixes = rarities.stream()
-                                      .flatMap(r -> r.getPrefixNames().stream())
-                                      .collect(Collectors.toSet())
-                                      .size();
-
-        final long suffixes = rarities.stream()
-                                      .flatMap(r -> r.getSuffixNames().stream())
-                                      .collect(Collectors.toSet())
-                                      .size();
-
-        final long names = rarities.stream()
-                                   .flatMap(r -> r.namesForMaterial(material).stream())
-                                   .collect(Collectors.toSet())
-                                   .size();
-
-        final long prefixCount = names * prefixes;
-        final long suffixCount = names * suffixes;
-        final long prefixSuffixCount = names * prefixes * suffixes;
-        return prefixCount + suffixCount + prefixSuffixCount;
+    public static long totalPermutations() {
+        return AcuteLoot.nameGenChancePool.values().stream().mapToLong(NameGenerator::countNumberOfNames).sum();
     }
 
     // Try to find, with tolerance epsilon, the number of draws needed to have a `targetChance`

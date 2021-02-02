@@ -7,4 +7,6 @@ public interface NameGenerator {
 
     String generate(LootMaterial lootMaterial, LootRarity rarity);
 
+    long countNumberOfNames();
+
 }

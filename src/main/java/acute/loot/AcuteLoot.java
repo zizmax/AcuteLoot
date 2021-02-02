@@ -100,8 +100,8 @@ public final class AcuteLoot extends JavaPlugin {
         }
 
         //birthdayProblem();
-        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(getConfig().getBoolean("kana-namegen")), 0.5, 0.0001);
-        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(getConfig().getBoolean("kana-namegen"))));
+        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(), 0.5, 0.0001);
+        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations()));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
 
         getLogger().info("Enabled");
