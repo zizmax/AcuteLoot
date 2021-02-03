@@ -32,9 +32,6 @@ conjunction: "of"
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
 
-# Names that look like Japanese katakana syllables (not in .txt files)
-kana-namegen: true
-
 # Only relevant if global-loot-name-color is true. See below for color options
 loot-name-color: "&3"
 
@@ -368,3 +365,60 @@ msg:
 
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
+
+# A name pool is a list of names that can be referenced in a name
+# generator pattern. There are presently two types:
+# * fixed: a fixed list of names provided in a file (the file: field)
+# * material: a list of names for each material.
+#   Instead of providing a file, provide a directory with the prefix: field.
+name-pools:
+  -
+    file: /Plugins/AcuteLoot/names/prefixes.txt
+    name: prefix
+    type: fixed
+  -
+    file: /Plugins/AcuteLoot/names/suffixes.txt
+    name: suffix
+    type: fixed
+  -
+    file: /Plugins/AcuteLoot/names/kana.txt
+    name: kana
+    type: fixed
+  -
+    name: item_name
+    prefix: /Plugins/AcuteLoot/names/
+    type: material
+  -
+    name: fixed
+    prefix: /Plugins/AcuteLoot/names/fixed/
+    type: material
+
+# prefix, prefixSuffixOf, suffixOf -> 30% each
+# jp, fixed -> 5% each
+#
+# Note that any leading and trailing spaces in a pattern will be removed,
+# and any multi-space sections will be collapsed down to a single space.
+name-generators:
+  -
+    name: prefixGenerator
+    pattern: "[prefix] [item_name]"
+    rarity: 6
+  -
+    name: suffixGenerator
+    pattern: "[item_name] of [suffix]"
+    rarity: 6
+  -
+    name: prefixSuffixGenerator
+    pattern: "[prefix] [item_name] of [suffix]"
+    rarity: 6
+  -
+    name: fixedGenerator
+    pattern: "[fixed]"
+    rarity: 1
+  -
+    name: kanaGenerator
+    pattern: "[kana](2-5)"
+    rarity: 1
+
+# Force generated names to start with capital letters
+capitalize-names: true

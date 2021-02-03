@@ -189,23 +189,45 @@ public final class AcuteLoot extends JavaPlugin {
 
         // Set up name generators
 
-        // prefix, prefixSuffixOf, suffixOf -> 30% each
-        // jp, fixed -> 5% each
-        nameGenChancePool.clear();
-        final String conjunction = getConfig().getString("conjunction");
-        nameGenChancePool.add(DefaultNameGenerators.getPrefixGenerator(), 6);
-        nameGeneratorNames.put("prefixGenerator", DefaultNameGenerators.getPrefixGenerator());
-        nameGenChancePool.add(DefaultNameGenerators.getSuffixGenerator(conjunction), 6);
-        nameGeneratorNames.put("suffixGenerator", DefaultNameGenerators.getSuffixGenerator(conjunction));
-        nameGenChancePool.add(DefaultNameGenerators.getPrefixSuffixGenerator(conjunction), 6);
-        nameGeneratorNames.put("prefixSuffixGenerator", DefaultNameGenerators.getPrefixSuffixGenerator(conjunction));
-        if (getConfig().getBoolean("kana-namegen")) {
-            nameGenChancePool.add(DefaultNameGenerators.jpKanaNameGenerator, 1);
-            nameGeneratorNames.put("kanaGenerator", DefaultNameGenerators.jpKanaNameGenerator);
+        final Map<String, NameGenerator> namePools = new HashMap<>();
+        // Todo add name pools from config
+        for (Map<?, ?> namePool : getConfig().getMapList("name-pools")) {
+            final String name = (String) namePool.get("name");
+            final String type = (String) namePool.get("type");
+            if (type.equals("fixed")) {
+                namePools.put(name, FixedListNameGenerator.fromNamesFile((String) namePool.get("file")));
+            } else if (type.equals("material")) {
+                namePools.put(name, new MaterialNameGenerator.FileBuilder().defaultNameFiles()
+                                                                           .prefix((String) namePool.get("prefix"))
+                                                                           .build());
+            } else {
+                getLogger().warning(String.format("Unknown name pool type '%s'. Skipping.", type));
+            }
         }
-        nameGenChancePool.add(DefaultNameGenerators.fixedNameGenerator(), 1);
-        nameGeneratorNames.put("fixedGenerator", DefaultNameGenerators.fixedNameGenerator());
 
+        // TODO: switch to NameGenerator.compile and remove DefaultNameGenerators
+        nameGenChancePool.clear();
+        nameGeneratorNames.clear();
+        for (Map<?, ?> nameGenerator : getConfig().getMapList("name-generators")) {
+            final String name = (String) nameGenerator.get("name");
+            final int rarity = (Integer) nameGenerator.get("rarity");
+            final String pattern = (String) nameGenerator.get("pattern");
+
+            try {
+                NameGenerator generator = NameGenerator.compile(pattern, namePools, s -> getLogger().warning(s));
+                if (getConfig().getBoolean("capitalize-names")) {
+                    generator = TransformationNameGenerator.uppercaser(generator);
+                }
+                nameGenChancePool.add(generator, rarity);
+                nameGeneratorNames.put(name.replace(' ', '_'), generator); // Add "tab completer-safe" name
+            } catch (IllegalArgumentException e) {
+                getLogger().warning("Could not compile name generator pattern '" + pattern + "'");
+                getLogger().warning("Exception was: ");
+                getLogger().warning(e.getMessage());
+                getLogger().warning(Arrays.toString(e.getStackTrace()));
+            }
+        }
+        getLogger().info("Loaded " + nameGenChancePool.values().size() + " name generators");
 
         // Set up rarities (changes in id's must be updated further down as well)
         LootRarity.getRarities().clear();
