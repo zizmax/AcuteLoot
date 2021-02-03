@@ -8,22 +8,43 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * NameGenerator that invokes one or more other NameGenerators,
+ * joining the results with a possibly-empty joining string.
+ */
 public class CompoundNameGenerator implements NameGenerator {
 
     private final List<NameGenerator> parts;
     private final String joiningString;
 
+    /**
+     * Construct a new CompoundNameGenerator with the given NameGenerator
+     * parts and " " as the joining string.
+     * @param parts the NameGenerator parts, must be non-null and non-empty
+     */
     public CompoundNameGenerator(NameGenerator... parts) {
         this(Arrays.asList(parts));
     }
 
+    /**
+     * Construct a new CompoundNameGenerator with the given NameGenerator
+     * parts and " " as the joining string.
+     * @param parts the NameGenerator parts, must be non-null and non-empty
+     */
     public CompoundNameGenerator(List<NameGenerator> parts) {
         this(parts, " ");
     }
 
+    /**
+     * Construct a new CompoundNameGenerator with the given NameGenerator
+     * parts and joining string.
+     * @param parts the NameGenerator parts, must be non-null and non-empty
+     * @param joiningString the joining string, must be non-null
+     */
     public CompoundNameGenerator(List<NameGenerator> parts, String joiningString) {
-        this.parts = parts;
-        this.joiningString = joiningString;
+        this.parts = Objects.requireNonNull(parts);
+        if (parts.isEmpty()) throw new IllegalArgumentException("Parts must not be empty");
+        this.joiningString = Objects.requireNonNull(joiningString);
     }
 
     @Override

@@ -9,6 +9,11 @@ import java.util.Objects;
 
 import static acute.loot.namegen.NameGenerator.readNames;
 
+/**
+ * NameGenerator the selects names from a fixed list based on the
+ * material and ignoring the rarity, which may be null. Names for a given
+ * material may or may not exist.
+ */
 public class MaterialNameGenerator implements NameGenerator {
 
     private final List<String> swordNames;
@@ -26,7 +31,12 @@ public class MaterialNameGenerator implements NameGenerator {
     private final List<String> tridentNames;
     private final List<String> genericNames;
 
+    /**
+     * Construct a new MaterialNameGenerator using the given FileBuilder.
+     * @param builder the FileBuilder pointing to the names files for this generator
+     */
     public MaterialNameGenerator(FileBuilder builder) {
+        Objects.requireNonNull(builder);
         this.swordNames      = readNames(builder.prefix + builder.swordFile);
         this.pickNames       = readNames(builder.prefix + builder.pickFile);
         this.bowNames        = readNames(builder.prefix + builder.bowFile);
@@ -107,6 +117,12 @@ public class MaterialNameGenerator implements NameGenerator {
         return Objects.hash(swordNames, pickNames, bowNames, helmetNames, bootsNames, crossbowNames, shovelNames, hoeNames, axeNames, pantsNames, chestPlateNames, fishingRodNames, tridentNames, genericNames);
     }
 
+    /**
+     * Builder for a MaterialNameGenerator based on a set of files, one for
+     * each material. Typical usage of this class is:
+     *
+     * new FileBuilder().defaultNameFiles().prefix("your prefix/").build()
+     */
     public static class FileBuilder {
         private String swordFile;
         private String pickFile;

@@ -8,16 +8,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * NameGenerator that draws from a fixed list of names regardless
+ * of material and rarity, either of which may be null.
+ */
 public class FixedListNameGenerator implements NameGenerator {
 
     private final List<String> names;
 
+    /**
+     * Construct a new FixedListNameGenerator with the given names.
+     * @param names the names, must be non-null and non-empty
+     */
     public FixedListNameGenerator(String... names) {
         this(Arrays.asList(names));
     }
 
+    /**
+     * Construct a new FixedListNameGenerator with the given names.
+     * @param names the names, must be non-null and non-empty
+     */
     public FixedListNameGenerator(List<String> names) {
-        this.names = names;
+        this.names = Objects.requireNonNull(names);
+        if (names.isEmpty()) throw new IllegalArgumentException("Names list must not be empty");
     }
 
     @Override
@@ -30,6 +43,11 @@ public class FixedListNameGenerator implements NameGenerator {
         return names.size();
     }
 
+    /**
+     * Get a FixedListNameGenerator for the given names file.
+     * @param namesFile the names file
+     * @return a FixedListNameGenerator the given names file.
+     */
     public static FixedListNameGenerator fromNamesFile(final String namesFile) {
         return new FixedListNameGenerator(NameGenerator.readNames(namesFile));
     }
