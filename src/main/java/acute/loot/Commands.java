@@ -20,7 +20,7 @@ import org.bukkit.util.StringUtil;
 import java.util.*;
 
 public class Commands implements CommandExecutor, TabCompleter {
-    private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename", "name", "chest", "salvage");
+    private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename", "name", "chest", "salvage", "give");
     //public static final TabCompleter TAB_COMPLETER = (s, c, l, args) -> (args.length == 1) ? StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, new ArrayList<>()) : null;
 
     @Override
@@ -30,17 +30,34 @@ public class Commands implements CommandExecutor, TabCompleter {
             StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, possibleArguments);
             return possibleArguments;
         }
-        if(args.length >= 2 && args.length < 4){
+        if(args.length >= 2 && args.length <= 4){
             if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("new")){
-                StringUtil.copyPartialMatches(args[1], AcuteLoot.rarityNames.keySet(), possibleArguments);
+                if (args.length == 2){
+                    StringUtil.copyPartialMatches(args[1], AcuteLoot.rarityNames.keySet(), possibleArguments);
+                    return possibleArguments;
+                }
                 if (args.length == 3) {
                     possibleArguments.clear();
                     StringUtil.copyPartialMatches(args[2], AcuteLoot.effectNames.keySet(), possibleArguments);
                     return possibleArguments;
                 }
+            }
+            else if(args[0].equalsIgnoreCase("give")) {
+                // Same logic as above for 'add' and 'new' but shifted by one to account for player name
+                if (args.length == 2){
+                    return null;
+                }
+                if (args.length == 3) {
+                    StringUtil.copyPartialMatches(args[2], AcuteLoot.rarityNames.keySet(), possibleArguments);
+                }
+                if (args.length == 4) {
+                    possibleArguments.clear();
+                    StringUtil.copyPartialMatches(args[3], AcuteLoot.effectNames.keySet(), possibleArguments);
+                    return possibleArguments;
+                }
                 return possibleArguments;
             }
-            if(args.length == 2 && args[0].equalsIgnoreCase("name")){
+            else if(args.length == 2 && args[0].equalsIgnoreCase("name")){
                 StringUtil.copyPartialMatches(args[1], AcuteLoot.nameGeneratorNames.keySet(), possibleArguments);
                 return possibleArguments;
             }
@@ -401,12 +418,62 @@ public class Commands implements CommandExecutor, TabCompleter {
         }
     }
 
-    public void sendIncompatibleEffectsWarning(Player player, LootItem lootItem, ItemStack item){
+    private void giveCommand(CommandSender sender, String[] args) {
+        if (args.length >= 2) {
+            if (sender.getServer().getPlayerExact(args[1]) != null) {
+                Player target = sender.getServer().getPlayerExact(args[1]);
+                ItemStack item = Events.chooseLootMaterial();
+                LootItem lootItem = null;
+                if (args.length == 2) new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
+                else {
+                    if (AcuteLoot.rarityNames.containsKey(args[2])) {
+                        final int rarityID = AcuteLoot.rarityNames.get(args[2]);
+                        if (args.length == 3) {
+                            new Events(plugin).createLootItem(item, LootRarity.get(rarityID));
+                        }
+                        final List<EffectId> effects = new ArrayList<>();
+                        if (args.length > 3) {
+                            if (AcuteLoot.effectNames.containsKey(args[3])) {
+                                effects.add(new EffectId(AcuteLoot.effectNames.get(args[3])));
+                                lootItem = new LootItem(rarityID, effects);
+                                new Events(plugin).createLootItem(item, lootItem);
+                            } else {
+                                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[3] + " doesn't exist");
+                                return; // Do not apply the rarity if the effect is invalid
+                            }
+                        }
+
+                    } else {
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity " + args[2] + " doesn't exist");
+                        return;
+                    }
+                }
+                if (target.getInventory().firstEmpty() != -1) {
+                    target.getInventory().addItem(item);
+                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Gave " + ChatColor.GOLD + item.getType() + ChatColor.GRAY + " to " + ChatColor.GOLD + target.getDisplayName());
+                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Name: " + item.getItemMeta().getDisplayName());
+                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + item.getItemMeta().getLore().get(0));
+                    sendIncompatibleEffectsWarning(sender, lootItem, item);
+                } else {
+                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + target.getDisplayName() + "'s inventory is full!");
+                }
+
+            } else {
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Player " + args[1] + " is not online!");
+            }
+        }
+        else {
+            sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Must specify a player!");
+        }
+
+    }
+
+    public void sendIncompatibleEffectsWarning(CommandSender sender, LootItem lootItem, ItemStack item){
         if(lootItem == null) return;
         for(LootSpecialEffect effect : lootItem.getEffects()){
             if(!effect.getValidMaterials().contains(LootMaterial.lootMaterialForMaterial(item.getType()))){
-                player.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + effect.getName() + " not strictly compatible with this item!");
-                player.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + "Effect may not work as expected/won't do anything");
+                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + effect.getName() + " not strictly compatible with this item!");
+                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + "Effect may not work as expected/won't do anything");
             }
         }
     }
@@ -569,6 +636,17 @@ public class Commands implements CommandExecutor, TabCompleter {
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Salvaging is not enabled");
                         return true;
                     }
+                }
+
+                // Give
+                else if (args[0].equalsIgnoreCase("give")) {
+                        if (hasPermission(sender, "acuteloot.give")) {
+                            giveCommand(sender, args);
+                            return true;
+                        } else {
+                            sender.sendMessage(PERM_DENIED_MSG);
+                        }
+                    return true;
                 }
 
                 // Invalid subcommand

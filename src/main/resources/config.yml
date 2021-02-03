@@ -191,6 +191,7 @@ effects:
     chance: 90
     enabled: true
   timewalker: #Applicable only to boots
+    affect-world-time: true
     time-shift: 150 # Measured in ticks. E.g. 150 / 20 = 7.5 seconds (20 ticks/second under normal conditions)
     name: "Time Walker"
     chance: 50 # This is the second effect for boots, after gardener.

@@ -49,8 +49,10 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
                         cropGrowthFactor = -cropGrowthFactor;
                         forward = false;
                     }
-                    World world = player.getWorld();
-                    world.setTime(world.getTime() + timeWarp);
+                    if(plugin.getConfig().getBoolean("effects.timewalker.affect-world-time")){
+                        World world = player.getWorld();
+                        world.setTime(world.getTime() + timeWarp);
+                    }
                     List<Entity> entities = player.getNearbyEntities(30, 5, 30);
                     for (Entity entity : entities) {
                         if (entity instanceof org.bukkit.entity.Ageable) {

@@ -38,3 +38,5 @@ permissions:
     default: op
   acuteloot.salvage-force-open:
     default: op
+  acuteloot.give:
+    default: op
