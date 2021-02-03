@@ -373,24 +373,24 @@ msg:
 #   Instead of providing a file, provide a directory with the prefix: field.
 name-pools:
   -
-    file: /Plugins/AcuteLoot/names/prefixes.txt
+    file: plugins/AcuteLoot/names/prefixes.txt
     name: prefix
     type: fixed
   -
-    file: /Plugins/AcuteLoot/names/suffixes.txt
+    file: plugins/AcuteLoot/names/suffixes.txt
     name: suffix
     type: fixed
   -
-    file: /Plugins/AcuteLoot/names/kana.txt
+    file: plugins/AcuteLoot/names/kana.txt
     name: kana
     type: fixed
   -
     name: item_name
-    prefix: /Plugins/AcuteLoot/names/
+    prefix: plugins/AcuteLoot/names/
     type: material
   -
     name: fixed
-    prefix: /Plugins/AcuteLoot/names/fixed/
+    prefix: plugins/AcuteLoot/names/fixed/
     type: material
 
 # prefix, prefixSuffixOf, suffixOf -> 30% each
