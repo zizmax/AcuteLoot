@@ -8,9 +8,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NameGeneratorTest {
 
@@ -62,32 +66,79 @@ public class NameGeneratorTest {
         assertThat(uppercaser.generate(LootMaterial.PICK, null), oneOf("Hello", "World"));
         assertThat(uppercaser.generate(null, testHelper.rare), oneOf("Hello", "World"));
         assertThat(uppercaser.generate(null, null), oneOf("Hello", "World"));
-
-        // Todo test parameters
     }
 
     @Test
     @DisplayName("Name generator compile correct")
     public void compileCorrect() {
 
-        // todo test empty, null
-
-        // todo test invalid
-
-        // todo test repeats + material (and add to defaults??)
-
         final MaterialNameGenerator.FileBuilder materialBuilder = new MaterialNameGenerator.FileBuilder().defaultNameFiles();
 
         final Map<String, NameGenerator> variableMap = new HashMap<>();
-        // todo fix for test environment
         final FixedListNameGenerator prefixPool = FixedListNameGenerator.fromNamesFile("src/main/resources/names/prefixes.txt");
         final FixedListNameGenerator suffixPool = FixedListNameGenerator.fromNamesFile("src/main/resources/names/suffixes.txt");
         final FixedListNameGenerator kanaPool = FixedListNameGenerator.fromNamesFile("src/main/resources/names/kana.txt");
         variableMap.put("prefix", prefixPool);
         variableMap.put("suffix", suffixPool);
         variableMap.put("kana", kanaPool);
+        variableMap.put("ka-na-", kanaPool);
+        variableMap.put("ka[na])](", kanaPool);
         variableMap.put("item_name", materialBuilder.prefix("src/main/resources/names/").build());
         variableMap.put("fixed", materialBuilder.prefix("src/main/resources/names/fixed/").build());
+
+        assertThrows(NullPointerException.class, () -> NameGenerator.compile(null, variableMap));
+        assertThrows(NullPointerException.class, () -> NameGenerator.compile("foo", null));
+        assertThrows(NullPointerException.class, () -> NameGenerator.compile("foo", variableMap, null));
+        assertThrows(IllegalArgumentException.class, () -> NameGenerator.compile("", variableMap));
+        assertThrows(IllegalArgumentException.class, () -> NameGenerator.compile("      ", variableMap));
+
+        assertThrows(IllegalArgumentException.class, () -> NameGenerator.compile("[foo]", variableMap));
+        assertThrows(IllegalArgumentException.class, () -> NameGenerator.compile("[bar](1-2)", variableMap));
+        assertThrows(IllegalArgumentException.class, () -> NameGenerator.compile("[kana](0-1)", variableMap));
+        assertThrows(IllegalArgumentException.class, () -> NameGenerator.compile("[kana](-1-2)", variableMap));
+        assertDoesNotThrow(() -> NameGenerator.compile("[ka-na-](1-2)", variableMap));
+        assertDoesNotThrow(() -> NameGenerator.compile("[ka[na])](]", variableMap));
+        assertDoesNotThrow(() -> NameGenerator.compile("[ka[na])](](1-2)", variableMap));
+        assertThrows(IllegalArgumentException.class, () -> NameGenerator.compile("[kana](4-2)", variableMap));
+        assertThrows(NumberFormatException.class, () -> NameGenerator.compile("[kana](a-2)", variableMap));
+        assertThrows(NumberFormatException.class, () -> NameGenerator.compile("[kana](1-)", variableMap));
+        assertDoesNotThrow(() -> NameGenerator.compile("[kana]()", variableMap));
+        assertThrows(NumberFormatException.class, () -> NameGenerator.compile("[kana](-)", variableMap));
+
+        class Warning implements Consumer<String> {
+            boolean wasTriggered = false;
+
+            @Override
+            public void accept(String s) {
+                wasTriggered = true;
+            }
+
+            public void reset() {
+                wasTriggered = false;
+            }
+        }
+
+        final Warning warning = new Warning();
+
+        NameGenerator.compile("[foo", variableMap, warning);
+        assertThat(warning.wasTriggered, is(true));
+        warning.reset();
+
+        NameGenerator.compile("foo]", variableMap, warning);
+        assertThat(warning.wasTriggered, is(true));
+        warning.reset();
+
+        NameGenerator.compile("[foo](1-2", variableMap, warning);
+        assertThat(warning.wasTriggered, is(true));
+        warning.reset();
+
+        NameGenerator.compile("[foo(1-2)", variableMap, warning);
+        assertThat(warning.wasTriggered, is(true));
+        warning.reset();
+
+        NameGenerator.compile("[kana](1-2)", variableMap, warning);
+        assertThat(warning.wasTriggered, is(false));
+        warning.reset();
 
         assertThat(NameGenerator.compile("foo", variableMap),
                 is(new CompoundNameGenerator(

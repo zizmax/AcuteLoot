@@ -38,6 +38,10 @@ public interface NameGenerator {
     static NameGenerator compile(final String expression,
                                  final Map<String, NameGenerator> variableMap,
                                  final Consumer<String> warningLogger) {
+        Objects.requireNonNull(expression);
+        Objects.requireNonNull(variableMap);
+        Objects.requireNonNull(warningLogger);
+        if (expression.trim().isEmpty()) throw new IllegalArgumentException("Expression cannot be empty");
         final String[] words = expression.split(" ");
 
         final List<NameGenerator> parts = new ArrayList<>();
@@ -49,12 +53,12 @@ public interface NameGenerator {
                 }
                 parts.add(variableMap.get(variableName));
             } else if (word.startsWith("[") && word.endsWith(")") && word.contains("](") && word.contains("-")) {
-                final String variableName = word.substring(1, word.indexOf("]"));
+                final String variableName = word.substring(1, word.lastIndexOf("]("));
                 if (!variableMap.containsKey(variableName)) {
                     throw new IllegalArgumentException(String.format("Unknown name pool '%s'", variableName));
                 }
 
-                final String range = word.substring(word.indexOf("(") + 1, word.length() - 1);
+                final String range = word.substring(word.lastIndexOf("](") + 2, word.length() - 1);
                 final String min = range.substring(0, range.indexOf('-'));
                 final String max = range.substring(range.indexOf('-') + 1);
                 parts.add(new RepeatedNameGenerator(variableMap.get(variableName), Integer.parseInt(min), Integer.parseInt(max)));
