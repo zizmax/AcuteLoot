@@ -34,22 +34,6 @@ public class FixedListNameGenerator implements NameGenerator {
         return new FixedListNameGenerator(NameGenerator.readNames(namesFile));
     }
 
-    public static FixedListNameGenerator defaultPrefixPool() {
-        return fromNamesFile(DEFAULT_PREFIX_NAME_FILE);
-    }
-
-    public static FixedListNameGenerator defaultSuffixPool() {
-        return fromNamesFile(DEFAULT_SUFFIX_NAME_FILE);
-    }
-
-    public static FixedListNameGenerator kanaPool() {
-        return fromNamesFile(KANA_NAME_FILE);
-    }
-
-    public static final String DEFAULT_PREFIX_NAME_FILE = "plugins/AcuteLoot/names/prefixes.txt";
-    public static final String DEFAULT_SUFFIX_NAME_FILE = "plugins/AcuteLoot/names/suffixes.txt";
-    public static final String KANA_NAME_FILE = "plugins/AcuteLoot/names/kana.txt";
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

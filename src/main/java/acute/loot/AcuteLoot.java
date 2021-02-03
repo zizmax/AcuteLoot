@@ -190,7 +190,6 @@ public final class AcuteLoot extends JavaPlugin {
         // Set up name generators
 
         final Map<String, NameGenerator> namePools = new HashMap<>();
-        // Todo add name pools from config
         for (Map<?, ?> namePool : getConfig().getMapList("name-pools")) {
             final String name = (String) namePool.get("name");
             final String type = (String) namePool.get("type");
@@ -205,7 +204,6 @@ public final class AcuteLoot extends JavaPlugin {
             }
         }
 
-        // TODO: switch to NameGenerator.compile and remove DefaultNameGenerators
         nameGenChancePool.clear();
         nameGeneratorNames.clear();
         for (Map<?, ?> nameGenerator : getConfig().getMapList("name-generators")) {

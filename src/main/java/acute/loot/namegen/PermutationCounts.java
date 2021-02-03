@@ -1,13 +1,6 @@
 package acute.loot.namegen;
 
 import acute.loot.AcuteLoot;
-import acute.loot.LootMaterial;
-import acute.loot.LootRarity;
-import org.bukkit.Bukkit;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public final class PermutationCounts {
 
@@ -24,8 +17,8 @@ public final class PermutationCounts {
         long x = total / 2;
         long lower = 0;
         long upper = total;
-        long interations = 0;
-        while (x > 0 && interations < 64) {
+        long iterations = 0;
+        while (x > 0 && iterations < 64) {
             final double chance = birthdayPercent(x, total);
             if (Math.abs(chance - targetChance) < epsilon) {
                 return x;
@@ -36,7 +29,7 @@ public final class PermutationCounts {
                 upper = x;
                 x = (x + lower) / 2;
             }
-            interations++;
+            iterations++;
         }
 
         return -1;

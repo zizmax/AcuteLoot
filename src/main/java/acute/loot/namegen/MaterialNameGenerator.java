@@ -206,11 +206,6 @@ public class MaterialNameGenerator implements NameGenerator {
             return this;
         }
 
-        public FileBuilder defaultPrefix() {
-            this.prefix = DEFAULT_PREFIX;
-            return this;
-        }
-
         public FileBuilder defaultNameFiles() {
             return swordFile(DEFAULT_SWORD_NAME_FILE)
                     .bowFile(DEFAULT_BOW_NAME_FILE)
@@ -229,7 +224,6 @@ public class MaterialNameGenerator implements NameGenerator {
 
         }
 
-        public static final String DEFAULT_PREFIX = "plugins/AcuteLoot/names/";
         public static final String DEFAULT_SWORD_NAME_FILE = "swords.txt";
         public static final String DEFAULT_BOW_NAME_FILE = "bows.txt";
         public static final String DEFAULT_PICK_NAME_FILE = "picks.txt";
