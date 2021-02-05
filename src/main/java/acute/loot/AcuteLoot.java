@@ -227,11 +227,11 @@ public final class AcuteLoot extends JavaPlugin {
         for (Map<?, ?> namePool : getConfig().getMapList("name-pools")) {
             final String name = (String) namePool.get("name");
             final String type = (String) namePool.get("type");
-            if (type.equals("fixed")) {
+            if (type.equals("common")) {
                 namePools.put(name, FixedListNameGenerator.fromNamesFile((String) namePool.get("file")));
             } else if (type.equals("material")) {
                 namePools.put(name, new MaterialNameGenerator.FileBuilder().defaultNameFiles()
-                                                                           .prefix((String) namePool.get("prefix"))
+                                                                           .prefix((String) namePool.get("folder"))
                                                                            .build());
             } else {
                 getLogger().warning(String.format("Unknown name pool type '%s'. Skipping.", type));
