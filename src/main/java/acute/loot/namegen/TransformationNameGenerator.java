@@ -7,7 +7,7 @@ import java.util.Objects;
 
 /**
  * NameGenerator that wraps another NameGenerator and applies a "transformation"
- * to its output. A transformation can be any function String -> String, typically
+ * to its output. A transformation can be any function String {@literal ->} String, typically
  * a small change such as adjusting capitalization.
  */
 public abstract class TransformationNameGenerator implements NameGenerator {

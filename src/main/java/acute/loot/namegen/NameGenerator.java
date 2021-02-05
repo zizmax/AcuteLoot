@@ -53,9 +53,12 @@ public interface NameGenerator {
 
     /**
      * Compile an expression into a NameGenerator using the given variable map. This is a shorthand for
-     * NameGenerator.compile(expression, variableMap, s -> {}).
      *
-     * See NameGenerator.compile(String, Map<String, NameGenerator>, Consumer<String>) for more information.
+     * <pre>
+     * {@code
+     * NameGenerator.compile(expression, variableMap, s -> {}).
+     * }
+     *</pre>
      *
      * @param expression the expression to compile
      * @param variableMap the variable map to use for compilation
