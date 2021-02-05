@@ -26,6 +26,8 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
+config-version: 1 # Don't change this!
+
 # What should go between names and prefixes and suffixes
 conjunction: "of"
 
