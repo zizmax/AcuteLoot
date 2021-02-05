@@ -6,6 +6,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Particle;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -45,6 +46,8 @@ public final class AcuteLoot extends JavaPlugin {
     // Defaults to -1 before the plugin has loaded, useful for tests
     public static int serverVersion = -1;
 
+    int configVersion = 1;
+
     @Override
     public void onEnable() {
         getLogger().info("+----------------------------------------------------------------+");
@@ -60,8 +63,8 @@ public final class AcuteLoot extends JavaPlugin {
         getCommand("acuteloot").setExecutor(new Commands(this));
 
         // Save/read config.yml
-        getConfig().options().copyDefaults(true);
         saveDefaultConfig();
+        getConfig().options().copyDefaults(true);
 
         // Connect to bStats
         int bStatsID = 7348;
@@ -100,17 +103,48 @@ public final class AcuteLoot extends JavaPlugin {
         }
 
         //birthdayProblem();
-        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(getConfig().getBoolean("kana-namegen")), 0.5, 0.0001);
-        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(getConfig().getBoolean("kana-namegen"))));
+        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(), 0.5, 0.0001);
+        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations()));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
 
         getLogger().info("Enabled");
     }
 
+    public void checkConfigVersion() {
+        int installedVersion = getIntIfDefined("config-version", getConfig());
+        if(installedVersion < configVersion){
+            try {
+                Files.copy(Paths.get("plugins/AcuteLoot/config.yml"), Paths.get("plugins/AcuteLoot/config.bak"), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                getLogger().warning("Failed to create backup config!");
+            }
+            getLogger().warning(String.format("[CONFIG OUT OF DATE]: Your version (v%d) is behind the current version (v%d)", installedVersion, configVersion));
+            getLogger().warning("This means you are missing new/updated config options!");
+            getLogger().warning("AcuteLoot will work correctly, but will use the defaults for missing options.");
+            getLogger().warning("To view the latest version of the config: https://git.io/JtgCf");
+            getLogger().warning("To use the new options:");
+            getLogger().warning("   1) Delete the current config (a backup has been made for you called config.bak)");
+            getLogger().warning("   2) Restart the server or use /al reload. It will generate a brand new config");
+            getLogger().warning("   3) Paste your old options into the newly generated config");
+            getLogger().warning("   4) Enjoy the new features! :)");
+        }
+    }
+
+    private int getIntIfDefined(String key, ConfigurationSection config){
+        // Modified version of code from:
+        // https://www.spigotmc.org/threads/prevent-defaults-coming-from-default-config-yml.439927/
+        // This is due to odd and annoying behavior of getConfig() to pull from config defaults if they don't exist on disk
+        if(config.getKeys(false).contains(key)){
+            return config.getInt(key);
+        }
+        return 0;
+    }
+
     public void reloadConfiguration() {
         // Reload config
-        reloadConfig();
         saveDefaultConfig();
+        reloadConfig();
+        checkConfigVersion();
 
         // Set debug mode
         debug = getConfig().getBoolean("debug");
@@ -130,7 +164,7 @@ public final class AcuteLoot extends JavaPlugin {
         }
 
         String[] namesFiles = {"axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
-                "helmets", "hoes", "leggings", "picks", "prefixes", "shovels", "suffixes",
+                "helmets", "hoes", "kana", "leggings", "picks", "prefixes", "shovels", "suffixes",
                 "swords", "tridents"};
 
         String[] fixedNamesFiles = {"axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
@@ -189,23 +223,43 @@ public final class AcuteLoot extends JavaPlugin {
 
         // Set up name generators
 
-        // prefix, prefixSuffixOf, suffixOf -> 30% each
-        // jp, fixed -> 5% each
-        nameGenChancePool.clear();
-        final String conjunction = getConfig().getString("conjunction");
-        nameGenChancePool.add(PrefixSuffixNameGenerator.getPrefixGenerator(), 6);
-        nameGeneratorNames.put("prefixGenerator", PrefixSuffixNameGenerator.getPrefixGenerator());
-        nameGenChancePool.add(PrefixSuffixNameGenerator.getSuffixGenerator(conjunction), 6);
-        nameGeneratorNames.put("suffixGenerator", PrefixSuffixNameGenerator.getSuffixGenerator(conjunction));
-        nameGenChancePool.add(PrefixSuffixNameGenerator.getPrefixSuffixGenerator(conjunction), 6);
-        nameGeneratorNames.put("prefixSuffixGenerator", PrefixSuffixNameGenerator.getPrefixSuffixGenerator(conjunction));
-        if (getConfig().getBoolean("kana-namegen")) {
-            nameGenChancePool.add(JPKanaNameGenerator.jpKanaNameGenerator, 1);
-            nameGeneratorNames.put("kanaGenerator", JPKanaNameGenerator.jpKanaNameGenerator);
+        final Map<String, NameGenerator> namePools = new HashMap<>();
+        for (Map<?, ?> namePool : getConfig().getMapList("name-pools")) {
+            final String name = (String) namePool.get("name");
+            final String type = (String) namePool.get("type");
+            if (type.equals("common")) {
+                namePools.put(name, FixedListNameGenerator.fromNamesFile((String) namePool.get("file")));
+            } else if (type.equals("material")) {
+                namePools.put(name, new MaterialNameGenerator.FileBuilder().defaultNameFiles()
+                                                                           .prefix((String) namePool.get("folder"))
+                                                                           .build());
+            } else {
+                getLogger().warning(String.format("Unknown name pool type '%s'. Skipping.", type));
+            }
         }
-        nameGenChancePool.add(FixedNameGenerator.defaultGenerator(), 1);
-        nameGeneratorNames.put("fixedGenerator", FixedNameGenerator.defaultGenerator());
 
+        nameGenChancePool.clear();
+        nameGeneratorNames.clear();
+        for (Map<?, ?> nameGenerator : getConfig().getMapList("name-generators")) {
+            final String name = (String) nameGenerator.get("name");
+            final int rarity = (Integer) nameGenerator.get("rarity");
+            final String pattern = (String) nameGenerator.get("pattern");
+
+            try {
+                NameGenerator generator = NameGenerator.compile(pattern, namePools, s -> getLogger().warning(s));
+                if (getConfig().getBoolean("capitalize-names")) {
+                    generator = TransformationNameGenerator.uppercaser(generator);
+                }
+                nameGenChancePool.add(generator, rarity);
+                nameGeneratorNames.put(name.replace(' ', '_'), generator); // Add "tab completer-safe" name
+            } catch (IllegalArgumentException e) {
+                getLogger().warning("Could not compile name generator pattern '" + pattern + "'");
+                getLogger().warning("Exception was: ");
+                getLogger().warning(e.getMessage());
+                getLogger().warning(Arrays.toString(e.getStackTrace()));
+            }
+        }
+        getLogger().info("Loaded " + nameGenChancePool.values().size() + " name generators");
 
         // Set up rarities (changes in id's must be updated further down as well)
         LootRarity.getRarities().clear();

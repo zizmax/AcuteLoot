@@ -76,11 +76,9 @@ public class Commands implements CommandExecutor, TabCompleter {
     }
 
     private void printGeneralStats(CommandSender sender) {
-        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(plugin.getConfig()
-                                                                                                               .getBoolean("kana-namegen")), 0.5, 0.0001);
+        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(), 0.5, 0.0001);
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "General stats:");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Total number of possible names: ~%,d", PermutationCounts
-                .totalPermutations(plugin.getConfig().getBoolean("kana-namegen"))));
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations()));
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Names for 50%% chance of duplicate: ~%,d", birthdayCount));
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of rarities: " + AcuteLoot.rarityChancePool.values().size());
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of effects: " + AcuteLoot.effectChancePool.values().size());

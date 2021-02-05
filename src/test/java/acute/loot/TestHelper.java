@@ -52,6 +52,13 @@ public class TestHelper {
         LootSpecialEffect.registerEffect(effect3);
     }
 
+    public void reset() {
+        LootRarity.getRarities().clear();
+        LootSpecialEffect.unregisterEffect(effect1);
+        LootSpecialEffect.unregisterEffect(effect2);
+        LootSpecialEffect.unregisterEffect(effect3);
+    }
+
     public static class VoidEffect extends LootSpecialEffect {
 
         public VoidEffect(String name, String ns, int id, List<LootMaterial> validMaterials) {

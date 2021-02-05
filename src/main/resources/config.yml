@@ -26,14 +26,10 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-# What should go between names and prefixes and suffixes
-conjunction: "of"
+config-version: 1 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
-
-# Names that look like Japanese katakana syllables (not in .txt files)
-kana-namegen: true
 
 # Only relevant if global-loot-name-color is true. See below for color options
 loot-name-color: "&3"
@@ -369,3 +365,74 @@ msg:
 
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                       Name Generators                                        | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+# AcuteLoot uses name generator patterns to create loot names.
+# These patterns are created and customized using the options below.
+# A name pool is a list of name parts that can be referenced in a name generator pattern.
+# There are currently two types of name pools:
+# * common: a fixed list of name parts provided in a txt file
+# * material: a list of names for each material
+#   NOTE: Instead of providing a file, provide a directory that contains separate files for each material type
+# You can create your own name pools and use your own files. The default files are included with the plugin.
+name-pools:
+  -
+    type: common
+    file: plugins/AcuteLoot/names/prefixes.txt
+    name: prefix
+  -
+    type: common
+    file: plugins/AcuteLoot/names/suffixes.txt
+    name: suffix
+  -
+    type: common
+    file: plugins/AcuteLoot/names/kana.txt
+    name: kana
+  -
+    type: material
+    folder: plugins/AcuteLoot/names/
+    name: item_name
+  -
+    type: material
+    folder: plugins/AcuteLoot/names/fixed/
+    name: fixed
+
+# A name generator is defined by its pattern
+# A pattern is made up of name pool tags, spaces, and any other text (typically a conjunction)
+# The tags MUST match the name field of an existing name pool
+# NOTE: Any leading and trailing spaces in a pattern will be removed,
+# ... and any multi-space sections will be collapsed down to a single space.
+# Rarity is proportional, meaning it doesn't strictly have to add up to 100%
+# The (a-b) syntax will make the name pool repeat between a and b times (currently only used in the kana generator)
+# You can create your own name generators. There are five included by default
+name-generators:
+  -
+    name: prefixGenerator
+    pattern: "[prefix] [item_name]"
+    rarity: 30
+  -
+    name: suffixGenerator
+    pattern: "[item_name] of [suffix]"
+    rarity: 30
+  -
+    name: prefixSuffixGenerator
+    pattern: "[prefix] [item_name] of [suffix]"
+    rarity: 30
+  -
+    name: fixedGenerator
+    pattern: "[fixed]"
+    rarity: 5
+  -
+    name: kanaGenerator
+    pattern: "[kana](2-5)"
+    rarity: 5
+
+# Force generated names to start with capital letters
+capitalize-names: true

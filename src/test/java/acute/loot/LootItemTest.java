@@ -1,5 +1,6 @@
 package acute.loot;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,11 @@ public class LootItemTest {
                                                                       testHelper.ns_effect3.id(),
                                                                       testHelper.effect1.ns(),
                                                                       testHelper.effect1.id()));
+    }
+
+    @AfterAll
+    public static void reset() {
+        testHelper.reset();
     }
 
     @Test

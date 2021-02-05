@@ -1,6 +1,5 @@
 package acute.loot;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,6 +26,7 @@ public final class Util {
      */
     public static <T> T drawRandom(List<T> list) {
         if (list.isEmpty()) throw new NoSuchElementException();
+        if (list.size() == 1) return list.get(0);
         return list.get(random.nextInt(list.size()));
     }
 
