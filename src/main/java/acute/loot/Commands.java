@@ -3,6 +3,8 @@ package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
 import acute.loot.namegen.PermutationCounts;
+import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.*;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
@@ -105,8 +107,21 @@ public class Commands implements CommandExecutor, TabCompleter {
         // Check for updates
         UpdateChecker.init(plugin, AcuteLoot.spigotID).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
-                sender.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE, result
-                        .getNewestVersion()));
+                if (sender instanceof Player) {
+                    BaseComponent message = new TextComponent(TextComponent.fromLegacyText(String.format(AcuteLoot.CHAT_PREFIX
+                            + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE, result.getNewestVersion())));
+                    TextComponent link = new TextComponent( "here" );
+                    link.setUnderlined(true);
+                    link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
+                            AcuteLoot.SPIGOT_URL));
+                    link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.GOLD + "SpigotMC.org")));
+                    message.addExtra(link);
+                    sender.spigot().sendMessage(message);
+                }
+                else {
+                    sender.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE, result
+                            .getNewestVersion()) + AcuteLoot.SPIGOT_URL);
+                }
                 return;
             }
 

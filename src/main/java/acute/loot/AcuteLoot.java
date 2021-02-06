@@ -26,7 +26,8 @@ public final class AcuteLoot extends JavaPlugin {
     public static boolean debug = false;
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
-    public static final String UPDATE_AVAILABLE = "An update is available! AcuteLoot %s may be downloaded on SpigotMC";
+    public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
+    public static final String UPDATE_AVAILABLE = "Update available! Download v%s ";
     public static final String UP_TO_DATE = "AcuteLoot is up to date: (%s)";
     public static final String UNRELEASED_VERSION = "Version (%s) is more recent than the one publicly available. Dev build?";
     public static final String UPDATE_CHECK_FAILED = "Could not check for updates. Reason: ";
@@ -83,7 +84,9 @@ public final class AcuteLoot extends JavaPlugin {
         // Check for updates
         UpdateChecker.init(this, spigotID).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
-                this.getLogger().warning(String.format(UPDATE_AVAILABLE, result.getNewestVersion()));
+                this.getLogger().warning((String.format(ChatColor.RED +
+                        AcuteLoot.UPDATE_AVAILABLE, result.getNewestVersion()) + "at "
+                        + ChatColor.UNDERLINE + AcuteLoot.SPIGOT_URL));
                 return;
             }
 
