@@ -1,6 +1,7 @@
 package acute.loot;
 
 import acute.loot.namegen.*;
+import base.collections.IntegerChancePool;
 import org.bstats.bukkit.Metrics;
 
 import org.bukkit.Bukkit;

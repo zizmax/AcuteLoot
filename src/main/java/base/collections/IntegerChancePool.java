@@ -1,8 +1,10 @@
-package acute.loot;
+package base.collections;
+
+import base.util.Checks;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -14,6 +16,9 @@ public class IntegerChancePool<T> {
     private int max;
     private final List<Element<T>> elements;
 
+    /**
+     * An element in the chance pool.
+     */
     private static class Element<T> {
         public Element(T val, int lower, int upper) {
             this.val = val;
@@ -37,11 +42,18 @@ public class IntegerChancePool<T> {
     }
 
     public void add(T val, int relativeChance) {
-        if (relativeChance < 1) throw new IllegalArgumentException("Relative chance must be positive.");
+        Checks.requirePositive(relativeChance, "Relative chance must be positive.");
         elements.add(new Element<>(val, max, max + relativeChance));
         max += relativeChance;
     }
 
+    /**
+     * Add the value to the pool with the given relative chance.
+     * If the chance is not positive, the element is silently ignored
+     * and not added.
+     * @param val the value to add to the chance pool
+     * @param relativeChance the relative chance for the value to be drawn
+     */
     public void addDiscardingInvalid(T val, int relativeChance) {
         if (relativeChance > 0) {
             add(val, relativeChance);
@@ -49,20 +61,20 @@ public class IntegerChancePool<T> {
     }
 
     public T draw() {
-        if (elements.isEmpty()) throw new NoSuchElementException();
+        Checks.requireNonEmpty(elements, "Cannot draw from empty pool.");
         return draw(random.nextInt(max));
     }
 
     public T draw(double rarity) {
-        if (rarity < 0 || rarity > 1) throw new IllegalArgumentException("Parameter of draw() must be non-negative and less or equal to 1.0");
+        Checks.requireInUnitInterval(rarity, "Parameter of draw() must be non-negative and less or equal to 1.0");
         int x = (int) Math.floor(max * rarity);
         x = x == max ? max - 1 : x; // x will be max if rarity = 1
         return draw(x);
     }
 
     public T draw(int x) {
-        if (elements.isEmpty()) throw new NoSuchElementException();
-        if (x < 0 || x >= max) throw new IllegalArgumentException("Parameter of draw() must be positive and less than max().");
+        Checks.requireNonEmpty(elements, "Cannot draw from empty pool.");
+        Checks.requireInInterval(x, 0, max - 1, "Parameter of draw() must be positive and less than max().");
 
         return elements.stream()
                        .filter(e -> e.lower <= x && e.upper > x)
@@ -109,15 +121,10 @@ public class IntegerChancePool<T> {
 
     @Override
     public String toString() {
-        StringBuilder str = new StringBuilder();
-        str.append("IntegerChancePool[");
-        for (int i = 0; i < elements.size(); i++) {
-            final Element<T> e = elements.get(i);
-            str.append(e.lower).append('-').append(e.upper - 1).append(':').append(e.val);
-            if (i != elements.size() - 1) str.append(", ");
-        }
-        str.append(']');
-        return str.toString();
+        String str = elements.stream()
+                             .map(e -> String.valueOf(e.lower) + '-' + (e.upper - 1) + ':' + e.val)
+                             .collect(Collectors.joining(", "));
+        return "IntegerChancePool[" + str + "]";
     }
 
 }
