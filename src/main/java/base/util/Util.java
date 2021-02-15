@@ -26,6 +26,7 @@ public final class Util {
     /**
      * Return the given items as a queue.
      * @param items the items
+     * @param <T> type of the items and the resulting queue
      * @return the items as a queue
      */
     @SafeVarargs

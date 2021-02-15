@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
  * the element's chance divided by the sum of all element chances.
  * This later value is referred to as the chance pool's maximum or max.
  *
- * The chance pool works by partitioning the integers 0 <= x < max
+ * The chance pool works by partitioning the integers 0 &le; x &lt; max
  * into blocks for each added element with respect to their chance. For
  * example, the situation above with "A", "B", and "C" would result
  * in {0, 1} being associated with "A", {2, 3, 4} being associated
  * with B, and {5, 6, 7, 8, 9} being associated with C. This representation
  * must be kept in mind while working with the parameterized draw() methods,
- * one of which maps the double range [0, 1) to integers 0 <= x < max and
- * the other of which returns the element associated with the integer 0 <= x < max.
+ * one of which maps the double range [0, 1) to integers 0 &le; x &lt; max and
+ * the other of which returns the element associated with the integer 0 &le; x &lt; max.
  *
  * The chance pool respects the order of added elements, meaning for example that
  * invoking draw with parameter 0 will always draw the first element added and
@@ -122,7 +122,7 @@ public class IntegerChancePool<T> {
     }
 
     /**
-     * Draw the element from the chance pool that is associated with the given integer in 0 <= x < max.
+     * Draw the element from the chance pool that is associated with the given integer in 0 &le; x &lt; max.
      * This operation is NOT random, see class documentation.
      * @param x the integer to get the element for
      * @return the element in the chance pool associated with the integer
