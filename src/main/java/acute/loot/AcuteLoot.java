@@ -1,6 +1,8 @@
 package acute.loot;
 
 import acute.loot.namegen.*;
+import base.collections.IntegerChancePool;
+import base.util.Util;
 import org.bstats.bukkit.Metrics;
 
 import org.bukkit.Bukkit;
@@ -20,6 +22,9 @@ import java.util.Random;
 public final class AcuteLoot extends JavaPlugin {
 
     public static final Random random = new Random();
+    static {
+        Util.setRandom(random);
+    }
 
     public static final int spigotID = 81899;
 
@@ -374,6 +379,15 @@ public final class AcuteLoot extends JavaPlugin {
             effectNames.put("Moonboots", 22);
             */
 
+        }
+    }
+
+    public String getUIString(String messageName){
+        if (getConfig().contains("msg." + messageName)) {
+            return ChatColor.translateAlternateColorCodes('&', getConfig().getString("msg." + messageName));
+        } else {
+            getLogger().warning("Config message error at: msg." + messageName);
+            return ChatColor.DARK_RED + "[" +ChatColor.BLACK + "Config Error" + ChatColor.DARK_RED+ "]";
         }
     }
 

@@ -1,5 +1,7 @@
 package acute.loot;
 
+import base.collections.IntegerChancePool;
+
 import java.util.Random;
 
 /**
