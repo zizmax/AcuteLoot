@@ -15,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class SalvagerGUI implements Listener {
@@ -31,7 +30,7 @@ public class SalvagerGUI implements Listener {
 
     public SalvagerGUI(AcuteLoot plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
-        inv = Bukkit.createInventory(null, 54, Util.getUIString("salvage.inv-name", plugin));
+        inv = Bukkit.createInventory(null, 54, plugin.getUIString("salvage.inv-name"));
         this.plugin = plugin;
         configureItems();
     }
@@ -44,7 +43,7 @@ public class SalvagerGUI implements Listener {
 
         }
 
-        inv.setItem(8, createItem(Material.OAK_SIGN, Util.getUIString("salvage.help-name", plugin)));
+        inv.setItem(8, createItem(Material.OAK_SIGN, plugin.getUIString("salvage.help-name")));
 
         // Add help-lore from config
         List<String> loreLines = plugin.getConfig().getStringList("msg.salvage.help-lore");
@@ -67,9 +66,9 @@ public class SalvagerGUI implements Listener {
             inv.setItem(i, createItem(Material.BLACK_STAINED_GLASS_PANE," "));
         }
 
-        inv.setItem(53, createItem(Material.YELLOW_STAINED_GLASS_PANE,Util.getUIString("salvage.pre-salvage-button", plugin)));
-        inv.setItem(45, createItem(Material.RED_STAINED_GLASS_PANE,Util.getUIString("salvage.cancel-button", plugin)));
-        inv.setItem(22, createItem(Material.HOPPER, Util.getUIString("salvage.name", plugin)));
+        inv.setItem(53, createItem(Material.YELLOW_STAINED_GLASS_PANE, plugin.getUIString("salvage.pre-salvage-button")));
+        inv.setItem(45, createItem(Material.RED_STAINED_GLASS_PANE, plugin.getUIString("salvage.cancel-button")));
+        inv.setItem(22, createItem(Material.HOPPER, plugin.getUIString("salvage.name")));
     }
 
     protected ItemStack createItem(final Material material, final String name, final String... lore) {
@@ -140,7 +139,7 @@ public class SalvagerGUI implements Listener {
                                                     plugin.getLogger().info("dropIDNode: " + dropIDNode);
                                                 if (AcuteLoot.debug)
                                                     plugin.getLogger().info("Material String: " + plugin.getConfig().getString(dropIDNode + "material"));
-                                                Material material = Util.validateMaterial(plugin.getConfig().getString(dropIDNode + "material"));
+                                                Material material = base.util.Util.validateMaterial(plugin.getConfig().getString(dropIDNode + "material"));
                                                 if (material != null) {
                                                     int slot = inv.first(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
                                                     inv.setItem(slot, createItem(material, ChatColor.translateAlternateColorCodes('&', ChatColor.stripColor(plugin.getConfig().getString(dropIDNode + "name")))));
@@ -171,20 +170,20 @@ public class SalvagerGUI implements Listener {
                                 }
                             }
                             if (salvaged == null) {
-                                denyUIClick(player, Util.getUIString("salvage.not-salvagable", plugin));
+                                denyUIClick(player, plugin.getUIString("salvage.not-salvagable"));
                             }
                         } else {
-                            denyUIClick(player, Util.getUIString("generic.not-acuteloot", plugin));
+                            denyUIClick(player, plugin.getUIString("generic.not-acuteloot"));
                         }
                     } else {
-                        denyUIClick(player, Util.getUIString("salvage.not-single-item", plugin));
+                        denyUIClick(player, plugin.getUIString("salvage.not-single-item"));
                     }
                 } else {
-                    denyUIClick(player, Util.getUIString("salvage.already-salvaged", plugin));
+                    denyUIClick(player, plugin.getUIString("salvage.already-salvaged"));
                 }
             }
             else{
-                denyUIClick(player, Util.getUIString("salvage.no-item", plugin));
+                denyUIClick(player, plugin.getUIString("salvage.no-item"));
             }
             event.setCancelled(true);
         }
@@ -210,7 +209,7 @@ public class SalvagerGUI implements Listener {
                 configureItems();
             }
             else{
-                denyUIClick(player, Util.getUIString("salvage.no-item", plugin));
+                denyUIClick(player, plugin.getUIString("salvage.no-item"));
                 salvaged = null;
                 if (inv.getItem(13) != null && !inv.getItem(13).getType().isAir())
                     player.getInventory().addItem(inv.getItem(13));
@@ -220,7 +219,7 @@ public class SalvagerGUI implements Listener {
 
         }
         else if (event.getRawSlot() == 45){
-            denyUIClick(player, Util.getUIString("salvage.cancel", plugin));
+            denyUIClick(player, plugin.getUIString("salvage.cancel"));
             player.closeInventory();
             event.setCancelled(true);
         }
