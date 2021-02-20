@@ -1,7 +1,8 @@
 package acute.loot;
 
-import acute.loot.namegen.NameGenerator;
-import org.bukkit.*;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
@@ -21,19 +22,15 @@ import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Events implements Listener {
 
@@ -41,38 +38,6 @@ public class Events implements Listener {
 
     public Events(AcuteLoot plugin) {
         this.plugin = plugin;
-    }
-
-    static List<Material> materials = new ArrayList<>();
-
-    public static void createMaterials(AcuteLoot plugin, String path) {
-        materials = new ArrayList<>();
-        try (Stream<String> stream = Files.lines(Paths.get(path))) {
-            List<String> lines = stream.collect(Collectors.toList());
-            for (String line : lines) {
-                if (!line.contains("#") && !line.trim().equals("")) {
-                    String[] materialStrings = line.split(",");
-                    for (String material : materialStrings) {
-                        material = material.trim();
-                        if (!material.equals("")) {
-                            try {
-                                Material mat = Material.matchMaterial(material);
-                                if (mat != null) materials.add(mat);
-                                else {
-                                    throw new NullPointerException();
-                                }
-                            } catch (IllegalArgumentException | NullPointerException e) {
-                                plugin.getLogger().warning(material + " not valid material for server version: " + Bukkit.getBukkitVersion() + ". Skipping...");
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            plugin.getLogger().severe("Fatal IO exception while initializing materials.txt. Is file missing or corrupted?");
-        }
-        plugin.getLogger().info("Initialized " + materials.size() + " materials");
     }
 
     @EventHandler
@@ -118,7 +83,7 @@ public class Events implements Listener {
                     if (getLootCode(plugin, item) == null) {
                         double seed = AcuteLoot.random.nextDouble();
                         chance = (seed + (enchantRarity / 300.0)) / 2.0;
-                        item = createLootItem(item, chance);
+                        item = plugin.generator.createLootItem(item, chance);
                         if (AcuteLoot.debug) {
                             player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType().toString());
                             player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
@@ -269,7 +234,7 @@ public class Events implements Listener {
                                         }
                                         int origEmptySlotsSize = emptySlots.size();
                                         if (emptySlots.size() > 0) {
-                                            ItemStack newLoot = createLootItem();
+                                            ItemStack newLoot = plugin.generator.createLootItem();
                                             slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
                                             int slotToFill = emptySlots.get(slotIndex);
                                             chest.getInventory().setItem(slotToFill, newLoot);
@@ -279,7 +244,7 @@ public class Events implements Listener {
                                                 roll = AcuteLoot.random.nextDouble();
                                                 if (AcuteLoot.debug) player.sendMessage("Roll: " + roll);
                                                 if (roll <= chance) {
-                                                    newLoot = createLootItem();
+                                                    newLoot = plugin.generator.createLootItem();
                                                     slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
                                                     slotToFill = emptySlots.get(slotIndex);
                                                     chest.getInventory().setItem(slotToFill, newLoot);
@@ -343,7 +308,7 @@ public class Events implements Listener {
                 if (roll <= chance) {
                     AcuteLoot.random.nextInt();
                     Item itemEntity = (Item) caught;
-                    ItemStack item = createLootItem();
+                    ItemStack item = plugin.generator.createLootItem();
                     // Turns out that unlike all the other trees, BAMBOO_SAPLING is NOT the material type
                     // BAMBOO_SAPLING appears to be the block material ONLY, so will error when applied to an ItemStack
                     // The original material lists include BAMBOO_SAPLING instead of the correct BAMBOO
@@ -377,116 +342,6 @@ public class Events implements Listener {
             }
         }
         return null;
-    }
-
-    public static ItemStack chooseLootMaterial(){
-        int materialIndex = AcuteLoot.random.nextInt(materials.size());
-        ItemStack item = new ItemStack(materials.get(materialIndex), 1);
-
-        // Set random damage if Material is damageable
-        if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
-            Damageable dmgItemMeta = (Damageable) item.getItemMeta();
-            int damage = AcuteLoot.random.nextInt(item.getType().getMaxDurability());
-            dmgItemMeta.setDamage(damage);
-            item.setItemMeta((ItemMeta) dmgItemMeta);
-        }
-        return item;
-    }
-
-    // Create Loot Item with RANDOM material
-
-    public ItemStack createLootItem() {
-        ItemStack item = chooseLootMaterial();
-        return createLootItem(item, AcuteLoot.random.nextDouble());
-    }
-
-    // Create Loot Item with GIVEN material
-
-    public ItemStack createLootItem(ItemStack item, double rarity) {
-        // Generate loot: name, rarity and effects
-        LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
-        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
-            return item;
-        }
-        return createLootItem(item, generator.generate(rarity, lootMaterial));
-    }
-
-    //public ItemStack createLootItem(ItemStack item, int rarityID, List<Integer> effects) {
-    //    return createLootItem(item, new LootItem(rarityID, effects));
-    //}
-    public ItemStack createLootItem(ItemStack item, LootRarity rarity) {
-        LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
-        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
-            return item;
-        }
-        return createLootItem(item, generator.generateWithRarity(rarity, lootMaterial));
-    }
-
-    public ItemStack createLootItem(ItemStack item, final LootItem loot) {
-        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
-            return item;
-        }
-
-        String name = null;
-        int attempts = 100;
-        NameGenerator nameGenerator = null;
-        do {
-            try {
-                nameGenerator = AcuteLoot.nameGenChancePool.draw();
-                name = nameGenerator.generate(lootMaterial, loot.rarity());
-            } catch (NoSuchElementException e) {
-                // Couldn't draw a name for some reason, try again
-                attempts--;
-            }
-        } while (name == null && attempts > 0);
-        if (attempts == 0) {
-            plugin.getLogger().severe("Could not generate a name in 100 attempts! Are name files empty or corrupted?");
-            plugin.getLogger().severe("Name Generator: " + nameGenerator.toString());
-        }
-
-        // Add loot info to lore and display name
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = new ArrayList<>();
-
-        // Store lootCode in metadata using PersistentDataHolder API
-        NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, loot.lootCode());
-
-        // Add loot info to lore
-        lore.add(loot.rarity().getRarityColor() + loot.rarity().getName());
-        for (LootSpecialEffect effect : loot.getEffects()) {
-            //String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
-            String effectName = effect.getDisplayName();
-            lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
-        }
-
-        // Add category lore
-        if(plugin.getConfig().getBoolean("loot-category-lore.enabled")){
-            String category = lootMaterial.name().toLowerCase();
-            if(plugin.getConfig().contains("loot-category-lore." + category)){
-                List<String> loreLines = plugin.getConfig().getStringList("loot-category-lore." + category);
-                for (String line : loreLines){
-                    lore.add(ChatColor.translateAlternateColorCodes('&', line));
-                }
-            }
-            else{
-                plugin.getLogger().warning("ERROR: Failed to add lore from config: loot-category-lore." +
-                        lootMaterial.name());
-            }
-        }
-        meta.setLore(lore);
-
-        // Set display name
-        if(plugin.getConfig().getBoolean("global-loot-name-color"))
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
-        else
-            meta.setDisplayName(loot.rarity().getRarityColor() + name);
-        item.setItemMeta(meta);
-
-        return item;
     }
 
     @EventHandler
@@ -573,7 +428,7 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerPickupItem(EntityPickupItemEvent event) {
         if (event.getEntity() instanceof Player) {
-            applyEventWithHumanEntity(event, (Player) event.getEntity());
+            applyEventWithPlayer(event, (Player) event.getEntity());
         }
     }
 
@@ -599,14 +454,16 @@ public class Events implements Listener {
 
     @EventHandler
     public void onPlayerClickTonight(InventoryClickEvent event) {
-        applyEventWithHumanEntity(event, event.getWhoClicked());
+        if (event.getWhoClicked() instanceof Player) {
+            applyEventWithPlayer(event, (Player) event.getWhoClicked());
+        }
     }
 
     private void applyPlayerEvent(final PlayerEvent event) {
-        applyEventWithHumanEntity(event, event.getPlayer());
+        applyEventWithPlayer(event, event.getPlayer());
     }
 
-    private void applyEventWithHumanEntity(final Event event, final HumanEntity player) {
+    private void applyEventWithPlayer(final Event event, final Player player) {
         applyEventToItem(event, player.getInventory().getItemInMainHand());
         applyEventToItem(event, player.getInventory().getItemInOffHand());
         applyEventToItem(event, player.getInventory().getHelmet());

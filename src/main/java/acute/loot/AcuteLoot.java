@@ -7,6 +7,7 @@ import org.bstats.bukkit.Metrics;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,10 +19,14 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class AcuteLoot extends JavaPlugin {
 
     public static final Random random = new Random();
+    static List<Material> materials = new ArrayList<>();
+
     static {
         Util.setRandom(random);
     }
@@ -47,6 +52,7 @@ public final class AcuteLoot extends JavaPlugin {
     public static final HashMap<String, Integer> rarityNames = new HashMap<>();
     public static final HashMap<String, String> effectNames = new HashMap<>();
     public static final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
+    public LootItemGenerator generator;
 
     // Minecraft version: Used for materials compatibility
     // Defaults to -1 before the plugin has loaded, useful for tests
@@ -227,7 +233,7 @@ public final class AcuteLoot extends JavaPlugin {
             }
         }
         // Initialize materials array
-        Events.createMaterials(this, "plugins/AcuteLoot/" + fileName + ".txt");
+        createMaterials(this, "plugins/AcuteLoot/" + fileName + ".txt");
 
         // Set up name generators
 
@@ -380,6 +386,8 @@ public final class AcuteLoot extends JavaPlugin {
             */
 
         }
+
+        generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool, this);
     }
 
     public String getUIString(String messageName){
@@ -394,5 +402,35 @@ public final class AcuteLoot extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Disabled");
+    }
+
+    public static void createMaterials(AcuteLoot plugin, String path) {
+        materials = new ArrayList<>();
+        try (Stream<String> stream = Files.lines(Paths.get(path))) {
+            List<String> lines = stream.collect(Collectors.toList());
+            for (String line : lines) {
+                if (!line.contains("#") && !line.trim().equals("")) {
+                    String[] materialStrings = line.split(",");
+                    for (String material : materialStrings) {
+                        material = material.trim();
+                        if (!material.equals("")) {
+                            try {
+                                Material mat = Material.matchMaterial(material);
+                                if (mat != null) materials.add(mat);
+                                else {
+                                    throw new NullPointerException();
+                                }
+                            } catch (IllegalArgumentException | NullPointerException e) {
+                                plugin.getLogger().warning(material + " not valid material for server version: " + Bukkit.getBukkitVersion() + ". Skipping...");
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            plugin.getLogger().severe("Fatal IO exception while initializing materials.txt. Is file missing or corrupted?");
+        }
+        plugin.getLogger().info("Initialized " + materials.size() + " materials");
     }
 }

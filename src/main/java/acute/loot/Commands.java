@@ -8,13 +8,11 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.*;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.StringUtil;
@@ -84,7 +82,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Names for 50%% chance of duplicate: ~%,d", birthdayCount));
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of rarities: " + AcuteLoot.rarityChancePool.values().size());
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of effects: " + AcuteLoot.effectChancePool.values().size());
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of loot materials: " + Events.materials.size());
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of loot materials: " + AcuteLoot.materials.size());
     }
 
     private void helpCommand(CommandSender sender) {
@@ -150,7 +148,7 @@ public class Commands implements CommandExecutor, TabCompleter {
                         player.sendMessage(AcuteLoot.CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
                         return;
                     }
-                    new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
+                    plugin.generator.createLootItem(item, AcuteLoot.random.nextDouble());
                     player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with random rarity");
                 }
                 else {
@@ -160,14 +158,14 @@ public class Commands implements CommandExecutor, TabCompleter {
                             if (AcuteLoot.effectNames.containsKey(args[2])) {
                                 final EffectId effectId = new EffectId(AcuteLoot.effectNames.get(args[2]));
                                 final LootItem lootItem = new LootItem(rarity, Collections.singletonList(effectId));
-                                new Events(plugin).createLootItem(item, lootItem);
+                                plugin.generator.createLootItem(item, lootItem);
                                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1] + " and " + args[2]);
                                 sendIncompatibleEffectsWarning(player, lootItem, item);
                             } else {
                                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
                             }
                         } else {
-                            new Events(plugin).createLootItem(item, LootRarity.get(rarity));
+                            plugin.generator.createLootItem(item, LootRarity.get(rarity));
                             player.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1]);
                         }
 
@@ -222,21 +220,21 @@ public class Commands implements CommandExecutor, TabCompleter {
 
     private void newCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        ItemStack item = Events.chooseLootMaterial();
+        ItemStack item = LootItemGenerator.getNewRandomLootItemStack();
         LootItem lootItem = null;
-        if(args.length == 1) new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
+        if(args.length == 1) plugin.generator.createLootItem(item, AcuteLoot.random.nextDouble());
         else{
             if (AcuteLoot.rarityNames.containsKey(args[1])) {
                 final int rarityID = AcuteLoot.rarityNames.get(args[1]);
                 if(args.length == 2){
-                    new Events(plugin).createLootItem(item, LootRarity.get(rarityID));
+                    plugin.generator.createLootItem(item, LootRarity.get(rarityID));
                 }
                 final List<EffectId> effects = new ArrayList<>();
                 if (args.length > 2) {
                     if (AcuteLoot.effectNames.containsKey(args[2])){
                         effects.add(new EffectId(AcuteLoot.effectNames.get(args[2])));
                         lootItem = new LootItem(rarityID, effects);
-                        new Events(plugin).createLootItem(item, lootItem);
+                        plugin.generator.createLootItem(item, lootItem);
                     }
                     else {
                         player.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
@@ -297,7 +295,7 @@ public class Commands implements CommandExecutor, TabCompleter {
             }
             ItemMeta meta = item.getItemMeta();
             String name = null;
-            LootItemGenerator generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool);
+            LootItemGenerator generator = plugin.generator;
             if (args.length >= 2) {
                 if (AcuteLoot.nameGeneratorNames.containsKey(args[1])) {
                     try {
@@ -435,21 +433,21 @@ public class Commands implements CommandExecutor, TabCompleter {
         if (args.length >= 2) {
             if (sender.getServer().getPlayerExact(args[1]) != null) {
                 Player target = sender.getServer().getPlayerExact(args[1]);
-                ItemStack item = Events.chooseLootMaterial();
+                ItemStack item = LootItemGenerator.getNewRandomLootItemStack();
                 LootItem lootItem = null;
-                if (args.length == 2) new Events(plugin).createLootItem(item, AcuteLoot.random.nextDouble());
+                if (args.length == 2) plugin.generator.createLootItem(item, AcuteLoot.random.nextDouble());
                 else {
                     if (AcuteLoot.rarityNames.containsKey(args[2])) {
                         final int rarityID = AcuteLoot.rarityNames.get(args[2]);
                         if (args.length == 3) {
-                            new Events(plugin).createLootItem(item, LootRarity.get(rarityID));
+                            plugin.generator.createLootItem(item, LootRarity.get(rarityID));
                         }
                         final List<EffectId> effects = new ArrayList<>();
                         if (args.length > 3) {
                             if (AcuteLoot.effectNames.containsKey(args[3])) {
                                 effects.add(new EffectId(AcuteLoot.effectNames.get(args[3])));
                                 lootItem = new LootItem(rarityID, effects);
-                                new Events(plugin).createLootItem(item, lootItem);
+                                plugin.generator.createLootItem(item, lootItem);
                             } else {
                                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[3] + " doesn't exist");
                                 return; // Do not apply the rarity if the effect is invalid
