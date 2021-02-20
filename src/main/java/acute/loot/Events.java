@@ -149,7 +149,6 @@ public class Events implements Listener {
         }
     }
 
-
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         if(event.getEntity().hasMetadata("turnedToStone")) {
@@ -158,7 +157,6 @@ public class Events implements Listener {
             event.getEntity().removeMetadata("turnedToStone", plugin);
         }
     }
-
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -265,26 +263,7 @@ public class Events implements Listener {
                 }
             }
         } else if (event.getAction() == Action.LEFT_CLICK_BLOCK || event.getAction() == Action.LEFT_CLICK_AIR) {
-            ItemStack item = player.getInventory().getItemInMainHand();
-            if (item.getType() != Material.AIR && item.getItemMeta().getLore() != null) {
-                if (plugin.getConfig().getBoolean("effects.enabled")) {
-                    String lootCode = getLootCode(plugin, item);
-                    if (lootCode != null) {
-                        LootItem loot = new LootItem(lootCode);
-                        List<LootSpecialEffect> effects = loot.getEffects();
-                        effects.forEach(e -> e.apply(event));
-                    }
-                }
-            }
-
-            if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
-                String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
-                if (lootCode != null) {
-                    LootItem loot = new LootItem(lootCode);
-                    List<LootSpecialEffect> effects = loot.getEffects();
-                    effects.forEach(e -> e.apply(event));
-                }
-            }
+            applyPlayerEvent(event);
         }
     }
 
@@ -332,7 +311,7 @@ public class Events implements Listener {
     }
 
     public static String getLootCode(AcuteLoot plugin, ItemStack item) {
-        if (item == null) return null;
+        if (item == null || item.getType().isAir()) return null;
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return null;
         NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
@@ -349,42 +328,22 @@ public class Events implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getBoots() != null){
-            String lootCode = getLootCode(plugin, player.getInventory().getBoots());
-            if (lootCode != null) {
-                LootItem loot = new LootItem(lootCode);
-                List<LootSpecialEffect> effects = loot.getEffects();
-                // Block Trail Effect and Time Walk Effect and Midas Effect
-                // Check if player moves between a block
-                if (player.isOnGround() && (event.getFrom().getBlockX() != (event.getTo().getBlockX())
-                        || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
-                        || event.getFrom().getBlockY() != event.getTo().getBlockY())) {
-                        effects.forEach(e -> e.apply(event));
-                }
-            }
-        }
-        if (plugin.getConfig().getBoolean("effects.enabled") && player.getInventory().getChestplate() != null) {
-            String lootCode = getLootCode(plugin, player.getInventory().getChestplate());
-            if (lootCode != null) {
-                LootItem loot = new LootItem(lootCode);
-                List<LootSpecialEffect> effects = loot.getEffects();
-                effects.forEach(e -> e.apply(event));
-            }
+        if (player.isOnGround() && (event.getFrom().getBlockX() != (event.getTo().getBlockX())
+                || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
+                || event.getFrom().getBlockY() != event.getTo().getBlockY())) {
+            applyPlayerEvent(event);
         }
     }
 
     @EventHandler
     public void onEntityShootBow(EntityShootBowEvent event) {
-        if (event.getEntity() instanceof Player && plugin.getConfig().getBoolean("effects.enabled")) {
-            Player player = (Player) event.getEntity();
-            String lootCode = getLootCode(plugin, player.getInventory().getItemInMainHand());
-            if (lootCode != null) {
-                LootItem loot = new LootItem(lootCode);
-                List<LootSpecialEffect> effects = loot.getEffects();
-                effects.forEach(e -> e.apply(event));
-            }
+        if (event.getEntity() instanceof Player) {
+            applyEventWithPlayer(event, (Player) event.getEntity());
         }
-        if(event.getEntity() instanceof Skeleton && event.getEntity().hasPotionEffect(PotionEffectType.SLOW) && event.getEntity().hasMetadata("deadEyeSlowness")) {
+
+        if (event.getEntity() instanceof Skeleton &&
+            event.getEntity().hasPotionEffect(PotionEffectType.SLOW) &&
+            event.getEntity().hasMetadata("deadEyeSlowness")) {
             // It ruins the Dead Eye slo-mo effect when skeletons can shoot you during it
             event.setCancelled(true);
         }
@@ -405,11 +364,11 @@ public class Events implements Listener {
         }
     }
 
-    //XP Boost Effect @EventHandler
+    //XP Boost Effect
+    @EventHandler
     public void onExpGain(PlayerExpChangeEvent event) {
         applyPlayerEvent(event);
     }
-
 
     @EventHandler
     public void onDropItem(PlayerDropItemEvent event){
