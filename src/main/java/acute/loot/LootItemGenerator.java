@@ -21,11 +21,16 @@ public class LootItemGenerator {
 
     private final IntegerChancePool<LootRarity> rarityPool;
     private final IntegerChancePool<LootSpecialEffect> effectPool;
+    private final IntegerChancePool<NameGenerator> namePool;
     private final AcuteLoot plugin;
 
-    public LootItemGenerator(IntegerChancePool<LootRarity> rarityPool, IntegerChancePool<LootSpecialEffect> effectPool, AcuteLoot plugin) {
+    public LootItemGenerator(IntegerChancePool<LootRarity> rarityPool,
+                             IntegerChancePool<LootSpecialEffect> effectPool,
+                             IntegerChancePool<NameGenerator> namePool,
+                             AcuteLoot plugin) {
         this.rarityPool = rarityPool;
         this.effectPool = effectPool;
+        this.namePool = namePool;
         this.plugin = plugin;
     }
 
@@ -69,7 +74,7 @@ public class LootItemGenerator {
      * @return a loot item with a random material.
      */
     public ItemStack createLootItem() {
-        return createLootItem(getNewRandomLootItemStack(), AcuteLoot.random.nextDouble());
+        return createLootItem(getNewRandomLootItemStack(), random.nextDouble());
     }
 
     /**
@@ -121,7 +126,7 @@ public class LootItemGenerator {
         NameGenerator nameGenerator = null;
         do {
             try {
-                nameGenerator = AcuteLoot.nameGenChancePool.draw();
+                nameGenerator = namePool.draw();
                 name = nameGenerator.generate(lootMaterial, loot.rarity());
             } catch (NoSuchElementException e) {
                 // Couldn't draw a name for some reason, try again
@@ -176,13 +181,13 @@ public class LootItemGenerator {
         return item;
     }
 
-    public static ItemStack getNewRandomLootItemStack(){
-        ItemStack item = new ItemStack(Util.drawRandom(AcuteLoot.materials), 1);
+    public ItemStack getNewRandomLootItemStack(){
+        ItemStack item = new ItemStack(Util.drawRandom(plugin.lootMaterials), 1);
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
             Damageable dmgItemMeta = (Damageable) item.getItemMeta();
-            dmgItemMeta.setDamage(AcuteLoot.random.nextInt(item.getType().getMaxDurability()));
+            dmgItemMeta.setDamage(random.nextInt(item.getType().getMaxDurability()));
             item.setItemMeta((ItemMeta) dmgItemMeta);
         }
         return item;

@@ -13,12 +13,18 @@ public enum LootMaterial {
     PICK, SHOVEL, HOE, AXE, PANTS, CHEST_PLATE, FISHING_ROD, TRIDENT, // Have names
     GENERIC, UNKNOWN;
 
+    private static List<Material> genericMaterialsList = Collections.emptyList();
+
+    public static void setGenericMaterialsList(final List<Material> genericMaterialsList) {
+        LootMaterial.genericMaterialsList = genericMaterialsList;
+    }
+
     /*
      Return the mapping for this material,
      or GENERIC if it is unregistered but in the events materials list, else UNKNOWN
     */
     public static LootMaterial lootMaterialForMaterial(Material type) {
-        return materialMap.getOrDefault(type, AcuteLoot.materials.contains(type) ? GENERIC : UNKNOWN);
+        return materialMap.getOrDefault(type, genericMaterialsList.contains(type) ? GENERIC : UNKNOWN);
     }
 
     // This map will translate Material -> LootMaterial

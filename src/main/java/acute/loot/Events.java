@@ -31,9 +31,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class Events implements Listener {
 
+    private static final Random random = AcuteLoot.random;
     private final AcuteLoot plugin;
 
     public Events(AcuteLoot plugin) {
@@ -69,9 +71,9 @@ public class Events implements Listener {
     public void onEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
         if (plugin.getConfig().getBoolean("loot-sources.enchanting.enabled")) {
-            double roll = AcuteLoot.random.nextDouble();
+            double roll = random.nextDouble();
             double chance = plugin.getConfig().getDouble("loot-sources.enchanting.chance") / 100.0;
-            if (AcuteLoot.debug) {
+            if (plugin.debug) {
                 player.sendMessage("Roll: " + roll);
                 player.sendMessage("Raw chance: " + chance);
             }
@@ -81,10 +83,10 @@ public class Events implements Listener {
                     int enchantRarity = getEnchantRarity(enchantments);
                     ItemStack item = event.getItem();
                     if (getLootCode(plugin, item) == null) {
-                        double seed = AcuteLoot.random.nextDouble();
+                        double seed = random.nextDouble();
                         chance = (seed + (enchantRarity / 300.0)) / 2.0;
-                        item = plugin.generator.createLootItem(item, chance);
-                        if (AcuteLoot.debug) {
+                        item = plugin.lootGenerator.createLootItem(item, chance);
+                        if (plugin.debug) {
                             player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType().toString());
                             player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
                             player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
@@ -173,9 +175,9 @@ public class Events implements Listener {
                     PersistentDataContainer container = chest.getPersistentDataContainer();
                     // Only naturally-generated chests have lootTables
                     // And they only have the lootTable the very first time they are opened
-                    if (AcuteLoot.debug || chest.getLootTable() != null || container.has(key, PersistentDataType.STRING)) {
+                    if (plugin.debug || chest.getLootTable() != null || container.has(key, PersistentDataType.STRING)) {
                         if(container.has(key, PersistentDataType.STRING)){
-                            if (AcuteLoot.debug) player.sendMessage("Has metadata code: "
+                            if (plugin.debug) player.sendMessage("Has metadata code: "
                                     + container.get(key, PersistentDataType.STRING));
                             String[] chestMetadataCode = container.get(key, PersistentDataType.STRING).split(":");
                             String version = chestMetadataCode[0];
@@ -218,9 +220,9 @@ public class Events implements Listener {
                             plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                                 @Override
                                 public void run() {
-                                    double roll = AcuteLoot.random.nextDouble();
+                                    double roll = random.nextDouble();
                                     double chance = plugin.getConfig().getDouble("loot-sources.chests.chance") / 100.0;
-                                    if (AcuteLoot.debug) {
+                                    if (plugin.debug) {
                                         player.sendMessage("Chance: " + chance);
                                         player.sendMessage("Roll: " + roll);
                                     }
@@ -234,18 +236,18 @@ public class Events implements Listener {
                                         }
                                         int origEmptySlotsSize = emptySlots.size();
                                         if (emptySlots.size() > 0) {
-                                            ItemStack newLoot = plugin.generator.createLootItem();
-                                            slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
+                                            ItemStack newLoot = plugin.lootGenerator.createLootItem();
+                                            slotIndex = random.nextInt(emptySlots.size());
                                             int slotToFill = emptySlots.get(slotIndex);
                                             chest.getInventory().setItem(slotToFill, newLoot);
                                             emptySlots.remove(slotIndex);
 
                                             for (int i = 1; i <= origEmptySlotsSize - 1; i++) {
-                                                roll = AcuteLoot.random.nextDouble();
-                                                if (AcuteLoot.debug) player.sendMessage("Roll: " + roll);
+                                                roll = random.nextDouble();
+                                                if (plugin.debug) player.sendMessage("Roll: " + roll);
                                                 if (roll <= chance) {
-                                                    newLoot = plugin.generator.createLootItem();
-                                                    slotIndex = AcuteLoot.random.nextInt(emptySlots.size());
+                                                    newLoot = plugin.lootGenerator.createLootItem();
+                                                    slotIndex = random.nextInt(emptySlots.size());
                                                     slotToFill = emptySlots.get(slotIndex);
                                                     chest.getInventory().setItem(slotToFill, newLoot);
                                                     emptySlots.remove(slotIndex);
@@ -292,9 +294,9 @@ public class Events implements Listener {
         Entity caught = event.getCaught();
         if (caught instanceof Item && event.getExpToDrop() > 0) {
             if (plugin.getConfig().getBoolean("loot-sources.fishing.enabled")) {
-                double roll = AcuteLoot.random.nextDouble();
+                double roll = random.nextDouble();
                 double chance = plugin.getConfig().getDouble("loot-sources.fishing.chance") / 100.0;
-                if (AcuteLoot.debug) {
+                if (plugin.debug) {
                     event.getPlayer().sendMessage("Roll: " + roll);
                     event.getPlayer().sendMessage("Raw chance: " + chance);
                 }
@@ -303,12 +305,12 @@ public class Events implements Listener {
                                        .getInventory()
                                        .getItemInMainHand()
                                        .getEnchantmentLevel(Enchantment.LUCK) * .021;
-                if (AcuteLoot.debug)
+                if (plugin.debug)
                     event.getPlayer().sendMessage("Enchanted chance: " + chance);
                 if (roll <= chance) {
-                    AcuteLoot.random.nextInt();
+                    random.nextInt();
                     Item itemEntity = (Item) caught;
-                    ItemStack item = plugin.generator.createLootItem();
+                    ItemStack item = plugin.lootGenerator.createLootItem();
                     // Turns out that unlike all the other trees, BAMBOO_SAPLING is NOT the material type
                     // BAMBOO_SAPLING appears to be the block material ONLY, so will error when applied to an ItemStack
                     // The original material lists include BAMBOO_SAPLING instead of the correct BAMBOO

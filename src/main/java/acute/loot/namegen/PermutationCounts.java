@@ -1,14 +1,14 @@
 package acute.loot.namegen;
 
-import acute.loot.AcuteLoot;
+import base.collections.IntegerChancePool;
 
 public final class PermutationCounts {
 
     private PermutationCounts() {
     }
 
-    public static long totalPermutations() {
-        return AcuteLoot.nameGenChancePool.values().stream().mapToLong(NameGenerator::countNumberOfNames).sum();
+    public static long totalPermutations(final IntegerChancePool<NameGenerator> namePool) {
+        return namePool.values().stream().mapToLong(NameGenerator::countNumberOfNames).sum();
     }
 
     // Try to find, with tolerance epsilon, the number of draws needed to have a `targetChance`

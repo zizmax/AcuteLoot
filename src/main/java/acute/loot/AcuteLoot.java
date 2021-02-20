@@ -25,15 +25,9 @@ import java.util.stream.Stream;
 public final class AcuteLoot extends JavaPlugin {
 
     public static final Random random = new Random();
-    public List<Material> lootMaterials = new ArrayList<>();
-
     static {
         Util.setRandom(random);
     }
-
-    public static final int spigotID = 81899;
-
-    public boolean debug = false;
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
     public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
@@ -41,22 +35,24 @@ public final class AcuteLoot extends JavaPlugin {
     public static final String UP_TO_DATE = "AcuteLoot is up to date: (%s)";
     public static final String UNRELEASED_VERSION = "Version (%s) is more recent than the one publicly available. Dev build?";
     public static final String UPDATE_CHECK_FAILED = "Could not check for updates. Reason: ";
-
-    // Maybe these shouldn't be static?
-    // But, will there ever be multiple AcuteLoot instances?
-    // Maybe access them from getters just in case...
-    public static final IntegerChancePool<LootRarity> rarityChancePool = new IntegerChancePool<>(random);
-    public static final IntegerChancePool<LootSpecialEffect> effectChancePool = new IntegerChancePool<>(random);
-    public static final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
-
-    public static final HashMap<String, Integer> rarityNames = new HashMap<>();
-    public static final HashMap<String, String> effectNames = new HashMap<>();
-    public static final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
-    public LootItemGenerator generator;
+    public static final int spigotID = 81899;
 
     // Minecraft version: Used for materials compatibility
     // Defaults to -1 before the plugin has loaded, useful for tests
     public static int serverVersion = -1;
+
+    public List<Material> lootMaterials = new ArrayList<>();
+
+    public boolean debug = false;
+
+    public final IntegerChancePool<LootRarity> rarityChancePool = new IntegerChancePool<>(random);
+    public final IntegerChancePool<LootSpecialEffect> effectChancePool = new IntegerChancePool<>(random);
+    public final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
+
+    public final HashMap<String, Integer> rarityNames = new HashMap<>();
+    public final HashMap<String, String> effectNames = new HashMap<>();
+    public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
+    public LootItemGenerator lootGenerator;
 
     int configVersion = 1;
 
@@ -117,8 +113,8 @@ public final class AcuteLoot extends JavaPlugin {
         }
 
         //birthdayProblem();
-        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(), 0.5, 0.0001);
-        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations()));
+        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(nameGenChancePool), 0.5, 0.0001);
+        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(nameGenChancePool)));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
 
         getLogger().info("Enabled");
@@ -387,7 +383,7 @@ public final class AcuteLoot extends JavaPlugin {
 
         }
 
-        generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool, AcuteLoot.nameGenChancePool, this);
+        lootGenerator = new LootItemGenerator(rarityChancePool, effectChancePool, nameGenChancePool, this);
     }
 
     public String getUIString(String messageName){
@@ -404,8 +400,8 @@ public final class AcuteLoot extends JavaPlugin {
         getLogger().info("Disabled");
     }
 
-    public static void createMaterials(AcuteLoot plugin, String path) {
-        materials = new ArrayList<>();
+    private void createMaterials(AcuteLoot plugin, String path) {
+        lootMaterials = new ArrayList<>();
         try (Stream<String> stream = Files.lines(Paths.get(path))) {
             List<String> lines = stream.collect(Collectors.toList());
             for (String line : lines) {
@@ -416,7 +412,7 @@ public final class AcuteLoot extends JavaPlugin {
                         if (!material.equals("")) {
                             try {
                                 Material mat = Material.matchMaterial(material);
-                                if (mat != null) materials.add(mat);
+                                if (mat != null) lootMaterials.add(mat);
                                 else {
                                     throw new NullPointerException();
                                 }
@@ -431,6 +427,7 @@ public final class AcuteLoot extends JavaPlugin {
             e.printStackTrace();
             plugin.getLogger().severe("Fatal IO exception while initializing materials.txt. Is file missing or corrupted?");
         }
-        plugin.getLogger().info("Initialized " + materials.size() + " materials");
+        LootMaterial.setGenericMaterialsList(lootMaterials);
+        plugin.getLogger().info("Initialized " + lootMaterials.size() + " materials");
     }
 }
