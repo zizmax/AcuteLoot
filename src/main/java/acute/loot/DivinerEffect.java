@@ -21,39 +21,37 @@ public class DivinerEffect extends AcuteLootSpecialEffect {
     }
 
     @Override
-    public void apply(Event origEvent) {
-        if (plugin.getConfig().getBoolean("effects.diviner.enabled")) {
-            if (origEvent instanceof EntityDamageByEntityEvent) {
-                EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
-                event.setCancelled(true);
-                if (event.getDamager() instanceof Player) {
-                    printStats(analyzeEntity(event.getEntity()), (Player) event.getDamager());
-                }
+    public void applyEffect(Event origEvent) {
+        if (origEvent instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
+            event.setCancelled(true);
+            if (event.getDamager() instanceof Player) {
+                printStats(analyzeEntity(event.getEntity()), (Player) event.getDamager());
             }
-            if (origEvent instanceof PlayerInteractEvent) {
-                PlayerInteractEvent event = (PlayerInteractEvent) origEvent;
-                event.setCancelled(true);
-                Player player = event.getPlayer();
-                int max_beam_distance = plugin.getConfig().getInt("effects.weapons.max-distance");
-                double beam_segment_length = 0.3;
-                final List<Location> locations = Util.getLine(player.getEyeLocation(), max_beam_distance, beam_segment_length);
-                for (Location location : locations) {
-                    final List<Entity> entities = (List<Entity>) player.getWorld().getNearbyEntities(location, 0.2, 0.2, 0.2);
-                    for (int n = 0; n < entities.size(); n++) {
-                        if (entities.get(n).equals(player)) {
-                            entities.remove(entities.get(n));
-                        }
+        }
+        if (origEvent instanceof PlayerInteractEvent) {
+            PlayerInteractEvent event = (PlayerInteractEvent) origEvent;
+            event.setCancelled(true);
+            Player player = event.getPlayer();
+            int max_beam_distance = plugin.getConfig().getInt("effects.weapons.max-distance");
+            double beam_segment_length = 0.3;
+            final List<Location> locations = Util.getLine(player.getEyeLocation(), max_beam_distance, beam_segment_length);
+            for (Location location : locations) {
+                final List<Entity> entities = (List<Entity>) player.getWorld().getNearbyEntities(location, 0.2, 0.2, 0.2);
+                for (int n = 0; n < entities.size(); n++) {
+                    if (entities.get(n).equals(player)) {
+                        entities.remove(entities.get(n));
                     }
+                }
 
-                    if (!location.getBlock().getType().isAir() && location.getBlock().getType() != Material.WATER) {
-                        printStats(analyzeBlock(location.getBlock()), player);
-                        break;
-                    }
+                if (!location.getBlock().getType().isAir() && location.getBlock().getType() != Material.WATER) {
+                    printStats(analyzeBlock(location.getBlock()), player);
+                    break;
+                }
 
-                    if (entities.size() > 0) {
-                        printStats(analyzeEntity(entities.get(0)), player);
-                        break;
-                    }
+                if (entities.size() > 0) {
+                    printStats(analyzeEntity(entities.get(0)), player);
+                    break;
                 }
             }
         }

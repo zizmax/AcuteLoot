@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public final class AcuteLoot extends JavaPlugin {
 
     public static final Random random = new Random();
-    static List<Material> materials = new ArrayList<>();
+    public List<Material> lootMaterials = new ArrayList<>();
 
     static {
         Util.setRandom(random);
@@ -33,7 +33,7 @@ public final class AcuteLoot extends JavaPlugin {
 
     public static final int spigotID = 81899;
 
-    public static boolean debug = false;
+    public boolean debug = false;
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
     public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
@@ -387,7 +387,7 @@ public final class AcuteLoot extends JavaPlugin {
 
         }
 
-        generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool, this);
+        generator = new LootItemGenerator(AcuteLoot.rarityChancePool, AcuteLoot.effectChancePool, AcuteLoot.nameGenChancePool, this);
     }
 
     public String getUIString(String messageName){

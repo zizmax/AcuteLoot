@@ -17,18 +17,16 @@ public class MoonBootsEffect extends AcuteLootSpecialEffect {
     }
 
     @Override
-    public void apply(Event origEvent) {
-        if (plugin.getConfig().getBoolean("effects.moonboots.enabled")) {
-            if (origEvent instanceof PlayerStatisticIncrementEvent) {
-                // Player jumps are not sent to the server. The jump statistic is not a perfect proxy for jumping.
-                PlayerStatisticIncrementEvent event = (PlayerStatisticIncrementEvent) origEvent;
-                Player player = event.getPlayer();
-                if (event.getStatistic() == Statistic.JUMP) {
-                    player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SLIME_JUMP, 2, 1);
-                    player.setVelocity(player.getVelocity().multiply(1.2));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 5, true));
+    public void applyEffect(Event origEvent) {
+        if (origEvent instanceof PlayerStatisticIncrementEvent) {
+            // Player jumps are not sent to the server. The jump statistic is not a perfect proxy for jumping.
+            PlayerStatisticIncrementEvent event = (PlayerStatisticIncrementEvent) origEvent;
+            Player player = event.getPlayer();
+            if (event.getStatistic() == Statistic.JUMP) {
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SLIME_JUMP, 2, 1);
+                player.setVelocity(player.getVelocity().multiply(1.2));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 5, true));
 
-                }
             }
         }
     }

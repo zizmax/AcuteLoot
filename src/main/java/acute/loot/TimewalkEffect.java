@@ -23,60 +23,58 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
     }
 
     @Override
-    public void apply(Event origEvent) {
+    public void applyEffect(Event origEvent) {
         if (origEvent instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
-            if (plugin.getConfig().getBoolean("effects.timewalker.enabled")) {
-                Player player = ((PlayerMoveEvent) origEvent).getPlayer();
-                ItemStack boots = player.getInventory().getBoots();
-                ItemMeta meta = boots.getItemMeta();
-                if (((Damageable) meta).getDamage() > boots.getType().getMaxDurability()) {
-                    player.getInventory().setBoots(null);
-                    player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
-                    return;
+            Player player = ((PlayerMoveEvent) origEvent).getPlayer();
+            ItemStack boots = player.getInventory().getBoots();
+            ItemMeta meta = boots.getItemMeta();
+            if (((Damageable) meta).getDamage() > boots.getType().getMaxDurability()) {
+                player.getInventory().setBoots(null);
+                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
+                return;
+            }
+            ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig().getInt("effects.timewalker.durability-modifier"));
+            boots.setItemMeta(meta);
+            Vector travel = event.getFrom().toVector().subtract(event.getTo().toVector());
+            float direction = player.getLocation().getDirection().angle(travel);
+            int timeWarp = plugin.getConfig().getInt("effects.timewalker.time-shift");
+            int cropGrowthFactor = 1;
+            boolean forward = true;
+            // Only execute effect if moving forwards or backwards, NOT sideways
+            if (direction > 1.65 || direction < 1.2) {
+                if (direction < 1.2) {
+                    timeWarp = -timeWarp;
+                    cropGrowthFactor = -cropGrowthFactor;
+                    forward = false;
                 }
-                ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig().getInt("effects.timewalker.durability-modifier"));
-                boots.setItemMeta(meta);
-                Vector travel = event.getFrom().toVector().subtract(event.getTo().toVector());
-                float direction = player.getLocation().getDirection().angle(travel);
-                int timeWarp = plugin.getConfig().getInt("effects.timewalker.time-shift");
-                int cropGrowthFactor = 1;
-                boolean forward = true;
-                // Only execute effect if moving forwards or backwards, NOT sideways
-                if (direction > 1.65 || direction < 1.2) {
-                    if (direction < 1.2) {
-                        timeWarp = -timeWarp;
-                        cropGrowthFactor = -cropGrowthFactor;
-                        forward = false;
-                    }
-                    if(plugin.getConfig().getBoolean("effects.timewalker.affect-world-time")){
-                        World world = player.getWorld();
-                        world.setTime(world.getTime() + timeWarp);
-                    }
-                    List<Entity> entities = player.getNearbyEntities(30, 5, 30);
-                    for (Entity entity : entities) {
-                        if (entity instanceof org.bukkit.entity.Ageable) {
-                            org.bukkit.entity.Ageable ageable = (org.bukkit.entity.Ageable) entity;
-                            double roll = AcuteLoot.random.nextDouble();
-                            double chance = 20 / 100.0;
-                            if (roll < chance) {
-                                if(ageable.getAge() < 0 || (ageable.getAge() >= 0 && timeWarp < 0)) {
-                                    playGrowthParticles(forward, entity.getLocation());
-                                    ageable.setAge(ageable.getAge() + timeWarp);
-                                }
+                if(plugin.getConfig().getBoolean("effects.timewalker.affect-world-time")){
+                    World world = player.getWorld();
+                    world.setTime(world.getTime() + timeWarp);
+                }
+                List<Entity> entities = player.getNearbyEntities(30, 5, 30);
+                for (Entity entity : entities) {
+                    if (entity instanceof org.bukkit.entity.Ageable) {
+                        org.bukkit.entity.Ageable ageable = (org.bukkit.entity.Ageable) entity;
+                        double roll = AcuteLoot.random.nextDouble();
+                        double chance = 20 / 100.0;
+                        if (roll < chance) {
+                            if(ageable.getAge() < 0 || (ageable.getAge() >= 0 && timeWarp < 0)) {
+                                playGrowthParticles(forward, entity.getLocation());
+                                ageable.setAge(ageable.getAge() + timeWarp);
                             }
                         }
                     }
-                    List<Block> blocks = getNearbyBlocks(player.getLocation(), 20, 5, 20);
-                    for (Block block : blocks) {
-                        if (block.getBlockData() instanceof org.bukkit.block.data.Ageable) {
-                            Ageable ageable = (Ageable) block.getBlockData();
-                            double roll = AcuteLoot.random.nextDouble();
-                            double chance = 10 / 100.0;
-                            if (((ageable.getAge() < ageable.getMaximumAge() && forward) || (ageable.getAge() > 0 && !forward)) && roll < chance) {
-                                ageable.setAge(ageable.getAge() + cropGrowthFactor);
-                                block.setBlockData(ageable);
-                            }
+                }
+                List<Block> blocks = getNearbyBlocks(player.getLocation(), 20, 5, 20);
+                for (Block block : blocks) {
+                    if (block.getBlockData() instanceof org.bukkit.block.data.Ageable) {
+                        Ageable ageable = (Ageable) block.getBlockData();
+                        double roll = AcuteLoot.random.nextDouble();
+                        double chance = 10 / 100.0;
+                        if (((ageable.getAge() < ageable.getMaximumAge() && forward) || (ageable.getAge() > 0 && !forward)) && roll < chance) {
+                            ageable.setAge(ageable.getAge() + cropGrowthFactor);
+                            block.setBlockData(ageable);
                         }
                     }
                 }

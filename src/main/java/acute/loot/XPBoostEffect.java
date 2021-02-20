@@ -13,20 +13,18 @@ public class XPBoostEffect extends AcuteLootSpecialEffect {
     }
 
     @Override
-    public void apply(Event origEvent) {
+    public void applyEffect(Event origEvent) {
         if (origEvent instanceof PlayerExpChangeEvent) {
-            if (plugin.getConfig().getBoolean("effects.xp-boost.enabled")) {
-                PlayerExpChangeEvent event = (PlayerExpChangeEvent) origEvent;
-                final Player player = event.getPlayer();
-                final int xpBoostAmount = plugin.getConfig().getInt("effects.xp-boost.boost-amount");
-                final int eventXpAmount = event.getAmount();
-                if (AcuteLoot.debug) {
-                    player.sendMessage("Original XP: " + eventXpAmount);
-                    player.sendMessage("Final XP: " + (eventXpAmount + xpBoostAmount));
-                    player.sendMessage("XP boosted by " + xpBoostAmount);
-                }
-                event.setAmount(eventXpAmount + xpBoostAmount);
+            PlayerExpChangeEvent event = (PlayerExpChangeEvent) origEvent;
+            final Player player = event.getPlayer();
+            final int xpBoostAmount = plugin.getConfig().getInt("effects.xp-boost.boost-amount");
+            final int eventXpAmount = event.getAmount();
+            if (plugin.debug) {
+                player.sendMessage("Original XP: " + eventXpAmount);
+                player.sendMessage("Final XP: " + (eventXpAmount + xpBoostAmount));
+                player.sendMessage("XP boosted by " + xpBoostAmount);
             }
+            event.setAmount(eventXpAmount + xpBoostAmount);
         }
     }
 }
