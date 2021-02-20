@@ -5,11 +5,12 @@ import base.collections.IntegerChancePool;
 import base.util.Util;
 import org.bstats.bukkit.Metrics;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -67,7 +68,8 @@ public final class AcuteLoot extends JavaPlugin {
         getLogger().info("+----------------------------------------------------------------+");
 
         // Register events and commands
-        getServer().getPluginManager().registerEvents(new Events(this), this);
+        getServer().getPluginManager().registerEvents(new EffectEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new LootCreationEventListener(this), this);
         getCommand("acuteloot").setExecutor(new Commands(this));
 
         // Save/read config.yml
@@ -393,6 +395,21 @@ public final class AcuteLoot extends JavaPlugin {
             getLogger().warning("Config message error at: msg." + messageName);
             return ChatColor.DARK_RED + "[" +ChatColor.BLACK + "Config Error" + ChatColor.DARK_RED+ "]";
         }
+    }
+
+    public String getLootCode(ItemStack item) {
+        if (item == null || item.getType().isAir()) return null;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return null;
+        NamespacedKey key = new NamespacedKey(this, "lootCodeKey");
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        if (container.has(key, PersistentDataType.STRING)) {
+            String foundValue = container.get(key, PersistentDataType.STRING);
+            if (foundValue != null && foundValue.contains("#AL")) {
+                return foundValue;
+            }
+        }
+        return null;
     }
 
     @Override

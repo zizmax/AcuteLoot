@@ -141,7 +141,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if (Events.getLootCode(plugin, item) == null) {
+            if (plugin.getLootCode(item) == null) {
                 if(args.length == 1) {
                     final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
                     if(lootMaterial == LootMaterial.UNKNOWN) {
@@ -187,7 +187,7 @@ public class Commands implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         ItemStack item = player.getInventory().getItemInMainHand();
         if (item.getType() != Material.AIR) {
-            if (Events.getLootCode(plugin, item) != null) {
+            if (plugin.getLootCode(item) != null) {
                 ItemMeta meta = item.getItemMeta();
                 meta.setLore(new ArrayList<>());
                 meta.setDisplayName(null);
@@ -206,7 +206,7 @@ public class Commands implements CommandExecutor, TabCompleter {
     private void statsCommand(CommandSender sender) {
         Player player = (Player) sender;
         if (player.getInventory().getItemInMainHand().getType() != Material.AIR) {
-            String lootCode = Events.getLootCode(plugin, player.getInventory().getItemInMainHand());
+            String lootCode = plugin.getLootCode(player.getInventory().getItemInMainHand());
             if (lootCode != null) {
                 player.sendMessage(AcuteLoot.CHAT_PREFIX + "Loot code: " + ChatColor.AQUA + lootCode);
             } else {

@@ -79,7 +79,7 @@ public class API {
      * @return the LootItem stored on the provided ItemStack, if any, else Empty
      */
     public Optional<LootItem> getLootItem(final ItemStack itemStack) {
-        return Optional.ofNullable(Events.getLootCode(acuteLoot, itemStack)).map(LootItem::new);
+        return Optional.ofNullable(acuteLoot.getLootCode(itemStack)).map(LootItem::new);
     }
 
     /**

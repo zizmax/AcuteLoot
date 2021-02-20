@@ -104,7 +104,7 @@ public class SalvagerGUI implements Listener {
                     commandsToRun = new ArrayList<>();
                     slotsToGive = new ArrayList<>();
                     if(inv.getItem(13).getAmount() == 1) {
-                        if (Events.getLootCode(plugin, inv.getItem(13)) != null) {
+                        if (plugin.getLootCode(inv.getItem(13)) != null) {
                             for (String key : plugin.getConfig().getConfigurationSection("salvager-drops").getKeys(false)) {
                                 int id;
                                 try {
@@ -119,7 +119,7 @@ public class SalvagerGUI implements Listener {
                                 }
 
                             }
-                            LootItem lootItem = new LootItem(Events.getLootCode(plugin, inv.getItem(13)));
+                            LootItem lootItem = new LootItem(plugin.getLootCode(inv.getItem(13)));
                             String node = "salvager-drops." + lootItem.rarityRaw() + ".";
                             if (plugin.debug)
                                 player.sendMessage(String.valueOf(plugin.getConfig().getConfigurationSection(node).getKeys(false)));
