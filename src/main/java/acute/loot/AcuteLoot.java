@@ -6,6 +6,7 @@ import base.util.Util;
 import org.bstats.bukkit.Metrics;
 
 import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,6 +32,7 @@ public final class AcuteLoot extends JavaPlugin {
     }
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
+    public static final String PERM_DENIED_MSG = CHAT_PREFIX + "You do not have permission to do this";
     public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
     public static final String UPDATE_AVAILABLE = "Update available! Download v%s ";
     public static final String UP_TO_DATE = "AcuteLoot is up to date: (%s)";
@@ -446,5 +448,10 @@ public final class AcuteLoot extends JavaPlugin {
         }
         LootMaterial.setGenericMaterialsList(lootMaterials);
         plugin.getLogger().info("Initialized " + lootMaterials.size() + " materials");
+    }
+
+    public boolean hasPermission(CommandSender sender, String node) {
+        return (!getConfig().getBoolean("use-permissions") && sender.isOp())
+                || (getConfig().getBoolean("use-permissions") && sender.hasPermission(node));
     }
 }
