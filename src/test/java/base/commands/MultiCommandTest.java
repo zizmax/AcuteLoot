@@ -131,6 +131,13 @@ public class MultiCommandTest {
         assertThat(playerCommandHandler.hits, is(2));
         assertThat(consoleCommandHandler.hits, is(2));
         assertThat(genericCommandHandler.hits, is(3));
+
+        multiCommand.setNoArgsCommand(genericCommandHandler);
+        assertThat(mockCommandSend(multiCommand, player), is(true));
+        assertThat(mockCommandSend(multiCommand, console), is(true));
+        assertThat(playerCommandHandler.hits, is(2));
+        assertThat(consoleCommandHandler.hits, is(2));
+        assertThat(genericCommandHandler.hits, is(5));
     }
 
     private boolean mockCommandSend(final CommandExecutor executor, final CommandSender commandSender, final String... args) {

@@ -18,6 +18,8 @@ public class MultiCommand implements CommandExecutor {
     private final Map<String, CommandHandler<ConsoleCommandSender>> consoleSubcommands = new HashMap<>();
     private final Map<String, CommandHandler<CommandSender>> genericSubcommands = new HashMap<>();
 
+    private CommandHandler<CommandSender> noArgsCommand = null;
+
     private String cannotBeUsedByPlayer = "This command cannot be used by a player.";
     private String cannotBeUsedByConsole = "This command cannot be used by the console.";
     private String unknownCommand = "Unknown command.";
@@ -43,6 +45,10 @@ public class MultiCommand implements CommandExecutor {
         genericSubcommands.put(subcommand, commandHandler);
     }
 
+    public void setNoArgsCommand(final CommandHandler<CommandSender> noArgsCommand) {
+        this.noArgsCommand = noArgsCommand;
+    }
+
     private void precheck(final String subcommand,
                           final CommandHandler<?> commandHandler,
                           final Map<String, ?> primaryMap) {
@@ -59,10 +65,15 @@ public class MultiCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            return false;
+            if (noArgsCommand != null) {
+                noArgsCommand.handle(commandSender, args);
+                return true;
+            } else {
+                return false;
+            }
         }
 
-        final String subcommand = args[0];
+        final String subcommand = args[0].toLowerCase();
         final String[] realArgs = Arrays.copyOfRange(args, 1, args.length);
         try {
             final Dispatcher visitor = new Dispatcher(playerSubcommands.get(subcommand),
