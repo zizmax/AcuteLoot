@@ -1,6 +1,5 @@
 package acute.loot;
 
-import base.util.Checks;
 import org.bukkit.event.Event;
 
 import java.util.List;
@@ -18,7 +17,7 @@ public abstract class AcuteLootSpecialEffect extends LootSpecialEffect {
     public AcuteLootSpecialEffect(String name, String ns, int id, List<LootMaterial> validMaterials, AcuteLoot plugin) {
         super(name, ns, id, validMaterials, plugin.getConfig().getString("effects." + name.replace("_", ".") + ".name"));
         this.plugin = Objects.requireNonNull(plugin);
-        this.effectEnabledConfigKey = Checks.requireNonEmpty(plugin.getConfig().getString("effects." + name.replace("_", ".") + ".enabled"));
+        this.effectEnabledConfigKey = "effects." + name.replace("_", ".") + ".enabled";
     }
 
     @Override
