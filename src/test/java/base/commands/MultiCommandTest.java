@@ -153,7 +153,9 @@ public class MultiCommandTest {
         public void handle(T sender, String[] args) {
             hits++;
             lastArgs.clear();
-            lastArgs.addAll(Arrays.asList(args));
+            if (args.length > 0) {
+                lastArgs.addAll(Arrays.asList(Arrays.copyOfRange(args, 1, args.length)));
+            }
         }
     }
 

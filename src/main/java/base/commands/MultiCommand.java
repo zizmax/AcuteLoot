@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -74,12 +73,11 @@ public class MultiCommand implements CommandExecutor {
         }
 
         final String subcommand = args[0].toLowerCase();
-        final String[] realArgs = Arrays.copyOfRange(args, 1, args.length);
         try {
             final Dispatcher visitor = new Dispatcher(playerSubcommands.get(subcommand),
                                                 consoleSubcommands.get(subcommand),
                                                 genericSubcommands.get(subcommand),
-                                                realArgs);
+                                                args);
             if (commandSender instanceof Player) {
                 visitor.dispatch((Player) commandSender);
             } else if (commandSender instanceof ConsoleCommandSender) {
