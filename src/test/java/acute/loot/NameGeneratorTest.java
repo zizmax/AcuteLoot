@@ -1,6 +1,7 @@
 package acute.loot;
 
 import acute.loot.namegen.*;
+import base.collections.IntegerChancePool;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -201,12 +202,12 @@ public class NameGeneratorTest {
         assertThat(uppercaser.countNumberOfNames(), is(2L));
         assertThat(compoundUppercaser.countNumberOfNames(), is(compoundGenerator.countNumberOfNames()));
 
-        AcuteLoot.nameGenChancePool.add(constantGenerator, 1);
-        AcuteLoot.nameGenChancePool.add(listGenerator, 1);
-        AcuteLoot.nameGenChancePool.add(repeatedGenerator, 1);
-        AcuteLoot.nameGenChancePool.add(compoundGenerator, 1);
-        assertThat(PermutationCounts.totalPermutations(), is(1 + 2 + 14 + 28L));
-        AcuteLoot.nameGenChancePool.clear();
+        final IntegerChancePool<NameGenerator> namePool = new IntegerChancePool<>();
+        namePool.add(constantGenerator, 1);
+        namePool.add(listGenerator, 1);
+        namePool.add(repeatedGenerator, 1);
+        namePool.add(compoundGenerator, 1);
+        assertThat(PermutationCounts.totalPermutations(namePool), is(1 + 2 + 14 + 28L));
     }
 
 }

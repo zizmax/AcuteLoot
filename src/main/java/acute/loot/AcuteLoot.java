@@ -5,10 +5,12 @@ import base.collections.IntegerChancePool;
 import base.util.Util;
 import org.bstats.bukkit.Metrics;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Particle;
+import org.bukkit.*;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
@@ -18,6 +20,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class AcuteLoot extends JavaPlugin {
 
@@ -26,31 +30,30 @@ public final class AcuteLoot extends JavaPlugin {
         Util.setRandom(random);
     }
 
-    public static final int spigotID = 81899;
-
-    public static boolean debug = false;
-
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
     public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
     public static final String UPDATE_AVAILABLE = "Update available! Download v%s ";
     public static final String UP_TO_DATE = "AcuteLoot is up to date: (%s)";
     public static final String UNRELEASED_VERSION = "Version (%s) is more recent than the one publicly available. Dev build?";
     public static final String UPDATE_CHECK_FAILED = "Could not check for updates. Reason: ";
-
-    // Maybe these shouldn't be static?
-    // But, will there ever be multiple AcuteLoot instances?
-    // Maybe access them from getters just in case...
-    public static final IntegerChancePool<LootRarity> rarityChancePool = new IntegerChancePool<>(random);
-    public static final IntegerChancePool<LootSpecialEffect> effectChancePool = new IntegerChancePool<>(random);
-    public static final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
-
-    public static final HashMap<String, Integer> rarityNames = new HashMap<>();
-    public static final HashMap<String, String> effectNames = new HashMap<>();
-    public static final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
+    public static final int spigotID = 81899;
 
     // Minecraft version: Used for materials compatibility
     // Defaults to -1 before the plugin has loaded, useful for tests
     public static int serverVersion = -1;
+
+    public List<Material> lootMaterials = new ArrayList<>();
+
+    public boolean debug = false;
+
+    public final IntegerChancePool<LootRarity> rarityChancePool = new IntegerChancePool<>(random);
+    public final IntegerChancePool<LootSpecialEffect> effectChancePool = new IntegerChancePool<>(random);
+    public final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
+
+    public final HashMap<String, Integer> rarityNames = new HashMap<>();
+    public final HashMap<String, String> effectNames = new HashMap<>();
+    public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
+    public LootItemGenerator lootGenerator;
 
     int configVersion = 1;
 
@@ -65,7 +68,8 @@ public final class AcuteLoot extends JavaPlugin {
         getLogger().info("+----------------------------------------------------------------+");
 
         // Register events and commands
-        getServer().getPluginManager().registerEvents(new Events(this), this);
+        getServer().getPluginManager().registerEvents(new EffectEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new LootCreationEventListener(this), this);
         getCommand("acuteloot").setExecutor(new Commands(this));
 
         // Save/read config.yml
@@ -111,8 +115,8 @@ public final class AcuteLoot extends JavaPlugin {
         }
 
         //birthdayProblem();
-        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(), 0.5, 0.0001);
-        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations()));
+        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(nameGenChancePool), 0.5, 0.0001);
+        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(nameGenChancePool)));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
 
         getLogger().info("Enabled");
@@ -227,7 +231,7 @@ public final class AcuteLoot extends JavaPlugin {
             }
         }
         // Initialize materials array
-        Events.createMaterials(this, "plugins/AcuteLoot/" + fileName + ".txt");
+        createMaterials(this, "plugins/AcuteLoot/" + fileName + ".txt");
 
         // Set up name generators
 
@@ -380,6 +384,8 @@ public final class AcuteLoot extends JavaPlugin {
             */
 
         }
+
+        lootGenerator = new LootItemGenerator(rarityChancePool, effectChancePool, nameGenChancePool, this);
     }
 
     public String getUIString(String messageName){
@@ -391,8 +397,54 @@ public final class AcuteLoot extends JavaPlugin {
         }
     }
 
+    public String getLootCode(ItemStack item) {
+        if (item == null || item.getType().isAir()) return null;
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return null;
+        NamespacedKey key = new NamespacedKey(this, "lootCodeKey");
+        PersistentDataContainer container = meta.getPersistentDataContainer();
+        if (container.has(key, PersistentDataType.STRING)) {
+            String foundValue = container.get(key, PersistentDataType.STRING);
+            if (foundValue != null && foundValue.contains("#AL")) {
+                return foundValue;
+            }
+        }
+        return null;
+    }
+
     @Override
     public void onDisable() {
         getLogger().info("Disabled");
+    }
+
+    private void createMaterials(AcuteLoot plugin, String path) {
+        lootMaterials = new ArrayList<>();
+        try (Stream<String> stream = Files.lines(Paths.get(path))) {
+            List<String> lines = stream.collect(Collectors.toList());
+            for (String line : lines) {
+                if (!line.contains("#") && !line.trim().equals("")) {
+                    String[] materialStrings = line.split(",");
+                    for (String material : materialStrings) {
+                        material = material.trim();
+                        if (!material.equals("")) {
+                            try {
+                                Material mat = Material.matchMaterial(material);
+                                if (mat != null) lootMaterials.add(mat);
+                                else {
+                                    throw new NullPointerException();
+                                }
+                            } catch (IllegalArgumentException | NullPointerException e) {
+                                plugin.getLogger().warning(material + " not valid material for server version: " + Bukkit.getBukkitVersion() + ". Skipping...");
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            plugin.getLogger().severe("Fatal IO exception while initializing materials.txt. Is file missing or corrupted?");
+        }
+        LootMaterial.setGenericMaterialsList(lootMaterials);
+        plugin.getLogger().info("Initialized " + lootMaterials.size() + " materials");
     }
 }

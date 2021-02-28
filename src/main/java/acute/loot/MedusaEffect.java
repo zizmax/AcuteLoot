@@ -22,60 +22,58 @@ public class MedusaEffect extends AcuteLootSpecialEffect{
     }
 
     @Override
-    public void apply(Event origEvent) {
-        if (plugin.getConfig().getBoolean("effects.medusa.enabled")) {
-            if (origEvent instanceof EntityDamageByEntityEvent) {
-                EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
-                if (event.getDamager() instanceof Arrow && event.getEntity() instanceof LivingEntity) {
-                    LivingEntity livingEntity = (LivingEntity) event.getEntity();
-                    Arrow arrow = (Arrow) event.getDamager();
-                    event.getEntity().playEffect(EntityEffect.ENTITY_POOF);
-                    World world = event.getEntity().getWorld();
-                    world.playSound(event.getEntity().getLocation(), Sound.BLOCK_STONE_PLACE, 2, 1);
-                    Material[] stoneBlockTypes;
-                    if (world.getEnvironment().equals(World.Environment.NETHER)) {
-                        if (AcuteLoot.serverVersion > 15)
-                            stoneBlockTypes = new Material[]{Material.BLACKSTONE, Material.CRACKED_POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE};
-                        else
-                            stoneBlockTypes = new Material[]{Material.GRAVEL, Material.SOUL_SAND};
+    public void applyEffect(Event origEvent) {
+        if (origEvent instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
+            if (event.getDamager() instanceof Arrow && event.getEntity() instanceof LivingEntity) {
+                LivingEntity livingEntity = (LivingEntity) event.getEntity();
+                Arrow arrow = (Arrow) event.getDamager();
+                event.getEntity().playEffect(EntityEffect.ENTITY_POOF);
+                World world = event.getEntity().getWorld();
+                world.playSound(event.getEntity().getLocation(), Sound.BLOCK_STONE_PLACE, 2, 1);
+                Material[] stoneBlockTypes;
+                if (world.getEnvironment().equals(World.Environment.NETHER)) {
+                    if (AcuteLoot.serverVersion > 15)
+                        stoneBlockTypes = new Material[]{Material.BLACKSTONE, Material.CRACKED_POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE};
+                    else
+                        stoneBlockTypes = new Material[]{Material.GRAVEL, Material.SOUL_SAND};
 
-                    } else if (world.getEnvironment().equals(World.Environment.THE_END)) {
-                        stoneBlockTypes = new Material[]{Material.END_STONE};
-                    } else {
-                        stoneBlockTypes = new Material[]{Material.COBBLESTONE, Material.MOSSY_COBBLESTONE};
-                    }
+                } else if (world.getEnvironment().equals(World.Environment.THE_END)) {
+                    stoneBlockTypes = new Material[]{Material.END_STONE};
+                } else {
+                    stoneBlockTypes = new Material[]{Material.COBBLESTONE, Material.MOSSY_COBBLESTONE};
+                }
 
-                    if (event.getEntity() instanceof Player) {
-                        Player player = (Player) event.getEntity();
-                        if (plugin.getConfig().getBoolean("effects.medusa.affect-players")) {
-                            player.setMetadata("turnedToStone", new FixedMetadataValue(plugin, true));
-                            player.setHealth(0);
-                        } else return;
-                    } else {
-                        if (plugin.getConfig().getBoolean("effects.medusa.drop-loot")) {
-                            for (ItemStack item : livingEntity.getEquipment().getArmorContents()) {
-                                if (item != null && !item.getType().isAir())
-                                    livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), item);
-                            }
-                            ItemStack mainHand = livingEntity.getEquipment().getItemInMainHand();
-                            ItemStack offHand = livingEntity.getEquipment().getItemInOffHand();
-                            if (mainHand != null && !mainHand.getType().isAir()) {
-                                livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), mainHand);
-                            }
-                            if (offHand != null && !offHand.getType().isAir()) {
-                                livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), offHand);
-                            }
+                if (event.getEntity() instanceof Player) {
+                    Player player = (Player) event.getEntity();
+                    if (plugin.getConfig().getBoolean("effects.medusa.affect-players")) {
+                        player.setMetadata("turnedToStone", new FixedMetadataValue(plugin, true));
+                        player.setHealth(0);
+                    } else return;
+                } else {
+                    if (plugin.getConfig().getBoolean("effects.medusa.drop-loot")) {
+                        for (ItemStack item : livingEntity.getEquipment().getArmorContents()) {
+                            if (item != null && !item.getType().isAir())
+                                livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), item);
                         }
-                        livingEntity.remove();
-                    }
-
-                    arrow.remove();
-                    event.setCancelled(true);
-                    List<Block> blocks = getMobBoundingBlocks(event.getEntity().getLocation(), (int) Math.round(event.getEntity().getBoundingBox().getWidthX() / 2), (int) Math.round(event.getEntity().getBoundingBox().getHeight() / 2), (int) Math.round(event.getEntity().getBoundingBox().getWidthZ() / 2));
-                    for (Block block : blocks) {
-                        if (block.getType().equals(Material.AIR) || block.isLiquid() || !block.getType().isSolid()) {
-                            block.setType(stoneBlockTypes[AcuteLoot.random.nextInt(stoneBlockTypes.length)]);
+                        ItemStack mainHand = livingEntity.getEquipment().getItemInMainHand();
+                        ItemStack offHand = livingEntity.getEquipment().getItemInOffHand();
+                        if (mainHand != null && !mainHand.getType().isAir()) {
+                            livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), mainHand);
                         }
+                        if (offHand != null && !offHand.getType().isAir()) {
+                            livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), offHand);
+                        }
+                    }
+                    livingEntity.remove();
+                }
+
+                arrow.remove();
+                event.setCancelled(true);
+                List<Block> blocks = getMobBoundingBlocks(event.getEntity().getLocation(), (int) Math.round(event.getEntity().getBoundingBox().getWidthX() / 2), (int) Math.round(event.getEntity().getBoundingBox().getHeight() / 2), (int) Math.round(event.getEntity().getBoundingBox().getWidthZ() / 2));
+                for (Block block : blocks) {
+                    if (block.getType().equals(Material.AIR) || block.isLiquid() || !block.getType().isSolid()) {
+                        block.setType(stoneBlockTypes[AcuteLoot.random.nextInt(stoneBlockTypes.length)]);
                     }
                 }
             }

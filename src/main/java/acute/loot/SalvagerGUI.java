@@ -95,7 +95,7 @@ public class SalvagerGUI implements Listener {
         final ItemStack currentItem = event.getCurrentItem();
         if (currentItem == null || currentItem.getType() == Material.AIR) return;
         final Player player = (Player) event.getWhoClicked();
-        if (AcuteLoot.debug) player.sendMessage("Clicked slot: " + event.getRawSlot());
+        if (plugin.debug) player.sendMessage("Clicked slot: " + event.getRawSlot());
 
         if (event.getRawSlot() == 22){
             event.setCancelled(true);
@@ -104,7 +104,7 @@ public class SalvagerGUI implements Listener {
                     commandsToRun = new ArrayList<>();
                     slotsToGive = new ArrayList<>();
                     if(inv.getItem(13).getAmount() == 1) {
-                        if (Events.getLootCode(plugin, inv.getItem(13)) != null) {
+                        if (plugin.getLootCode(inv.getItem(13)) != null) {
                             for (String key : plugin.getConfig().getConfigurationSection("salvager-drops").getKeys(false)) {
                                 int id;
                                 try {
@@ -119,14 +119,14 @@ public class SalvagerGUI implements Listener {
                                 }
 
                             }
-                            LootItem lootItem = new LootItem(Events.getLootCode(plugin, inv.getItem(13)));
+                            LootItem lootItem = new LootItem(plugin.getLootCode(inv.getItem(13)));
                             String node = "salvager-drops." + lootItem.rarityRaw() + ".";
-                            if (AcuteLoot.debug)
+                            if (plugin.debug)
                                 player.sendMessage(String.valueOf(plugin.getConfig().getConfigurationSection(node).getKeys(false)));
                             for (String outputID : plugin.getConfig().getConfigurationSection(node).getKeys(false)) {
                                 String outputIDNode = node + outputID + ".";
-                                if (AcuteLoot.debug) plugin.getLogger().info("Output ID: " + outputID);
-                                if (AcuteLoot.debug) plugin.getLogger().info("OutputIDNode: " + outputIDNode);
+                                if (plugin.debug) plugin.getLogger().info("Output ID: " + outputID);
+                                if (plugin.debug) plugin.getLogger().info("OutputIDNode: " + outputIDNode);
                                 List<String> materialStrings = plugin.getConfig().getStringList(outputIDNode + "loot-types");
                                 for (String materialString : materialStrings) {
                                     materialString = materialString.toUpperCase();
@@ -135,9 +135,9 @@ public class SalvagerGUI implements Listener {
                                         if (LootMaterial.lootMaterialForMaterial(inv.getItem(13).getType()).name().equals(materialString)) {
                                             for (String dropID : plugin.getConfig().getConfigurationSection(outputIDNode + "drops.").getKeys(false)) {
                                                 String dropIDNode = outputIDNode + "drops." + dropID + ".";
-                                                if (AcuteLoot.debug)
+                                                if (plugin.debug)
                                                     plugin.getLogger().info("dropIDNode: " + dropIDNode);
-                                                if (AcuteLoot.debug)
+                                                if (plugin.debug)
                                                     plugin.getLogger().info("Material String: " + plugin.getConfig().getString(dropIDNode + "material"));
                                                 Material material = base.util.Util.validateMaterial(plugin.getConfig().getString(dropIDNode + "material"));
                                                 if (material != null) {
@@ -146,7 +146,7 @@ public class SalvagerGUI implements Listener {
                                                     if (plugin.getConfig().contains(dropIDNode + "commands")) {
                                                         List<String> commands = plugin.getConfig().getStringList(dropIDNode + "commands");
                                                         for (String command : commands) {
-                                                            if (AcuteLoot.debug)
+                                                            if (plugin.debug)
                                                                 plugin.getLogger().info("Found command: " + command);
                                                             commandsToRun.add(command);
                                                         }
@@ -199,7 +199,7 @@ public class SalvagerGUI implements Listener {
                     }
                 }
                 for (String command : commandsToRun){
-                    if (AcuteLoot.debug) plugin.getLogger().info("AcuteLoot dispatching: " + command);
+                    if (plugin.debug) plugin.getLogger().info("AcuteLoot dispatching: " + command);
                     String parsedCommand = command.replace("{PLAYER}", player.getName());
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(), parsedCommand);
                 }

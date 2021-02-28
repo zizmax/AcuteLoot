@@ -56,8 +56,8 @@ public class API {
             throw new AcuteLootException("Effect namespace does not match API namespace");
         }
         LootSpecialEffect.registerEffect(effect);
-        AcuteLoot.effectChancePool.add(effect, chance);
-        AcuteLoot.effectNames.put(effect.getName(), effect.effectId().toString());
+        acuteLoot.effectChancePool.add(effect, chance);
+        acuteLoot.effectNames.put(effect.getName(), effect.effectId().toString());
         registeredEffects.add(effect);
     }
 
@@ -67,8 +67,8 @@ public class API {
      */
     public void unregisterPluginEffects() {
         registeredEffects.forEach(LootSpecialEffect::unregisterEffect);
-        registeredEffects.forEach(effect -> AcuteLoot.effectNames.remove(effect.getName()));
-        AcuteLoot.effectChancePool.removeWithPredicate(e -> !registeredEffects.contains(e));
+        registeredEffects.forEach(effect -> acuteLoot.effectNames.remove(effect.getName()));
+        acuteLoot.effectChancePool.removeWithPredicate(e -> !registeredEffects.contains(e));
         registeredEffects.clear();
     }
 
@@ -79,7 +79,7 @@ public class API {
      * @return the LootItem stored on the provided ItemStack, if any, else Empty
      */
     public Optional<LootItem> getLootItem(final ItemStack itemStack) {
-        return Optional.ofNullable(Events.getLootCode(acuteLoot, itemStack)).map(LootItem::new);
+        return Optional.ofNullable(acuteLoot.getLootCode(itemStack)).map(LootItem::new);
     }
 
     /**
