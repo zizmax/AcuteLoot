@@ -7,9 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A MultiCommand is a CommandExecutor that will delegate to a CommandHandler
@@ -166,6 +164,22 @@ public class MultiCommand implements CommandExecutor {
      */
     public void setUnknownCommand(String unknownCommand) {
         this.unknownCommand = Objects.requireNonNull(unknownCommand);
+    }
+
+    /**
+     * Return a list of all registered subcommands valid for the give sender.
+     * @param sender the sender for whom subcommands will be returned
+     * @return a list of all registered subcommands valid for the given sender
+     */
+    public List<String> getSubcommandsForSender(final CommandSender sender) {
+        Objects.requireNonNull(sender);
+        final List<String> subcommands = new ArrayList<>(genericSubcommands.keySet());
+        if (sender instanceof Player) {
+            subcommands.addAll(playerSubcommands.keySet());
+        } else if (sender instanceof ConsoleCommandSender) {
+            subcommands.addAll(consoleSubcommands.keySet());
+        }
+        return subcommands;
     }
 
     // Helper class for dispatching to the correct delegate

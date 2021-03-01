@@ -1,9 +1,7 @@
 package base.commands;
 
 import base.util.Mock;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -142,6 +140,56 @@ public class MultiCommandTest {
 
     private boolean mockCommandSend(final CommandExecutor executor, final CommandSender commandSender, final String... args) {
         return executor.onCommand(commandSender, null, null, args);
+    }
+
+    @Test
+    @DisplayName("TabCompletedMultiCommand correct")
+    public void tabCompletedMultiCommandCorrect() {
+        final TabCompletedMultiCommand multiCommand = new TabCompletedMultiCommand();
+
+        final CommandHandler<Player> playerCommandHandler = (sender, args) -> {};
+        final CommandHandler<ConsoleCommandSender> consoleCommandHandler = (sender, args) -> {};
+        final CommandHandler<CommandSender> genericCommandHandler = (sender, args) -> {};
+
+        multiCommand.registerPlayerSubcommand("player", playerCommandHandler);
+        multiCommand.registerPlayerSubcommand("player2", playerCommandHandler);
+        multiCommand.registerConsoleSubcommand("console", consoleCommandHandler);
+        multiCommand.registerConsoleSubcommand("console2", consoleCommandHandler);
+        multiCommand.registerPlayerSubcommand("player-and-console", playerCommandHandler);
+        multiCommand.registerConsoleSubcommand("player-and-console", consoleCommandHandler);
+        multiCommand.registerGenericSubcommand("generic", genericCommandHandler);
+
+        final Player player = Mock.mockPlayer();
+        final ConsoleCommandSender console = Mock.mockConsoleCommandSender();
+
+        assertThat(mockTabComplete(multiCommand, player), containsInAnyOrder("player", "player2", "player-and-console", "generic"));
+        assertThat(mockTabComplete(multiCommand, console), containsInAnyOrder("console", "console2", "player-and-console", "generic"));
+        assertThat(mockTabComplete(multiCommand, player, ""), containsInAnyOrder("player", "player2", "player-and-console", "generic"));
+        assertThat(mockTabComplete(multiCommand, console, ""), containsInAnyOrder("console", "console2", "player-and-console", "generic"));
+        assertThat(mockTabComplete(multiCommand, player, "pl"), containsInAnyOrder("player", "player2", "player-and-console"));
+        assertThat(mockTabComplete(multiCommand, console, "g"), containsInAnyOrder("generic"));
+        assertThat(mockTabComplete(multiCommand, console, "foo"), emptyIterable());
+
+        final TabCompleter playerTabCompleter = (commandSender, command, s, strings) -> Arrays.asList("foo", "bar", "baz");
+        final TabCompleter consoleTabCompleter = (commandSender, command, s, strings) -> null;
+        final TabCompleter genericTabCompleter = (commandSender, command, s, strings) -> Arrays.asList("hello_world!");
+
+        multiCommand.registerSubcompletion("player2", playerTabCompleter);
+        multiCommand.registerSubcompletion("console", consoleTabCompleter);
+        multiCommand.registerSubcompletion("generic", genericTabCompleter);
+        multiCommand.registerSubcompletion("player-and-console", genericTabCompleter);
+
+        assertThat(mockTabComplete(multiCommand, player, "player", ""), nullValue());
+        assertThat(mockTabComplete(multiCommand, player, "player2", ""), containsInAnyOrder("foo", "bar", "baz"));
+        assertThat(mockTabComplete(multiCommand, player, "player2", "test"), containsInAnyOrder("foo", "bar", "baz")); // Our test tab completer doesn't consider it's args..
+        assertThat(mockTabComplete(multiCommand, player, "console", ""), nullValue());
+        assertThat(mockTabComplete(multiCommand, player, "console2", ""), nullValue());
+        assertThat(mockTabComplete(multiCommand, player, "player-and-console", ""), containsInAnyOrder("hello_world!"));
+        assertThat(mockTabComplete(multiCommand, player, "generic", "test", "args"), containsInAnyOrder("hello_world!"));
+    }
+
+    private List<String> mockTabComplete(final TabCompleter completer, final CommandSender commandSender, final String... args) {
+        return completer.onTabComplete(commandSender, null, null, args);
     }
 
     private static class RecordingCommandHandler<T extends CommandSender> implements CommandHandler<T> {
