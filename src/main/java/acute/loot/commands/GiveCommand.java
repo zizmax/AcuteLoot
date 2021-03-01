@@ -51,7 +51,7 @@ public class GiveCommand extends AcuteLootCommand<CommandSender> {
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Gave " + ChatColor.GOLD + item.getType() + ChatColor.GRAY + " to " + ChatColor.GOLD + target.getDisplayName());
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Name: " + item.getItemMeta().getDisplayName());
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + item.getItemMeta().getLore().get(0));
-                    Commands.sendIncompatibleEffectsWarning(sender, lootItem, item);
+                    AcuteLoot.sendIncompatibleEffectsWarning(sender, lootItem, item);
                 } else {
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + target.getDisplayName() + "'s inventory is full!");
                 }

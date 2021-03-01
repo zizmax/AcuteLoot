@@ -36,7 +36,7 @@ public class AddCommand extends AcuteLootCommand<Player> {
                                 final LootItem lootItem = new LootItem(rarity, Collections.singletonList(effectId));
                                 plugin().lootGenerator.createLootItem(item, lootItem);
                                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1] + " and " + args[2]);
-                                Commands.sendIncompatibleEffectsWarning(sender, lootItem, item);
+                                AcuteLoot.sendIncompatibleEffectsWarning(sender, lootItem, item);
                             } else {
                                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
                             }

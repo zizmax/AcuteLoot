@@ -49,7 +49,7 @@ public class NewLootCommand extends AcuteLootCommand<Player> {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Created " + ChatColor.GOLD + item.getType());
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Name: " + item.getItemMeta().getDisplayName());
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + item.getItemMeta().getLore().get(0));
-            Commands.sendIncompatibleEffectsWarning(sender, lootItem, item);
+            AcuteLoot.sendIncompatibleEffectsWarning(sender, lootItem, item);
         } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Inventory cannot be full");
         }
