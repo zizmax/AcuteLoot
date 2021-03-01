@@ -11,28 +11,69 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * A MultiCommand is a CommandExecutor that will delegate to a CommandHandler
+ * based on the "subcommand", that is, the first command argument. Further, the
+ * subcommand delegate can be selected based on the type of the command sender.
+ * This allows, for example, subcommands that can only be run by the player or the console,
+ * or ones that have different handlers for the player and the console.
+ *
+ * A subcommand can either be registered with just a player handler, just a console
+ * handler, a player handler and a console handler, or a "generic" handler. All other
+ * combinations are invalid and will throw an IllegalStateException if created. Please
+ * note that generic handlers will be invoked for ANY CommandSender, not just ones implementing
+ * Player or ConsoleCommandSender.
+ *
+ * Additionally, a generic CommandHandler may be registered in the event that the command
+ * is executed without a subcommand (that is, with no arguments).
+ *
+ * Please note that the arguments list is passed to the delegate CommandHandler's as is,
+ * so args[0] in the handler will always be the subcommand, with the subcommand's arguments
+ * starting at args[1] if present.
+ */
 public class MultiCommand implements CommandExecutor {
 
+    // Registered subcommands and handlers
     private final Map<String, CommandHandler<Player>> playerSubcommands = new HashMap<>();
     private final Map<String, CommandHandler<ConsoleCommandSender>> consoleSubcommands = new HashMap<>();
     private final Map<String, CommandHandler<CommandSender>> genericSubcommands = new HashMap<>();
 
+    // Will be used if no subcommand is present (args.length = 0)
     private CommandHandler<CommandSender> noArgsCommand = null;
 
+    // Messages for bad commands
     private String cannotBeUsedByPlayer = "This command cannot be used by a player.";
     private String cannotBeUsedByConsole = "This command cannot be used by the console.";
     private String unknownCommand = "Unknown command.";
 
+    /**
+     * Register a subcommand with a player CommandHandler. The subcommand must not already be
+     * registered as a player subcommand or as a generic subcommand.
+     * @param subcommand the subcommand, must be non-empty
+     * @param commandHandler the handler for the subcommand, must be non-null
+     */
     public void registerPlayerSubcommand(final String subcommand, final CommandHandler<Player> commandHandler) {
         precheck(subcommand, commandHandler, playerSubcommands);
         playerSubcommands.put(subcommand, commandHandler);
     }
 
+    /**
+     * Register a subcommand with a console CommandHandler. The subcommand must not already be
+     * registered as a console subcommand or as a generic subcommand.
+     * @param subcommand the subcommand, must be non-empty
+     * @param commandHandler the handler for the subcommand, must be non-null
+     */
     public void registerConsoleSubcommand(final String subcommand, final CommandHandler<ConsoleCommandSender> commandHandler) {
         precheck(subcommand, commandHandler, consoleSubcommands);
         consoleSubcommands.put(subcommand, commandHandler);
     }
 
+    /**
+     * Register a subcommand with a console CommandHandler. The subcommand must not already be
+     * registered as any other kind of subcommand.
+     * @param subcommand the subcommand, must be non-empty
+     * @param commandHandler the handler for the subcommand, must be non-null
+     */
     public void registerGenericSubcommand(final String subcommand, final CommandHandler<CommandSender> commandHandler) {
         precheck(subcommand, commandHandler, genericSubcommands);
         try {
@@ -44,10 +85,18 @@ public class MultiCommand implements CommandExecutor {
         genericSubcommands.put(subcommand, commandHandler);
     }
 
+    /**
+     * Set the handler for when no subcommand is specified. This may be null,
+     * in which case if no subcommand is specified onCommand() will do nothing
+     * and return false.
+     * @param noArgsCommand the handler for when no subcommand is specified
+     */
     public void setNoArgsCommand(final CommandHandler<CommandSender> noArgsCommand) {
         this.noArgsCommand = noArgsCommand;
     }
 
+    // Check the subcommand and command handler are valid and not
+    // already registered as generic or in the primary map.
     private void precheck(final String subcommand,
                           final CommandHandler<?> commandHandler,
                           final Map<String, ?> primaryMap) {
@@ -95,18 +144,31 @@ public class MultiCommand implements CommandExecutor {
         }
     }
 
+    /**
+     * Set the message for when a console-only subcommand is executed by a player.
+     * @param cannotBeUsedByPlayer the messages, must be non-null
+     */
     public void setCannotBeUsedByPlayer(String cannotBeUsedByPlayer) {
         this.cannotBeUsedByPlayer = Objects.requireNonNull(cannotBeUsedByPlayer);
     }
 
+    /**
+     * Set the message for when a player-only subcommand is executed by a console..
+     * @param cannotBeUsedByConsole the messages, must be non-null
+     */
     public void setCannotBeUsedByConsole(String cannotBeUsedByConsole) {
         this.cannotBeUsedByConsole = Objects.requireNonNull(cannotBeUsedByConsole);
     }
 
+    /**
+     * Set the message for when an unknown subcommand is executed.
+     * @param unknownCommand the messages, must be non-null
+     */
     public void setUnknownCommand(String unknownCommand) {
         this.unknownCommand = Objects.requireNonNull(unknownCommand);
     }
 
+    // Helper class for dispatching to the correct delegate
     private class Dispatcher {
         private final CommandHandler<Player> playerHandler;
         private final CommandHandler<ConsoleCommandSender> consoleHandler;
