@@ -2,7 +2,7 @@ package acute.loot;
 
 
 import acute.loot.commands.*;
-import base.commands.MultiCommand;
+import base.commands.TabCompletedMultiCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.*;
 import org.bukkit.inventory.ItemStack;
@@ -13,53 +13,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Commands implements CommandExecutor, TabCompleter {
-    private static final List<String> DEFAULT_COMPLETIONS = Arrays.asList("help", "reload", "add", "remove", "stats", "new", "rename", "name", "chest", "salvage", "give");
-    //public static final TabCompleter TAB_COMPLETER = (s, c, l, args) -> (args.length == 1) ? StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, new ArrayList<>()) : null;
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        List<String> possibleArguments = new ArrayList<>();
-        if(args.length == 1){
-            StringUtil.copyPartialMatches(args[0], DEFAULT_COMPLETIONS, possibleArguments);
-            return possibleArguments;
-        }
-        if(args.length >= 2 && args.length <= 4){
-            if(args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("new")){
-                if (args.length == 2){
-                    StringUtil.copyPartialMatches(args[1], plugin.rarityNames.keySet(), possibleArguments);
-                    return possibleArguments;
-                }
-                if (args.length == 3) {
-                    possibleArguments.clear();
-                    StringUtil.copyPartialMatches(args[2], plugin.effectNames.keySet(), possibleArguments);
-                    return possibleArguments;
-                }
-            }
-            else if(args[0].equalsIgnoreCase("give")) {
-                // Same logic as above for 'add' and 'new' but shifted by one to account for player name
-                if (args.length == 2){
-                    return null;
-                }
-                if (args.length == 3) {
-                    StringUtil.copyPartialMatches(args[2], plugin.rarityNames.keySet(), possibleArguments);
-                }
-                if (args.length == 4) {
-                    possibleArguments.clear();
-                    StringUtil.copyPartialMatches(args[3], plugin.effectNames.keySet(), possibleArguments);
-                    return possibleArguments;
-                }
-                return possibleArguments;
-            }
-            else if(args.length == 2 && args[0].equalsIgnoreCase("name")){
-                StringUtil.copyPartialMatches(args[1], plugin.nameGeneratorNames.keySet(), possibleArguments);
-                return possibleArguments;
-            }
-        }
-        return null;
+        return multiCommand.onTabComplete(sender, command, label, args);
     }
 
     private final AcuteLoot plugin;
-    private final MultiCommand multiCommand = new MultiCommand();
+    private final TabCompletedMultiCommand multiCommand = new TabCompletedMultiCommand();
     public Commands(AcuteLoot plugin) {
         this.plugin = plugin;
         multiCommand.setCannotBeUsedByConsole(AcuteLoot.CHAT_PREFIX + "You have to be a player!");
@@ -90,6 +51,27 @@ public class Commands implements CommandExecutor, TabCompleter {
 
         multiCommand.registerPlayerSubcommand("stats", new StatsCommand.PlayerStatsCommand("acuteloot.stats", plugin));
         multiCommand.registerConsoleSubcommand("stats", new StatsCommand.ConsoleStatsCommand("acuteloot.stats", plugin));
+
+        final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
+            switch (args.length) {
+                case 2: return StringUtil.copyPartialMatches(args[1], plugin.rarityNames.keySet(), new ArrayList<>());
+                case 3: return StringUtil.copyPartialMatches(args[2], plugin.effectNames.keySet(), new ArrayList<>());
+                default: return null;
+            }
+        };
+
+        final TabCompleter giveCompletion = (s, c, l, args) -> {
+            // Same logic as above for 'add' and 'new' but shifted by one to account for player name
+            // Note: this means args[0] is the player name, not "give"...
+            return addAndNewCompletion.onTabComplete(s, c, l, Arrays.copyOfRange(args, 1, args.length));
+        };
+
+        final TabCompleter nameCompletion = (s, c, l, args) -> args.length == 2 ? StringUtil.copyPartialMatches(args[1], plugin.nameGeneratorNames.keySet(), new ArrayList<>()) : null;
+
+        multiCommand.registerSubcompletion("add", addAndNewCompletion);
+        multiCommand.registerSubcompletion("new", addAndNewCompletion);
+        multiCommand.registerSubcompletion("give", giveCompletion);
+        multiCommand.registerSubcompletion("name", nameCompletion);
     }
 
     public static void sendIncompatibleEffectsWarning(CommandSender sender, LootItem lootItem, ItemStack item){
