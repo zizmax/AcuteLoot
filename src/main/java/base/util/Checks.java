@@ -1,11 +1,13 @@
 package base.util;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+@SuppressWarnings("unused")
 public final class Checks {
 
     private Checks() {}
@@ -18,7 +20,6 @@ public final class Checks {
         return Objects.requireNonNull(collection).isEmpty();
     }
 
-    @SuppressWarnings("unused")
     public static String requireNonEmpty(final String s) {
         return requireNonEmpty(s, "String must be non-empty");
     }
@@ -57,6 +58,14 @@ public final class Checks {
 
     public static double requireInUnitInterval(final double x, final String message) {
         return checkNot(x, i -> i < 0 || i > 1, message);
+    }
+
+    public static <K> Map<K, ?> requireDoesNotHaveKey(final K key, final Map<K, ?> map) {
+        return requireDoesNotHaveKey(key, map, "Map must not have key " + key);
+    }
+
+    public static <K> Map<K, ?> requireDoesNotHaveKey(final K key, final Map<K, ?> map, final String message) {
+        return checkNot(map, m -> m.containsKey(key), message);
     }
 
     public static <T> T checkNot(final T t, final Predicate<T> predicate, final String message) {

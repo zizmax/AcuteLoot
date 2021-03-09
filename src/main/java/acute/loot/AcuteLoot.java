@@ -1,17 +1,22 @@
 package acute.loot;
 
+import acute.loot.commands.*;
 import acute.loot.namegen.*;
 import base.collections.IntegerChancePool;
+import base.commands.TabCompletedMultiCommand;
 import base.util.Util;
 import org.bstats.bukkit.Metrics;
 
 import org.bukkit.*;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.StringUtil;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -31,6 +36,7 @@ public final class AcuteLoot extends JavaPlugin {
     }
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
+    public static final String PERM_DENIED_MSG = CHAT_PREFIX + "You do not have permission to do this";
     public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
     public static final String UPDATE_AVAILABLE = "Update available! Download v%s ";
     public static final String UP_TO_DATE = "AcuteLoot is up to date: (%s)";
@@ -45,6 +51,8 @@ public final class AcuteLoot extends JavaPlugin {
     public List<Material> lootMaterials = new ArrayList<>();
 
     public boolean debug = false;
+
+    public TabCompletedMultiCommand acuteLootCommand;
 
     public final IntegerChancePool<LootRarity> rarityChancePool = new IntegerChancePool<>(random);
     public final IntegerChancePool<LootSpecialEffect> effectChancePool = new IntegerChancePool<>(random);
@@ -67,10 +75,9 @@ public final class AcuteLoot extends JavaPlugin {
         getLogger().info("| * Enjoying the plugin? Leave a review and share with a friend! |");
         getLogger().info("+----------------------------------------------------------------+");
 
-        // Register events and commands
+        // Register events
         getServer().getPluginManager().registerEvents(new EffectEventListener(this), this);
         getServer().getPluginManager().registerEvents(new LootCreationEventListener(this), this);
-        getCommand("acuteloot").setExecutor(new Commands(this));
 
         // Save/read config.yml
         saveDefaultConfig();
@@ -249,6 +256,11 @@ public final class AcuteLoot extends JavaPlugin {
                 getLogger().warning(String.format("Unknown name pool type '%s'. Skipping.", type));
             }
         }
+
+        // Commands
+        acuteLootCommand = new TabCompletedMultiCommand();
+        configureCommands(acuteLootCommand);
+        getCommand("acuteloot").setExecutor(acuteLootCommand);
 
         nameGenChancePool.clear();
         nameGeneratorNames.clear();
@@ -446,5 +458,72 @@ public final class AcuteLoot extends JavaPlugin {
         }
         LootMaterial.setGenericMaterialsList(lootMaterials);
         plugin.getLogger().info("Initialized " + lootMaterials.size() + " materials");
+    }
+
+    public void configureCommands(final TabCompletedMultiCommand alCommand) {
+        alCommand.setCannotBeUsedByConsole(CHAT_PREFIX + "You have to be a player!");
+        alCommand.setCannotBeUsedByPlayer(CHAT_PREFIX + "You have to be a console!");
+        alCommand.setUnknownCommand(CHAT_PREFIX + "Subcommand not found!");
+        alCommand.setNoArgsCommand(new NoArgsCommand("acuteloot", this));
+
+        alCommand.registerPlayerSubcommand("add", new AddCommand("acuteloot.add", this));
+
+        alCommand.registerPlayerSubcommand("chest", new ChestCommand("acuteloot.chest", this));
+
+        alCommand.registerGenericSubcommand("give", new GiveCommand("acuteloot.give", this));
+
+        alCommand.registerGenericSubcommand("help", new HelpCommand("acuteloot.help", this));
+
+        alCommand.registerPlayerSubcommand("name", new NameCommand("acuteloot.name", this));
+
+        alCommand.registerPlayerSubcommand("new", new NewLootCommand("acuteloot.new", this));
+
+        alCommand.registerPlayerSubcommand("reload", new ReloadCommand.PlayerReloadCommand("acuteloot.reload", this));
+        alCommand.registerConsoleSubcommand("reload", new ReloadCommand.ConsoleReloadCommand("acuteloot.reload", this));
+
+        alCommand.registerPlayerSubcommand("remove", new RemoveCommand("acuteloot.remove", this));
+
+        alCommand.registerPlayerSubcommand("rename", new RenameCommand("acuteloot.rename", this));
+
+        alCommand.registerGenericSubcommand("salvage", new SalvageCommand(this));
+
+        alCommand.registerPlayerSubcommand("stats", new StatsCommand.PlayerStatsCommand("acuteloot.stats", this));
+        alCommand.registerConsoleSubcommand("stats", new StatsCommand.ConsoleStatsCommand("acuteloot.stats", this));
+
+        final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
+            switch (args.length) {
+                case 2: return StringUtil.copyPartialMatches(args[1], rarityNames.keySet(), new ArrayList<>());
+                case 3: return StringUtil.copyPartialMatches(args[2], effectNames.keySet(), new ArrayList<>());
+                default: return null;
+            }
+        };
+
+        final TabCompleter giveCompletion = (s, c, l, args) -> {
+            // Same logic as above for 'add' and 'new' but shifted by one to account for player name
+            // Note: this means args[0] is the player name, not "give"...
+            return addAndNewCompletion.onTabComplete(s, c, l, Arrays.copyOfRange(args, 1, args.length));
+        };
+
+        final TabCompleter nameCompletion = (s, c, l, args) -> args.length == 2 ? StringUtil.copyPartialMatches(args[1], nameGeneratorNames.keySet(), new ArrayList<>()) : null;
+
+        alCommand.registerSubcompletion("add", addAndNewCompletion);
+        alCommand.registerSubcompletion("new", addAndNewCompletion);
+        alCommand.registerSubcompletion("give", giveCompletion);
+        alCommand.registerSubcompletion("name", nameCompletion);
+    }
+
+    public static void sendIncompatibleEffectsWarning(CommandSender sender, LootItem lootItem, ItemStack item){
+        if(lootItem == null) return;
+        for(LootSpecialEffect effect : lootItem.getEffects()){
+            if(!effect.getValidMaterials().contains(LootMaterial.lootMaterialForMaterial(item.getType()))){
+                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + effect.getName() + " not strictly compatible with this item!");
+                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + "Effect may not work as expected/won't do anything");
+            }
+        }
+    }
+
+    public boolean hasPermission(CommandSender sender, String node) {
+        return (!getConfig().getBoolean("use-permissions") && sender.isOp())
+                || (getConfig().getBoolean("use-permissions") && sender.hasPermission(node));
     }
 }
