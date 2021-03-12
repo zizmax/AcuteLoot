@@ -1,10 +1,10 @@
 package base.commands;
 
-import base.util.Mock;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,8 +68,8 @@ public class MultiCommandTest {
         final RecordingCommandHandler<ConsoleCommandSender> consoleCommandHandler = new RecordingCommandHandler<>();
         final RecordingCommandHandler<CommandSender> genericCommandHandler = new RecordingCommandHandler<>();
 
-        final Player player = Mock.mockPlayer();
-        final ConsoleCommandSender console = Mock.mockConsoleCommandSender();
+        final Player player = Mockito.mock(Player.class);
+        final ConsoleCommandSender console = Mockito.mock(ConsoleCommandSender.class);
 
         multiCommand.registerPlayerSubcommand("player", playerCommandHandler);
         multiCommand.registerConsoleSubcommand("console", consoleCommandHandler);
@@ -159,8 +159,8 @@ public class MultiCommandTest {
         multiCommand.registerConsoleSubcommand("player-and-console", consoleCommandHandler);
         multiCommand.registerGenericSubcommand("generic", genericCommandHandler);
 
-        final Player player = Mock.mockPlayer();
-        final ConsoleCommandSender console = Mock.mockConsoleCommandSender();
+        final Player player = Mockito.mock(Player.class);
+        final ConsoleCommandSender console = Mockito.mock(ConsoleCommandSender.class);
 
         assertThat(mockTabComplete(multiCommand, player), containsInAnyOrder("player", "player2", "player-and-console", "generic"));
         assertThat(mockTabComplete(multiCommand, console), containsInAnyOrder("console", "console2", "player-and-console", "generic"));
