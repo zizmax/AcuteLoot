@@ -6,14 +6,15 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.oneOf;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -106,40 +107,22 @@ public class NameGeneratorTest {
         assertDoesNotThrow(() -> NameGenerator.compile("[kana]()", variableMap));
         assertThrows(NumberFormatException.class, () -> NameGenerator.compile("[kana](-)", variableMap));
 
-        class Warning implements Consumer<String> {
-            boolean wasTriggered = false;
-
-            @Override
-            public void accept(String s) {
-                wasTriggered = true;
-            }
-
-            public void reset() {
-                wasTriggered = false;
-            }
-        }
-
-        final Warning warning = new Warning();
+        @SuppressWarnings("unchecked") final Consumer<String> warning = Mockito.mock(Consumer.class);
 
         NameGenerator.compile("[foo", variableMap, warning);
-        assertThat(warning.wasTriggered, is(true));
-        warning.reset();
+        Mockito.verify(warning, Mockito.times(1)).accept(Mockito.anyString());
 
         NameGenerator.compile("foo]", variableMap, warning);
-        assertThat(warning.wasTriggered, is(true));
-        warning.reset();
+        Mockito.verify(warning, Mockito.times(2)).accept(Mockito.anyString());
 
         NameGenerator.compile("[foo](1-2", variableMap, warning);
-        assertThat(warning.wasTriggered, is(true));
-        warning.reset();
+        Mockito.verify(warning, Mockito.times(3)).accept(Mockito.anyString());
 
         NameGenerator.compile("[foo(1-2)", variableMap, warning);
-        assertThat(warning.wasTriggered, is(true));
-        warning.reset();
+        Mockito.verify(warning, Mockito.times(4)).accept(Mockito.anyString());
 
         NameGenerator.compile("[kana](1-2)", variableMap, warning);
-        assertThat(warning.wasTriggered, is(false));
-        warning.reset();
+        Mockito.verify(warning, Mockito.times(4)).accept(Mockito.anyString());
 
         assertThat(NameGenerator.compile("foo", variableMap),
                 is(new CompoundNameGenerator(
