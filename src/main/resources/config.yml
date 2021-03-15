@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 1 # Don't change this!
+config-version: 2 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -438,7 +438,15 @@ name-generators:
 # Force generated names to start with capital letters
 capitalize-names: true
 
-well:
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                           Loot Well                                          | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+loot-well:
   enabled: true
   world: "world"
   x: 100
