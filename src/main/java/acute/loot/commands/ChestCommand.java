@@ -102,7 +102,7 @@ public class ChestCommand extends AcuteLootCommand<Player> {
             if (refillCooldown.equals("-1")){
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown: " + ChatColor.AQUA + "none"
                         + ChatColor.GRAY + "*");
-                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "*Only attempts to generate loot once, on first open");
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "*Only attempts to generate loot on first open");
             }
             else{
 

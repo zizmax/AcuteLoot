@@ -138,7 +138,7 @@ public class MultiCommand implements CommandExecutor {
             if (commandSender != null) {
                 commandSender.sendMessage(unknownCommand);
             }
-            return false;
+            return true;
         }
     }
 

@@ -125,7 +125,7 @@ public class MultiCommandTest {
         assertThat(consoleCommandHandler.hits, is(2));
         assertThat(genericCommandHandler.hits, is(3));
 
-        assertThat(mockCommandSend(multiCommand, null, "fake_command"), is(false));
+        assertThat(mockCommandSend(multiCommand, null, "fake_command"), is(true));
         assertThat(playerCommandHandler.hits, is(2));
         assertThat(consoleCommandHandler.hits, is(2));
         assertThat(genericCommandHandler.hits, is(3));
