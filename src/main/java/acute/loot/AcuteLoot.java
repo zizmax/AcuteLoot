@@ -54,6 +54,8 @@ public final class AcuteLoot extends JavaPlugin {
 
     public TabCompletedMultiCommand acuteLootCommand;
 
+    public LootWell lootWell;
+
     public final IntegerChancePool<LootRarity> rarityChancePool = new IntegerChancePool<>(random);
     public final IntegerChancePool<LootSpecialEffect> effectChancePool = new IntegerChancePool<>(random);
     public final IntegerChancePool<NameGenerator> nameGenChancePool = new IntegerChancePool<>(random);
@@ -63,7 +65,7 @@ public final class AcuteLoot extends JavaPlugin {
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
 
-    int configVersion = 1;
+    int configVersion = 2;
 
     @Override
     public void onEnable() {
@@ -126,7 +128,7 @@ public final class AcuteLoot extends JavaPlugin {
         getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(nameGenChancePool)));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
 
-        getLogger().info("Enabled");
+        getLogger().info(String.format("v%s Enabled!", getDescription().getVersion()));
     }
 
     public void checkConfigVersion() {
@@ -168,6 +170,9 @@ public final class AcuteLoot extends JavaPlugin {
         // Set debug mode
         debug = getConfig().getBoolean("debug");
         if(debug) this.getLogger().warning("Debug mode enabled!");
+
+        // Create loot well(s)
+        lootWell = new LootWell(this);
 
         // Writing names files to disk if they don't exist
         File namesFolder = new File("plugins/AcuteLoot/names");

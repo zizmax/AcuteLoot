@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.AnvilInventory;
@@ -182,7 +183,6 @@ public class LootCreationEventListener implements Listener {
                             }
                         });
                     }
-
                 }
             }
         }
@@ -246,6 +246,11 @@ public class LootCreationEventListener implements Listener {
             return item.getItemMeta().getDisplayName();
         }
         return "";
+    }
+
+    @EventHandler
+    public void lootWellListener(PlayerDropItemEvent event){
+        plugin.lootWell.onWish(event);
     }
 
 }

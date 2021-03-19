@@ -178,7 +178,7 @@ public class EffectEventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerClickTonight(InventoryClickEvent event) {
+    public void onPlayerClickEvent(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player) {
             applyEventWithPlayer(event, (Player) event.getWhoClicked());
         }

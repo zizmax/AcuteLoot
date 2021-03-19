@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 1 # Don't change this!
+config-version: 2 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -366,6 +366,7 @@ msg:
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
 
+
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
 # |                                                                                              | #
@@ -436,3 +437,19 @@ name-generators:
 
 # Force generated names to start with capital letters
 capitalize-names: true
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
+# |                                           Loot Well                                          | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+
+loot-well:
+  enabled: true
+  world: "world"
+  x: 100
+  y: 70
+  z: 100
+  max-distance: 1.5
