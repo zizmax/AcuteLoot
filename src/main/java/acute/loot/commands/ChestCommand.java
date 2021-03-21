@@ -12,7 +12,6 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.persistence.PersistentDataType;
 
 public class ChestCommand extends AcuteLootCommand<Player> {
@@ -68,7 +67,8 @@ public class ChestCommand extends AcuteLootCommand<Player> {
                 "Chest Creator" + ChatColor.YELLOW + " ==============");
 
         Block targetedBlock = sender.getTargetBlockExact(20);
-        if (targetedBlock.getType().equals(Material.CHEST) && targetedBlock.getState() instanceof Chest) {
+
+        if (targetedBlock != null && targetedBlock.getType().equals(Material.CHEST) && targetedBlock.getState() instanceof Chest) {
             if (((Chest) targetedBlock.getState()).getPersistentDataContainer().has(key, PersistentDataType.STRING)){
                 String chestMetadata = ((Chest) targetedBlock).getPersistentDataContainer().get(key, PersistentDataType.STRING);
             }
@@ -93,6 +93,7 @@ public class ChestCommand extends AcuteLootCommand<Player> {
                 }
             }
         }
+
         if(numFoundChests == 0){
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "0" + ChatColor.GRAY
                     + " non-AcuteLoot chests found in current chunk!");
