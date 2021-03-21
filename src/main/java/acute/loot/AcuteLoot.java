@@ -172,7 +172,7 @@ public final class AcuteLoot extends JavaPlugin {
         if(debug) this.getLogger().warning("Debug mode enabled!");
 
         // Create loot well(s)
-        lootWell = new LootWell(this);
+        if(debug) lootWell = new LootWell(this);
 
         // Writing names files to disk if they don't exist
         File namesFolder = new File("plugins/AcuteLoot/names");
