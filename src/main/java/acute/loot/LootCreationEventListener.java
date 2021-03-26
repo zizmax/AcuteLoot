@@ -79,7 +79,7 @@ public class LootCreationEventListener implements Listener {
         }
     }
 
-    public int getEnchantRarity(Map<Enchantment, Integer> enchantments) {
+    private int getEnchantRarity(Map<Enchantment, Integer> enchantments) {
         double totalLevels = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
             totalLevels = totalLevels + (float) entry.getValue() / entry.getKey().getMaxLevel() * 100.0;
@@ -254,7 +254,7 @@ public class LootCreationEventListener implements Listener {
         }
     }
 
-    public String getDisplayName(ItemStack item) {
+    private String getDisplayName(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             return item.getItemMeta().getDisplayName();
         }

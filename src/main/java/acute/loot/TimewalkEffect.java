@@ -76,7 +76,8 @@ public class TimewalkEffect extends AcuteLootSpecialEffect {
                         Ageable ageable = (Ageable) block.getBlockData();
                         double roll = AcuteLoot.random.nextDouble();
                         double chance = 10 / 100.0;
-                        if (((ageable.getAge() < ageable.getMaximumAge() && forward) || (ageable.getAge() > 0 && !forward)) && roll < chance) {
+                        if (((ageable.getAge() < ageable.getMaximumAge() && forward) ||
+                             (ageable.getAge() > 0 && !forward)) && roll < chance) {
                             ageable.setAge(ageable.getAge() + cropGrowthFactor);
                             block.setBlockData(ageable);
                         }

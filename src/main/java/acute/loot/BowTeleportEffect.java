@@ -9,6 +9,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
+/**
+ * Effect that teleports the shooter to the location an arrow strikes.
+ */
 public class BowTeleportEffect extends AcuteLootSpecialEffect {
 
     public BowTeleportEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {

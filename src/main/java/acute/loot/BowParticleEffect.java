@@ -15,6 +15,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
+/**
+ * Effect that leaves a trail of particles behind fired arrows.
+ */
 public class BowParticleEffect extends AcuteLootSpecialEffect {
 
     private final Particle particle;
