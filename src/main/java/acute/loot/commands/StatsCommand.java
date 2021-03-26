@@ -18,7 +18,8 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
     protected void doHandle(T sender, String[] args) {
         final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(plugin().nameGenChancePool), 0.5, 0.0001);
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "General stats:");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(plugin().nameGenChancePool)));
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Total number of possible names: ~%,d",
+                                                                 PermutationCounts.totalPermutations(plugin().nameGenChancePool)));
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Names for 50%% chance of duplicate: ~%,d", birthdayCount));
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of rarities: " + plugin().rarityChancePool.values().size());
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of effects: " + plugin().effectChancePool.values().size());

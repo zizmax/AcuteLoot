@@ -11,8 +11,8 @@ import java.util.List;
 
 public class BowTeleportEffect extends AcuteLootSpecialEffect {
 
-    public BowTeleportEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+    public BowTeleportEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, id, validLootMaterials, plugin);
     }
 
     @Override

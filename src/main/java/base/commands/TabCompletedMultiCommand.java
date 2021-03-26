@@ -15,7 +15,7 @@ import java.util.*;
  * empty or has a single entry (in which case the partial matches will be returned
  * from the list of valid subcommands).
  *
- * If the arguments list has two or more entries, this object will return null unless
+ * <p>If the arguments list has two or more entries, this object will return null unless
  * a delegate TabCompleter has been registered for the given subcommand. Note that
  * delegates CANNOT currently vary based on the type of the sender requesting the
  * completion.
@@ -30,6 +30,7 @@ public class TabCompletedMultiCommand extends MultiCommand implements TabComplet
 
     /**
      * Register a subcompletion for the given subcommand.
+     *
      * @param subcommand the subcommand, must be non-empty and not already registered
      * @param completion the completion, must be non-null
      */

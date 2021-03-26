@@ -1,6 +1,9 @@
 package acute.loot;
 
-import org.bukkit.*;
+import org.bukkit.Location;
+import org.bukkit.Particle;
+import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Entity;
@@ -15,17 +18,17 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimewalkEffect extends AcuteLootSpecialEffect{
+public class TimewalkEffect extends AcuteLootSpecialEffect {
 
 
-    public TimewalkEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+    public TimewalkEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, id, validLootMaterials, plugin);
     }
 
     @Override
     public void applyEffect(Event origEvent) {
         if (origEvent instanceof PlayerMoveEvent) {
-            PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
+            final PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
             Player player = ((PlayerMoveEvent) origEvent).getPlayer();
             ItemStack boots = player.getInventory().getBoots();
             ItemMeta meta = boots.getItemMeta();
@@ -34,7 +37,8 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
                 player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
                 return;
             }
-            ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig().getInt("effects.timewalker.durability-modifier"));
+            ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig()
+                                                                                  .getInt("effects.timewalker.durability-modifier"));
             boots.setItemMeta(meta);
             Vector travel = event.getFrom().toVector().subtract(event.getTo().toVector());
             float direction = player.getLocation().getDirection().angle(travel);
@@ -48,7 +52,7 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
                     cropGrowthFactor = -cropGrowthFactor;
                     forward = false;
                 }
-                if(plugin.getConfig().getBoolean("effects.timewalker.affect-world-time")){
+                if (plugin.getConfig().getBoolean("effects.timewalker.affect-world-time")) {
                     World world = player.getWorld();
                     world.setTime(world.getTime() + timeWarp);
                 }
@@ -59,7 +63,7 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
                         double roll = AcuteLoot.random.nextDouble();
                         double chance = 20 / 100.0;
                         if (roll < chance) {
-                            if(ageable.getAge() < 0 || (ageable.getAge() >= 0 && timeWarp < 0)) {
+                            if (ageable.getAge() < 0 || (ageable.getAge() >= 0 && timeWarp < 0)) {
                                 playGrowthParticles(forward, entity.getLocation());
                                 ageable.setAge(ageable.getAge() + timeWarp);
                             }
@@ -82,11 +86,11 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
         }
     }
 
-    public static List<Block> getNearbyBlocks(Location location, int x_length, int y_length, int z_length) {
+    public static List<Block> getNearbyBlocks(Location location, int xLength, int yLength, int zLength) {
         List<Block> blocks = new ArrayList<Block>();
-        for(int x = location.getBlockX() - x_length; x <= location.getBlockX() + x_length; x++) {
-            for(int y = location.getBlockY() - y_length; y <= location.getBlockY() + y_length; y++) {
-                for(int z = location.getBlockZ() - z_length; z <= location.getBlockZ() + z_length; z++) {
+        for (int x = location.getBlockX() - xLength; x <= location.getBlockX() + xLength; x++) {
+            for (int y = location.getBlockY() - yLength; y <= location.getBlockY() + yLength; y++) {
+                for (int z = location.getBlockZ() - zLength; z <= location.getBlockZ() + zLength; z++) {
                     blocks.add(location.getWorld().getBlockAt(x, y, z));
                 }
             }
@@ -97,14 +101,17 @@ public class TimewalkEffect extends AcuteLootSpecialEffect{
 
     public void playGrowthParticles(boolean forward, Location location) {
         location = location.add(0, .5, 0);
-        for(double x = location.getX() - .4; x <= location.getX() + .4; x += .1) {
+        for (double x = location.getX() - .4; x <= location.getX() + .4; x += .1) {
             for (double y = location.getY() - .3; y <= location.getY() + .3; y += .1) {
-                for (double z = location.getZ() - .4; z <= location.getZ() + + .4; z += .2) {
+                for (double z = location.getZ() - .4; z <= location.getZ() + +.4; z += .2) {
                     double roll = AcuteLoot.random.nextDouble();
                     double chance = 5 / 100.0;
-                    if(roll < chance) {
-                        if(forward) location.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, x, y, z, 1);
-                        else location.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, x, y, z, 0, 0, 0, 0, 1);
+                    if (roll < chance) {
+                        if (forward) {
+                            location.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, x, y, z, 1);
+                        } else {
+                            location.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, x, y, z, 0, 0, 0, 0, 1);
+                        }
                     }
 
                 }

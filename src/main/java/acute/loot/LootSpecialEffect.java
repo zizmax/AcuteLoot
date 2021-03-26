@@ -1,5 +1,6 @@
 package acute.loot;
 
+import base.util.Checks;
 import org.bukkit.event.Event;
 
 import java.util.HashMap;
@@ -23,24 +24,31 @@ public abstract class LootSpecialEffect {
     // effect Id for this effect, must be unique if effect is registered
     private final EffectId id;
 
+    /**
+     * Construct a new LootSpecialEffect.
+     * @param name the internal name, must not be empty
+     * @param ns the effect namespace
+     * @param id the effect id
+     * @param validMaterials the list of materials the effect can be applied to, cannot be empty
+     * @param displayName the effect display name
+     */
     public LootSpecialEffect(String name, String ns, int id, List<LootMaterial> validMaterials, String displayName) {
-        if (name.contains(" ")) throw new IllegalArgumentException("Name must not contain spaces");
-        if (name.trim().isEmpty()) throw new IllegalArgumentException("Name cannot be empty");
-        if (validMaterials == null || validMaterials.isEmpty()) throw new IllegalArgumentException("Materials list cannot be null or empty");
-        this.name = name;
+        this.name = Checks.requireNonEmpty(name, "Name cannot be empty");
         this.id = new EffectId(ns, id);
-        this.validMaterials = validMaterials;
+        this.validMaterials = Checks.requireNonEmpty(validMaterials, "Materials list cannot be empty");
         this.displayName = displayName;
     }
 
     /**
      * Apply the special effect, called by various event listeners.
+     *
      * @param event the event.
      */
     public abstract void apply(Event event);
 
     /**
      * Get the list of LootMaterial's that this effect can be applied to.
+     *
      * @return the list of LootMaterial's that this effect can be applied to
      */
     public List<LootMaterial> getValidMaterials() {
@@ -49,6 +57,7 @@ public abstract class LootSpecialEffect {
 
     /**
      * Get the registered effect map for the given namespace. This maps integer id's to effects.
+     *
      * @param ns the namespace to get the effect map for
      * @return the effect map for the given namespace
      */
@@ -60,6 +69,7 @@ public abstract class LootSpecialEffect {
     /**
      * Get the integer id for this effect. Note that this
      * may overlap with other effects in different namespaces.
+     *
      * @return the integer id for this effect.
      */
     public int id() {
@@ -67,7 +77,8 @@ public abstract class LootSpecialEffect {
     }
 
     /**
-     * Get the namespace for this effect
+     * Get the namespace for this effect.
+     *
      * @return the namespace for this effect
      */
     public String ns() {
@@ -76,6 +87,7 @@ public abstract class LootSpecialEffect {
 
     /**
      * Get the effect id for this effect.
+     *
      * @return the effect id for this effect
      */
     public EffectId effectId() {
@@ -85,6 +97,7 @@ public abstract class LootSpecialEffect {
     /**
      * Get the "internal" name for this effect, this will also be
      * used in the /al command.
+     *
      * @return the "internal" name
      */
     public String getName() {
@@ -93,6 +106,7 @@ public abstract class LootSpecialEffect {
 
     /**
      * Get the display name for this effect.
+     *
      * @return the display name for this effect.
      */
     public String getDisplayName() {
@@ -104,7 +118,7 @@ public abstract class LootSpecialEffect {
         return name;
     }
 
-    private static final Map<String, Map<Integer,LootSpecialEffect>> effects = new HashMap<>();
+    private static final Map<String, Map<Integer, LootSpecialEffect>> effects = new HashMap<>();
 
     /**
      * The namespace used by AcuteLoot.
@@ -118,6 +132,7 @@ public abstract class LootSpecialEffect {
 
     /**
      * Get the given registered effect by effect id.
+     *
      * @param id the EffectId of the effect to get
      * @return the effect with the given effect id
      */
@@ -128,6 +143,7 @@ public abstract class LootSpecialEffect {
     /**
      * Register the given effect. If an effect with the same effect id has already been
      * registered an AcuteLootException is thrown.
+     *
      * @param effect the effect to register
      */
     public static void registerEffect(final LootSpecialEffect effect) {
@@ -143,6 +159,7 @@ public abstract class LootSpecialEffect {
     /**
      * Unregister the given effect. Throws an AcuteLootException if the
      * effect has not been registered.
+     *
      * @param effect the effect to unregister, must have been registered before
      * @return the unregistered effect
      */

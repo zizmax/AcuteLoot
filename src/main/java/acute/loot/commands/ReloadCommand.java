@@ -53,9 +53,10 @@ public abstract class ReloadCommand<T extends CommandSender> extends AcuteLootCo
 
         @Override
         protected void sendUpdateMessage(Player sender, UpdateChecker.UpdateResult result) {
-            BaseComponent message = new TextComponent(TextComponent.fromLegacyText(String.format(AcuteLoot.CHAT_PREFIX
-                    + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE, result.getNewestVersion())));
-            TextComponent link = new TextComponent( "here" );
+            final String messageStr = String.format(AcuteLoot.CHAT_PREFIX + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE,
+                                                    result.getNewestVersion());
+            BaseComponent message = new TextComponent(TextComponent.fromLegacyText(messageStr));
+            TextComponent link = new TextComponent("here");
             link.setUnderlined(true);
             link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
                     AcuteLoot.SPIGOT_URL));

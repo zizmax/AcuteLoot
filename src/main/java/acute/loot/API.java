@@ -3,7 +3,10 @@ package acute.loot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Class for interfacing with AcuteLoot from external plugins.
@@ -11,7 +14,7 @@ import java.util.*;
 public class API {
 
     /**
-     * The current API version
+     * The current API version.
      */
     public static final String API_VERSION = "1.0.0-beta";
 
@@ -33,7 +36,8 @@ public class API {
     /**
      * Construct a new API instance. Throws an AcuteLootException is the
      * provided namespace is not valid.
-     * @param user the Plugin that will be using the API
+     *
+     * @param user      the Plugin that will be using the API
      * @param namespace the namespace the Plugin will be using for LootSpecialEffect id's
      */
     public API(final Plugin user, String namespace) {
@@ -48,6 +52,7 @@ public class API {
      * Register a LootSpecialEffect with AcuteLoot with the given relative chance.
      * Throws an AcuteLootException if the effect's namespace does not match
      * the API instance's namespace.
+     *
      * @param effect the LootSpecialEffect to register
      * @param chance the relative chance of this effect being applied during loot generation
      */
@@ -75,6 +80,7 @@ public class API {
     /**
      * Get the LootItem stored on the provided ItemStack, or Empty
      * if there is none.
+     *
      * @param itemStack the ItemStack to read the LootItem from
      * @return the LootItem stored on the provided ItemStack, if any, else Empty
      */
@@ -84,8 +90,9 @@ public class API {
 
     /**
      * Return if the ItemStack has the specified effect.
+     *
      * @param itemStack the ItemStack to check for the effect
-     * @param effect the LootSpecialEffect to check for
+     * @param effect    the LootSpecialEffect to check for
      * @return if the provided ItemStack has the specified effect
      */
     public boolean itemHasEffect(final ItemStack itemStack, final LootSpecialEffect effect) {
@@ -94,8 +101,9 @@ public class API {
 
     /**
      * Return if the ItemStack has the specified rarity.
+     *
      * @param itemStack the ItemStack to check for the rarity
-     * @param rarity the LootRarity to check for
+     * @param rarity    the LootRarity to check for
      * @return if the provided ItemStack has the specified rarity
      */
     public boolean itemHasRarity(final ItemStack itemStack, final LootRarity rarity) {
@@ -104,6 +112,7 @@ public class API {
 
     /**
      * Get the AcuteLoot instance associated with this API instance.
+     *
      * @return the AcuteLoot instance associated with this API instance.
      */
     public AcuteLoot getAcuteLoot() {
@@ -115,7 +124,7 @@ public class API {
      * "version". If "version" does not exist in the versions list an
      * AcuteLootException is thrown.
      *
-     * Note that a newer API version is not necessarily compatible with
+     * <p>Note that a newer API version is not necessarily compatible with
      * an older one, use this function together with API.apiVersionOlderThan()
      * to check for a range of known working versions for complete accuracy.
      *

@@ -19,8 +19,8 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
 
     private final Particle particle;
 
-    public BowParticleEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, Particle particle, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+    public BowParticleEffect(String name, int id, List<LootMaterial> validLootMaterials, Particle particle, AcuteLoot plugin) {
+        super(name, id, validLootMaterials, plugin);
         this.particle = particle;
     }
 

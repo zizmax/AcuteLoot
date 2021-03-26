@@ -22,6 +22,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
+/**
+ * EventListeners related to effects. Most of these are passthroughs.
+ */
 public class EffectEventListener implements Listener {
 
     private final AcuteLoot plugin;
@@ -32,8 +35,8 @@ public class EffectEventListener implements Listener {
 
     @EventHandler
     public void onPlayerHitMob(EntityDamageByEntityEvent event) {
-        if(event.getDamager() instanceof Player){
-            if(DeadEyeEffect.deadEyeArrowsShot.containsKey(event.getDamager())){
+        if (event.getDamager() instanceof Player) {
+            if (DeadEyeEffect.deadEyeArrowsShot.containsKey(event.getDamager())) {
                 // Cancel player's attacks while in Dead Eye
                 event.setCancelled(true);
             }
@@ -45,8 +48,8 @@ public class EffectEventListener implements Listener {
                 if (plugin.getConfig().getBoolean("effects.enabled") && ((Player) arrow.getShooter()).getInventory()
                                                                                                      .getItemInMainHand()
                                                                                                      .getType() == Material.BOW) {
-                    if(event.getEntity() instanceof LivingEntity) {
-                        if(arrow.hasMetadata("deadEye")) {
+                    if (event.getEntity() instanceof LivingEntity) {
+                        if (arrow.hasMetadata("deadEye")) {
                             LivingEntity livingEntity = (LivingEntity) event.getEntity();
                             livingEntity.setMaximumNoDamageTicks(0);
                             livingEntity.setNoDamageTicks(0);
@@ -75,7 +78,7 @@ public class EffectEventListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if(event.getEntity().hasMetadata("turnedToStone")) {
+        if (event.getEntity().hasMetadata("turnedToStone")) {
             String message = plugin.getConfig().getString("effects.medusa.death-message");
             event.setDeathMessage(event.getEntity().getDisplayName() + " " + message);
             event.getEntity().removeMetadata("turnedToStone", plugin);
@@ -92,9 +95,9 @@ public class EffectEventListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (player.isOnGround() && (event.getFrom().getBlockX() != (event.getTo().getBlockX())
-                || event.getFrom().getBlockZ() != event.getTo().getBlockZ()
-                || event.getFrom().getBlockY() != event.getTo().getBlockY())) {
+        if (player.isOnGround() && (event.getFrom().getBlockX() != (event.getTo().getBlockX()) ||
+            event.getFrom().getBlockZ() != event.getTo().getBlockZ() ||
+            event.getFrom().getBlockY() != event.getTo().getBlockY())) {
             applyPlayerEvent(event);
         }
     }
@@ -106,8 +109,8 @@ public class EffectEventListener implements Listener {
         }
 
         if (event.getEntity() instanceof Skeleton &&
-            event.getEntity().hasPotionEffect(PotionEffectType.SLOW) &&
-            event.getEntity().hasMetadata("deadEyeSlowness")) {
+                event.getEntity().hasPotionEffect(PotionEffectType.SLOW) &&
+                event.getEntity().hasMetadata("deadEyeSlowness")) {
             // It ruins the Dead Eye slo-mo effect when skeletons can shoot you during it
             event.setCancelled(true);
         }
@@ -117,10 +120,19 @@ public class EffectEventListener implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if(DeadEyeEffect.deadEyeArrowsShot.get(player) != null && event.getItemDrop().getItemStack().getType().equals(Material.BOW) && event.getItemDrop().getItemStack().hasItemMeta() && event.getItemDrop().getItemStack().getItemMeta().hasLore()){
+        if (DeadEyeEffect.deadEyeArrowsShot.get(player) != null && event.getItemDrop()
+                                                                        .getItemStack()
+                                                                        .getType()
+                                                                        .equals(Material.BOW) && event.getItemDrop()
+                                                                                                      .getItemStack()
+                                                                                                      .hasItemMeta() && event
+                .getItemDrop()
+                .getItemStack()
+                .getItemMeta()
+                .hasLore()) {
             ItemMeta bowMeta = event.getItemDrop().getItemStack().getItemMeta();
             List<String> bowLore = bowMeta.getLore();
-            if(bowLore.get(bowLore.size() - 1 ).contains("Activated")) {
+            if (bowLore.get(bowLore.size() - 1).contains("Activated")) {
                 bowLore.remove(bowLore.size() - 1);
                 bowMeta.setLore(bowLore);
                 event.getItemDrop().getItemStack().setItemMeta(bowMeta);
@@ -135,7 +147,7 @@ public class EffectEventListener implements Listener {
     }
 
     @EventHandler
-    public void onDropItem(PlayerDropItemEvent event){
+    public void onDropItem(PlayerDropItemEvent event) {
         applyPlayerEvent(event);
         /*
         // May be used in the future to prevent Dead Eye from activating while viewing inventory
@@ -158,7 +170,7 @@ public class EffectEventListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerStatisticIncrement(PlayerStatisticIncrementEvent event){
+    public void onPlayerStatisticIncrement(PlayerStatisticIncrementEvent event) {
         applyPlayerEvent(event);
     }
 

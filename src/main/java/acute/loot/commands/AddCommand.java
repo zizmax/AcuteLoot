@@ -7,6 +7,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 
+/**
+ * Handler for /al add.
+ */
 public class AddCommand extends AcuteLootCommand<Player> {
 
     public AddCommand(String permission, AcuteLoot plugin) {
@@ -18,16 +21,15 @@ public class AddCommand extends AcuteLootCommand<Player> {
         if (sender.getInventory().getItemInMainHand().getType() != Material.AIR) {
             ItemStack item = sender.getInventory().getItemInMainHand();
             if (plugin().getLootCode(item) == null) {
-                if(args.length == 1) {
+                if (args.length == 1) {
                     final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-                    if(lootMaterial == LootMaterial.UNKNOWN) {
+                    if (lootMaterial == LootMaterial.UNKNOWN) {
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
                         return;
                     }
                     plugin().lootGenerator.createLootItem(item, AcuteLoot.random.nextDouble());
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with random rarity");
-                }
-                else {
+                } else {
                     if (plugin().rarityNames.containsKey(args[1])) {
                         final int rarity = plugin().rarityNames.get(args[1]);
                         if (args.length > 2) {
@@ -50,8 +52,7 @@ public class AddCommand extends AcuteLootCommand<Player> {
                     }
                 }
 
-            }
-            else{
+            } else {
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is already AcuteLoot");
             }
         } else {

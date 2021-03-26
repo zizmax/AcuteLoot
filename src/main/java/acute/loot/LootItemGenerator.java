@@ -2,6 +2,7 @@ package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
 import base.collections.IntegerChancePool;
+import base.util.Checks;
 import base.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -37,20 +38,21 @@ public class LootItemGenerator {
     /**
      * Generate a loot item using the given rarity and material.
      *
-     * @param rarity the rarity of the item generated, higher is rarer, must be in [0, 1]
+     * @param rarity   the rarity of the item generated, higher is rarer, must be in [0, 1]
      * @param material the material of the item generated
      * @return A randomly generated LootItem
      */
     public LootItem generate(double rarity, LootMaterial material) {
-        if (rarity < 0 || rarity > 1) throw new IllegalArgumentException("Rarity must be in [0, 1]");
+        Checks.requireInUnitInterval(rarity);
         final LootRarity lootRarity = rarityPool.draw(rarity);
         return generateWithRarity(lootRarity, material);
     }
 
     /**
      * Generate a loot item with the provided rarity and material.
+     *
      * @param lootRarity Rarity of the item generated
-     * @param material Material of the item generated
+     * @param material   Material of the item generated
      * @return A randomly generated LootItem with the provided rarity
      */
     public LootItem generateWithRarity(LootRarity lootRarity, LootMaterial material) {
@@ -59,7 +61,8 @@ public class LootItemGenerator {
         List<EffectId> effects = new ArrayList<>();
         try {
             if (random.nextDouble() <= lootRarity.getEffectChance()) {
-                final LootSpecialEffect effect = effectPool.drawWithPredicate(l -> l.getValidMaterials().contains(material));
+                final LootSpecialEffect effect = effectPool.drawWithPredicate(l -> l.getValidMaterials()
+                                                                                    .contains(material));
                 effects.add(effect.effectId());
             }
         } catch (NoSuchElementException e) {
@@ -71,6 +74,7 @@ public class LootItemGenerator {
 
     /**
      * Create a loot item with a random material.
+     *
      * @return a loot item with a random material.
      */
     public ItemStack createLootItem() {
@@ -79,7 +83,8 @@ public class LootItemGenerator {
 
     /**
      * Create a loot item from the given item stack with the given rarity.
-     * @param item the item stack to turn into a loot item
+     *
+     * @param item   the item stack to turn into a loot item
      * @param rarity the rarity of the item, in [0.0, 1.0]
      * @return a loot item made from the given item stack
      */
@@ -94,7 +99,8 @@ public class LootItemGenerator {
 
     /**
      * Create a loot item from the given item stack and LootRarity.
-     * @param item the item stack to turn into a loot item
+     *
+     * @param item   the item stack to turn into a loot item
      * @param rarity the rarity of the item
      * @return a loot item made from the given item stack
      */
@@ -111,6 +117,7 @@ public class LootItemGenerator {
      * Create a loot item with the given ItemStack and LootItem loot data.
      * This will create a name for the item as well as attaching the LootItem
      * to the item's persistent data.
+     *
      * @param item the item to turn into a loot item
      * @param loot the LootItem loot data for the item
      * @return the item with the LootItem data added along with a generated name
@@ -151,28 +158,28 @@ public class LootItemGenerator {
         for (LootSpecialEffect effect : loot.getEffects()) {
             //String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
             String effectName = effect.getDisplayName();
-            lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-effect-color")) + effectName);
+            lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig()
+                                                                       .getString("loot-effect-color")) + effectName);
         }
 
         // Add category lore
-        if(plugin.getConfig().getBoolean("loot-category-lore.enabled")){
+        if (plugin.getConfig().getBoolean("loot-category-lore.enabled")) {
             String category = lootMaterial.name().toLowerCase();
-            if(plugin.getConfig().contains("loot-category-lore." + category)){
+            if (plugin.getConfig().contains("loot-category-lore." + category)) {
                 List<String> loreLines = plugin.getConfig().getStringList("loot-category-lore." + category);
-                for (String line : loreLines){
+                for (String line : loreLines) {
                     lore.add(ChatColor.translateAlternateColorCodes('&', line));
                 }
-            }
-            else{
-                plugin.getLogger().warning("ERROR: Failed to add lore from config: loot-category-lore." +
-                        lootMaterial.name());
+            } else {
+                plugin.getLogger().warning("ERROR: Failed to add lore from config: loot-category-lore." + lootMaterial.name());
             }
         }
         meta.setLore(lore);
 
         // Set display name
         if (plugin.getConfig().getBoolean("global-loot-name-color")) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color")) + name);
+            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig()
+                                                                                  .getString("loot-name-color")) + name);
         } else {
             meta.setDisplayName(loot.rarity().getRarityColor() + name);
         }
@@ -181,7 +188,7 @@ public class LootItemGenerator {
         return item;
     }
 
-    public ItemStack getNewRandomLootItemStack(){
+    public ItemStack getNewRandomLootItemStack() {
         ItemStack item = new ItemStack(Util.drawRandom(plugin.lootMaterials), 1);
 
         // Set random damage if Material is damageable

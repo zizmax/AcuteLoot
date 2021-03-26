@@ -33,42 +33,57 @@ public class MaterialNameGenerator implements NameGenerator {
 
     /**
      * Construct a new MaterialNameGenerator using the given FileBuilder.
+     *
      * @param builder the FileBuilder pointing to the names files for this generator
      */
     public MaterialNameGenerator(FileBuilder builder) {
         Objects.requireNonNull(builder);
-        this.swordNames      = readNames(builder.prefix + builder.swordFile);
-        this.pickNames       = readNames(builder.prefix + builder.pickFile);
-        this.bowNames        = readNames(builder.prefix + builder.bowFile);
-        this.helmetNames     = readNames(builder.prefix + builder.helmetFile);
-        this.bootsNames      = readNames(builder.prefix + builder.bootsFile);
-        this.crossbowNames   = readNames(builder.prefix + builder.crossbowFile);
-        this.shovelNames     = readNames(builder.prefix + builder.shovelFile);
-        this.hoeNames        = readNames(builder.prefix + builder.hoeFile);
-        this.axeNames        = readNames(builder.prefix + builder.axeFile);
-        this.pantsNames      = readNames(builder.prefix + builder.pantsFile);
+        this.swordNames = readNames(builder.prefix + builder.swordFile);
+        this.pickNames = readNames(builder.prefix + builder.pickFile);
+        this.bowNames = readNames(builder.prefix + builder.bowFile);
+        this.helmetNames = readNames(builder.prefix + builder.helmetFile);
+        this.bootsNames = readNames(builder.prefix + builder.bootsFile);
+        this.crossbowNames = readNames(builder.prefix + builder.crossbowFile);
+        this.shovelNames = readNames(builder.prefix + builder.shovelFile);
+        this.hoeNames = readNames(builder.prefix + builder.hoeFile);
+        this.axeNames = readNames(builder.prefix + builder.axeFile);
+        this.pantsNames = readNames(builder.prefix + builder.pantsFile);
         this.chestPlateNames = readNames(builder.prefix + builder.chestPlateFile);
         this.fishingRodNames = readNames(builder.prefix + builder.fishingRodFile);
-        this.tridentNames    = readNames(builder.prefix + builder.tridentFile);
-        this.genericNames    = readNames(builder.prefix + builder.genericFile);
+        this.tridentNames = readNames(builder.prefix + builder.tridentFile);
+        this.genericNames = readNames(builder.prefix + builder.genericFile);
     }
 
     public List<String> getNamesForMaterial(LootMaterial lootMaterial) {
         switch (lootMaterial) {
-            case SWORD:       return swordNames;
-            case PICK:        return pickNames;
-            case BOW:         return bowNames;
-            case HELMET:      return helmetNames;
-            case BOOTS:       return bootsNames;
-            case CROSSBOW:    return crossbowNames;
-            case SHOVEL:      return shovelNames;
-            case HOE:         return hoeNames;
-            case AXE:         return axeNames;
-            case PANTS:       return pantsNames;
-            case CHEST_PLATE: return chestPlateNames;
-            case FISHING_ROD: return fishingRodNames;
-            case TRIDENT:     return tridentNames;
-            case GENERIC:     return genericNames;
+            case SWORD:
+                return swordNames;
+            case PICK:
+                return pickNames;
+            case BOW:
+                return bowNames;
+            case HELMET:
+                return helmetNames;
+            case BOOTS:
+                return bootsNames;
+            case CROSSBOW:
+                return crossbowNames;
+            case SHOVEL:
+                return shovelNames;
+            case HOE:
+                return hoeNames;
+            case AXE:
+                return axeNames;
+            case PANTS:
+                return pantsNames;
+            case CHEST_PLATE:
+                return chestPlateNames;
+            case FISHING_ROD:
+                return fishingRodNames;
+            case TRIDENT:
+                return tridentNames;
+            case GENERIC:
+                return genericNames;
 
             default:
                 throw new IllegalArgumentException("Loot material " + lootMaterial + " not implemented.");
@@ -86,15 +101,20 @@ public class MaterialNameGenerator implements NameGenerator {
         for (LootMaterial material : LootMaterial.values()) {
             try {
                 sum += getNamesForMaterial(material).size();
-            } catch (IllegalArgumentException ignored) {} // Material not supported, ignore
+            } catch (IllegalArgumentException ignored) {
+            } // Material not supported, ignore
         }
         return sum;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MaterialNameGenerator namePool = (MaterialNameGenerator) o;
         return swordNames.equals(namePool.swordNames) &&
                 pickNames.equals(namePool.pickNames) &&
@@ -121,7 +141,7 @@ public class MaterialNameGenerator implements NameGenerator {
      * Builder for a MaterialNameGenerator based on a set of files, one for
      * each material. Typical usage of this class is:
      *
-     * new FileBuilder().defaultNameFiles().prefix("your prefix/").build()
+     * <p>new FileBuilder().defaultNameFiles().prefix("your prefix/").build()
      */
     public static class FileBuilder {
         private String swordFile;
@@ -141,7 +161,8 @@ public class MaterialNameGenerator implements NameGenerator {
 
         private String prefix = "";
 
-        public FileBuilder() {}
+        public FileBuilder() {
+        }
 
         public MaterialNameGenerator build() {
             return new MaterialNameGenerator(this);

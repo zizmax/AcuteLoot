@@ -4,7 +4,7 @@ import acute.loot.AcuteLoot;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class HelpCommand extends AcuteLootCommand<CommandSender>  {
+public class HelpCommand extends AcuteLootCommand<CommandSender> {
 
     public HelpCommand(String permission, AcuteLoot plugin) {
         super(permission, plugin);

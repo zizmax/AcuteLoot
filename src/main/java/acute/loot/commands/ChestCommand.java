@@ -14,20 +14,25 @@ import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.persistence.PersistentDataType;
 
+/**
+ * Handler for /al chest.
+ */
 public class ChestCommand extends AcuteLootCommand<Player> {
 
     public ChestCommand(String permission, AcuteLoot plugin) {
         super(permission, plugin);
     }
 
-    private void createChest(Chest chest, Player sender, NamespacedKey key, String refillCooldown){
+    private void createChest(Chest chest, Player sender, NamespacedKey key, String refillCooldown) {
         // chestMetadataCode Version 1.0 = "1.0:currentTimeMillis():refillCooldown (minutes)"
         // i.e. "1.0:1606604412:90"
         String version = "1.0";
         String currentTime = String.valueOf(System.currentTimeMillis());
         String chestMetadataCode = String.format("%s:%s:%s", version, currentTime, refillCooldown);
 
-        if (plugin().debug) sender.sendMessage("Code: " + chestMetadataCode);
+        if (plugin().debug) {
+            sender.sendMessage("Code: " + chestMetadataCode);
+        }
         chest.getPersistentDataContainer().set(key, PersistentDataType.STRING, chestMetadataCode);
         chest.update();
 
@@ -52,12 +57,11 @@ public class ChestCommand extends AcuteLootCommand<Player> {
         NamespacedKey key = new NamespacedKey(plugin(), "chestMetadataKey");
         String refillCooldown = "-1";
 
-        if (args.length >= 2){
+        if (args.length >= 2) {
             try {
                 Integer.parseInt(args[1]);
                 refillCooldown = args[1];
-            }
-            catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown (minutes) must be an integer");
                 return;
             }
@@ -68,25 +72,24 @@ public class ChestCommand extends AcuteLootCommand<Player> {
 
         Block targetedBlock = sender.getTargetBlockExact(20);
 
-        if (targetedBlock != null && targetedBlock.getType().equals(Material.CHEST) && targetedBlock.getState() instanceof Chest) {
-            if (((Chest) targetedBlock.getState()).getPersistentDataContainer().has(key, PersistentDataType.STRING)){
-                String chestMetadata = ((Chest) targetedBlock).getPersistentDataContainer().get(key, PersistentDataType.STRING);
-            }
-            else {
+        if (targetedBlock != null && targetedBlock.getType()
+                                                  .equals(Material.CHEST) && targetedBlock.getState() instanceof Chest) {
+            if (((Chest) targetedBlock.getState()).getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+                String chestMetadata = ((Chest) targetedBlock).getPersistentDataContainer()
+                                                              .get(key, PersistentDataType.STRING);
+            } else {
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.GRAY + "Mode: " + ChatColor.AQUA + "targeted block");
                 createChest((Chest) targetedBlock.getState(), sender, key, refillCooldown);
                 numFoundChests++;
             }
-        }
-
-        else {
+        } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.GRAY + "Mode: " + ChatColor.AQUA + "chunk search");
-            for (BlockState tileEntity : sender.getLocation().getChunk().getTileEntities()){
-                if (tileEntity instanceof Chest){
-                    if (((Chest) tileEntity).getPersistentDataContainer().has(key, PersistentDataType.STRING)){
-                        String chestMetadata = ((Chest) tileEntity).getPersistentDataContainer().get(key, PersistentDataType.STRING);
-                    }
-                    else {
+            for (BlockState tileEntity : sender.getLocation().getChunk().getTileEntities()) {
+                if (tileEntity instanceof Chest) {
+                    if (((Chest) tileEntity).getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+                        String chestMetadata = ((Chest) tileEntity).getPersistentDataContainer()
+                                                                   .get(key, PersistentDataType.STRING);
+                    } else {
                         createChest((Chest) tileEntity, sender, key, refillCooldown);
                         numFoundChests++;
                     }
@@ -94,24 +97,21 @@ public class ChestCommand extends AcuteLootCommand<Player> {
             }
         }
 
-        if(numFoundChests == 0){
-            sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "0" + ChatColor.GRAY
-                    + " non-AcuteLoot chests found in current chunk!");
-        }
-        else {
+        if (numFoundChests == 0) {
+            sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "0" + ChatColor.GRAY +
+                    " non-AcuteLoot chests found in current chunk!");
+        } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Chests created: " + ChatColor.AQUA + numFoundChests);
-            if (refillCooldown.equals("-1")){
-                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown: " + ChatColor.AQUA + "none"
-                        + ChatColor.GRAY + "*");
+            if (refillCooldown.equals("-1")) {
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown: " + ChatColor.AQUA + "none" + ChatColor.GRAY + "*");
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "*Only attempts to generate loot on first open");
-            }
-            else{
+            } else {
 
                 int seconds = (Integer.parseInt(refillCooldown) * 60) % 60;
                 int minutes = Integer.parseInt(refillCooldown) % 60;
-                int hours   = Integer.parseInt(refillCooldown) / 60;
-                sender.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + "Refill cooldown: " + ChatColor.AQUA
-                        + "%dh:%dm:%ds", hours, minutes, seconds));
+                int hours = Integer.parseInt(refillCooldown) / 60;
+                sender.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + "Refill cooldown: " + ChatColor.AQUA +
+                        "%dh:%dm:%ds", hours, minutes, seconds));
             }
         }
     }

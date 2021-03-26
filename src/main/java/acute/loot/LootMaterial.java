@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Enum for a the type of loot, e.g. SWORD or BOW.
+ */
 public enum LootMaterial {
 
     SWORD, BOW, HELMET, BOOTS, CROSSBOW, // Can have effects (for now)
@@ -33,7 +36,7 @@ public enum LootMaterial {
     static {
         final Map<Material, LootMaterial> matMap = new HashMap<>();
 
-        boolean has15 = AcuteLoot.serverVersion > 15;
+        final boolean has15 = AcuteLoot.serverVersion > 15;
 
         // Swords
         matMap.put(Material.WOODEN_SWORD, SWORD);
@@ -41,7 +44,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_SWORD, SWORD);
         matMap.put(Material.GOLDEN_SWORD, SWORD);
         matMap.put(Material.DIAMOND_SWORD, SWORD);
-        if (has15) matMap.put(Material.NETHERITE_SWORD, SWORD);
+        if (has15) {
+            matMap.put(Material.NETHERITE_SWORD, SWORD);
+        }
 
         // Picks
         matMap.put(Material.WOODEN_PICKAXE, PICK);
@@ -49,7 +54,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_PICKAXE, PICK);
         matMap.put(Material.GOLDEN_PICKAXE, PICK);
         matMap.put(Material.DIAMOND_PICKAXE, PICK);
-        if (has15) matMap.put(Material.NETHERITE_PICKAXE, PICK);
+        if (has15) {
+            matMap.put(Material.NETHERITE_PICKAXE, PICK);
+        }
 
         // Shovels
         matMap.put(Material.WOODEN_SHOVEL, SHOVEL);
@@ -57,7 +64,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_SHOVEL, SHOVEL);
         matMap.put(Material.GOLDEN_SHOVEL, SHOVEL);
         matMap.put(Material.DIAMOND_SHOVEL, SHOVEL);
-        if (has15) matMap.put(Material.NETHERITE_SHOVEL, SHOVEL);
+        if (has15) {
+            matMap.put(Material.NETHERITE_SHOVEL, SHOVEL);
+        }
 
         // Axes
         matMap.put(Material.WOODEN_AXE, AXE);
@@ -65,7 +74,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_AXE, AXE);
         matMap.put(Material.GOLDEN_AXE, AXE);
         matMap.put(Material.DIAMOND_AXE, AXE);
-        if (has15) matMap.put(Material.NETHERITE_AXE, AXE);
+        if (has15) {
+            matMap.put(Material.NETHERITE_AXE, AXE);
+        }
 
         // Hoes
         matMap.put(Material.WOODEN_HOE, HOE);
@@ -73,7 +84,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_HOE, HOE);
         matMap.put(Material.GOLDEN_HOE, HOE);
         matMap.put(Material.DIAMOND_HOE, HOE);
-        if (has15) matMap.put(Material.NETHERITE_HOE, HOE);
+        if (has15) {
+            matMap.put(Material.NETHERITE_HOE, HOE);
+        }
 
         // Helmets
         matMap.put(Material.TURTLE_HELMET, HELMET);
@@ -82,7 +95,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_HELMET, HELMET);
         matMap.put(Material.GOLDEN_HELMET, HELMET);
         matMap.put(Material.DIAMOND_HELMET, HELMET);
-        if (has15) matMap.put(Material.NETHERITE_HELMET, HELMET);
+        if (has15) {
+            matMap.put(Material.NETHERITE_HELMET, HELMET);
+        }
 
         // Chest plates
         matMap.put(Material.LEATHER_CHESTPLATE, CHEST_PLATE);
@@ -90,7 +105,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_CHESTPLATE, CHEST_PLATE);
         matMap.put(Material.GOLDEN_CHESTPLATE, CHEST_PLATE);
         matMap.put(Material.DIAMOND_CHESTPLATE, CHEST_PLATE);
-        if (has15) matMap.put(Material.NETHERITE_CHESTPLATE, CHEST_PLATE);
+        if (has15) {
+            matMap.put(Material.NETHERITE_CHESTPLATE, CHEST_PLATE);
+        }
 
         // Leggings
         matMap.put(Material.LEATHER_LEGGINGS, PANTS);
@@ -98,7 +115,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_LEGGINGS, PANTS);
         matMap.put(Material.GOLDEN_LEGGINGS, PANTS);
         matMap.put(Material.DIAMOND_LEGGINGS, PANTS);
-        if (has15) matMap.put(Material.NETHERITE_LEGGINGS, PANTS);
+        if (has15) {
+            matMap.put(Material.NETHERITE_LEGGINGS, PANTS);
+        }
 
         // Boots
         matMap.put(Material.LEATHER_BOOTS, BOOTS);
@@ -106,7 +125,9 @@ public enum LootMaterial {
         matMap.put(Material.IRON_BOOTS, BOOTS);
         matMap.put(Material.GOLDEN_BOOTS, BOOTS);
         matMap.put(Material.DIAMOND_BOOTS, BOOTS);
-        if (has15) matMap.put(Material.NETHERITE_BOOTS, BOOTS);
+        if (has15) {
+            matMap.put(Material.NETHERITE_BOOTS, BOOTS);
+        }
 
         // Bow
         matMap.put(Material.BOW, BOW);

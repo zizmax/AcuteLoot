@@ -13,9 +13,11 @@ public class LootWell {
 
     private final AcuteLoot plugin;
 
-    public LootWell(AcuteLoot plugin) { this.plugin = plugin; }
+    public LootWell(AcuteLoot plugin) {
+        this.plugin = plugin;
+    }
 
-    public void onWish(PlayerDropItemEvent event){
+    public void onWish(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         if (plugin.debug) {
             if (plugin.getConfig().getBoolean("loot-well.enabled") && player.hasPermission("acuteloot.use-well")) {
@@ -28,12 +30,32 @@ public class LootWell {
                             cancel();
                             return;
                         }
-                        Location well = new Location(plugin.getServer().getWorld(plugin.getConfig().getString("loot-well.world")), plugin.getConfig().getDouble("loot-well.x"), plugin.getConfig().getDouble("loot-well.y"), plugin.getConfig().getDouble("loot-well.z"));
+                        Location well = new Location(plugin.getServer()
+                                                           .getWorld(plugin.getConfig()
+                                                                           .getString("loot-well.world")), plugin.getConfig()
+                                                                                                                 .getDouble("loot-well.x"), plugin
+                                .getConfig()
+                                .getDouble("loot-well.y"), plugin.getConfig().getDouble("loot-well.z"));
                         if (event.getItemDrop().getWorld().equals(well.getWorld())) {
                             if (event.getItemDrop().isOnGround() || event.getItemDrop().isInWater()) {
-                                if (event.getItemDrop().getLocation().distance(well) < plugin.getConfig().getDouble("loot-well.max-distance")) {
-                                    event.getItemDrop().setItemStack(new ItemStack(Material.DIAMOND, event.getItemDrop().getItemStack().getAmount()));
-                                    event.getItemDrop().setVelocity((player.getEyeLocation().add(0, 10, 0).toVector().subtract(event.getItemDrop().getLocation().toVector())).normalize().multiply(Double.parseDouble(player.getInventory().getItemInMainHand().getItemMeta().getDisplayName())));
+                                if (event.getItemDrop().getLocation().distance(well) < plugin.getConfig()
+                                                                                             .getDouble("loot-well.max-distance")) {
+                                    event.getItemDrop()
+                                         .setItemStack(new ItemStack(Material.DIAMOND, event.getItemDrop()
+                                                                                            .getItemStack()
+                                                                                            .getAmount()));
+                                    event.getItemDrop()
+                                         .setVelocity((player.getEyeLocation()
+                                                             .add(0, 10, 0)
+                                                             .toVector()
+                                                             .subtract(event.getItemDrop()
+                                                                            .getLocation()
+                                                                            .toVector())).normalize()
+                                                                                         .multiply(Double.parseDouble(player
+                                                                                                 .getInventory()
+                                                                                                 .getItemInMainHand()
+                                                                                                 .getItemMeta()
+                                                                                                 .getDisplayName())));
                                     player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, well.add(0, .25, 0), 100);
                                     player.getWorld().playSound(well, Sound.ENTITY_GENERIC_EXPLODE, 1f, 2.5f);
                                 }

@@ -17,9 +17,9 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
     private final Particle particle;
     private final boolean beamVisible;
 
-    public ToolParticleEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials,
+    public ToolParticleEffect(String name, int id, List<LootMaterial> validLootMaterials,
                               Particle particle, boolean beamVisible, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+        super(name, id, validLootMaterials, plugin);
         this.particle = particle;
         this.beamVisible = beamVisible;
     }
@@ -29,27 +29,28 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
         if (origEvent instanceof PlayerInteractEvent) {
             PlayerInteractEvent event = (PlayerInteractEvent) origEvent;
             Player player = event.getPlayer();
-            int max_beam_distance = plugin.getConfig().getInt("effects.weapons.max-distance");
-            double beam_segment_length = 0.3;
+            int maxBeamDistance = plugin.getConfig().getInt("effects.weapons.max-distance");
+            double beamSegmentLength = 0.3;
             final Random random = AcuteLoot.random;
 
             Particle.DustOptions dustOptions = null;
 
             if (particle == Particle.REDSTONE) {
-                if (this.getName().contains("laser"))
+                if (this.getName().contains("laser")) {
                     dustOptions = new Particle.DustOptions(Color.fromRGB(255, 0, 0), 1);
-                if (this.getName().equals("redstone"))
-                    dustOptions = new Particle.DustOptions(Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255)), 6);
+                }
+                if (this.getName().equals("redstone")) {
+                    dustOptions = new Particle.DustOptions(Color.fromRGB(random.nextInt(255), random.nextInt(255), random
+                            .nextInt(255)), 6);
+                }
             }
 
-            final List<Location> locations = Util.getLine(player.getEyeLocation(), max_beam_distance, beam_segment_length);
+            final List<Location> locations = Util.getLine(player.getEyeLocation(), maxBeamDistance, beamSegmentLength);
             for (int i = 0; i < locations.size(); i++) {
                 if (beamVisible) {
                     if (particle == Particle.REDSTONE) {
                         player.getWorld().spawnParticle(particle, locations.get(i), 1, dustOptions);
-                    }
-                    // Add other directional/velocity particles
-                    else if (particle == Particle.DRAGON_BREATH) {
+                    } else if (particle == Particle.DRAGON_BREATH) { // Add other directional/velocity particles
                         player.getWorld().spawnParticle(particle, locations.get(i), 0, 0, 0, 0);
                     } else {
                         player.getWorld().spawnParticle(particle, locations.get(i), 1);
@@ -73,10 +74,7 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
                     }
                     if (particle == Particle.REDSTONE) {
                         player.getWorld().spawnParticle(particle, location, 1, dustOptions);
-                    }
-
-                    // Add other directional/velocity particles
-                    else if (particle == Particle.DRAGON_BREATH) {
+                    } else if (particle == Particle.DRAGON_BREATH) { // Add other directional/velocity particles
                         player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
                     } else if (particle == Particle.ENCHANTMENT_TABLE) {
                         player.getWorld().spawnParticle(particle, location, 100);

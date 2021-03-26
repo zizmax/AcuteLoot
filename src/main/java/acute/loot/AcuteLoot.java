@@ -6,7 +6,6 @@ import base.collections.IntegerChancePool;
 import base.commands.TabCompletedMultiCommand;
 import base.util.Util;
 import org.bstats.bukkit.Metrics;
-
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -18,19 +17,24 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
-
-import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static acute.loot.LootSpecialEffect.registerEffect;
+
+/**
+ * Main plugin class.
+ */
 public final class AcuteLoot extends JavaPlugin {
 
     public static final Random random = new Random();
+
     static {
         Util.setRandom(random);
     }
@@ -86,15 +90,17 @@ public final class AcuteLoot extends JavaPlugin {
         getConfig().options().copyDefaults(true);
 
         // Connect to bStats
-        int bStatsID = 7348;
-        Metrics metrics = new Metrics(this, bStatsID);
+        int bStatsId = 7348;
+        Metrics metrics = new Metrics(this, bStatsId);
 
         // Set server version
-        serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2,4));
+        serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2, 4));
 
         // Configure name generators, rarities, and effects
         reloadConfiguration();
-        if (!this.isEnabled()) return;
+        if (!this.isEnabled()) {
+            return;
+        }
 
         // Set the AcuteLoot instance for the API
         API.setAcuteLoot(this);
@@ -103,8 +109,8 @@ public final class AcuteLoot extends JavaPlugin {
         UpdateChecker.init(this, spigotID).requestUpdateCheck().whenComplete((result, exception) -> {
             if (result.requiresUpdate()) {
                 this.getLogger().warning((String.format(ChatColor.RED +
-                        AcuteLoot.UPDATE_AVAILABLE, result.getNewestVersion()) + "at "
-                        + ChatColor.UNDERLINE + AcuteLoot.SPIGOT_URL));
+                        AcuteLoot.UPDATE_AVAILABLE, result.getNewestVersion()) + "at " +
+                        ChatColor.UNDERLINE + AcuteLoot.SPIGOT_URL));
                 return;
             }
 
@@ -118,7 +124,7 @@ public final class AcuteLoot extends JavaPlugin {
             }
         });
 
-        if(debug) {
+        if (debug) {
             getLogger().info(rarityChancePool.toString());
             getLogger().info(effectChancePool.toString());
         }
@@ -131,15 +137,18 @@ public final class AcuteLoot extends JavaPlugin {
         getLogger().info(String.format("v%s Enabled!", getDescription().getVersion()));
     }
 
-    public void checkConfigVersion() {
+    private void checkConfigVersion() {
         int installedVersion = getIntIfDefined("config-version", getConfig());
-        if(installedVersion < configVersion){
+        if (installedVersion < configVersion) {
             try {
-                Files.copy(Paths.get("plugins/AcuteLoot/config.yml"), Paths.get("plugins/AcuteLoot/config.bak"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(Paths.get("plugins/AcuteLoot/config.yml"),
+                           Paths.get("plugins/AcuteLoot/config.bak"),
+                           StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 getLogger().warning("Failed to create backup config!");
             }
-            getLogger().warning(String.format("[CONFIG OUT OF DATE]: Your version (v%d) is behind the current version (v%d)", installedVersion, configVersion));
+            getLogger().warning(String.format("[CONFIG OUT OF DATE]: Your version (v%d) is behind the current version (v%d)",
+                                              installedVersion, configVersion));
             getLogger().warning("This means you are missing new/updated config options!");
             getLogger().warning("AcuteLoot will work correctly, but will use the defaults for missing options.");
             getLogger().warning("To view the latest version of the config: https://git.io/JtgCf");
@@ -151,11 +160,11 @@ public final class AcuteLoot extends JavaPlugin {
         }
     }
 
-    private int getIntIfDefined(String key, ConfigurationSection config){
+    private int getIntIfDefined(String key, ConfigurationSection config) {
         // Modified version of code from:
         // https://www.spigotmc.org/threads/prevent-defaults-coming-from-default-config-yml.439927/
         // This is due to odd and annoying behavior of getConfig() to pull from config defaults if they don't exist on disk
-        if(config.getKeys(false).contains(key)){
+        if (config.getKeys(false).contains(key)) {
             return config.getInt(key);
         }
         return 0;
@@ -169,10 +178,14 @@ public final class AcuteLoot extends JavaPlugin {
 
         // Set debug mode
         debug = getConfig().getBoolean("debug");
-        if(debug) this.getLogger().warning("Debug mode enabled!");
+        if (debug) {
+            this.getLogger().warning("Debug mode enabled!");
+        }
 
         // Create loot well(s)
-        if(debug) lootWell = new LootWell(this);
+        if (debug) {
+            lootWell = new LootWell(this);
+        }
 
         // Writing names files to disk if they don't exist
         File namesFolder = new File("plugins/AcuteLoot/names");
@@ -187,18 +200,19 @@ public final class AcuteLoot extends JavaPlugin {
             getLogger().info("Created fixed names folder");
         }
 
-        String[] namesFiles = {"axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
-                "helmets", "hoes", "kana", "leggings", "picks", "prefixes", "shovels", "suffixes",
-                "swords", "tridents"};
+        String[] namesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
+                                "helmets", "hoes", "kana", "leggings", "picks", "prefixes", "shovels", "suffixes",
+                                "swords", "tridents"};
 
-        String[] fixedNamesFiles = {"axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
-                "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents"};
+        String[] fixedNamesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
+                                     "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents"};
 
         for (String fileName : namesFiles) {
             File fileToCheck = new File("plugins/AcuteLoot/names/" + fileName + ".txt");
             if (!fileToCheck.exists()) {
                 try {
-                    Files.copy(this.getClass().getResourceAsStream("/names/" + fileName + ".txt"), Paths.get("plugins/AcuteLoot/names/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(this.getClass().getResourceAsStream("/names/" + fileName + ".txt"),
+                               Paths.get("plugins/AcuteLoot/names/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
                     getLogger().info("Wrote " + fileName + ".txt file");
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -211,7 +225,8 @@ public final class AcuteLoot extends JavaPlugin {
             File fileToCheck = new File("plugins/AcuteLoot/names/fixed/" + fileName + ".txt");
             if (!fileToCheck.exists()) {
                 try {
-                    Files.copy(this.getClass().getResourceAsStream("/names/fixed/" + fileName + ".txt"), Paths.get("plugins/AcuteLoot/names/fixed/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(this.getClass().getResourceAsStream("/names/fixed/" + fileName + ".txt"),
+                               Paths.get("plugins/AcuteLoot/names/fixed/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
                     getLogger().info("Wrote fixed/" + fileName + ".txt file");
 
                 } catch (IOException e) {
@@ -222,20 +237,21 @@ public final class AcuteLoot extends JavaPlugin {
 
         // Materials file
         String fileName = "materials";
-        if(debug) getLogger().info("Detected Major MC version: 1." + serverVersion);
+        if (debug) {
+            getLogger().info("Detected Major MC version: 1." + serverVersion);
+        }
         String version;
         // MC version 1.16 or above
         if (serverVersion > 15) {
             version = "1.16";
-        }
-        // MC version 1.15 or below
-        else {
+        } else { // MC version 1.15 or below
             version = "1.15";
         }
         File fileToCheck = new File("plugins/AcuteLoot/" + fileName + ".txt");
         if (!fileToCheck.exists()) {
             try {
-                Files.copy(this.getClass().getResourceAsStream("/" + fileName + version + ".txt"), Paths.get("plugins/AcuteLoot/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(this.getClass().getResourceAsStream("/" + fileName + version + ".txt"),
+                           Paths.get("plugins/AcuteLoot/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
                 getLogger().info("Wrote " + version + " " + fileName + ".txt file");
             } catch (IOException e) {
                 this.getLogger().severe("IO Exception");
@@ -294,12 +310,11 @@ public final class AcuteLoot extends JavaPlugin {
         LootRarity.getRarities().clear();
         rarityChancePool.clear();
         rarityNames.clear();
-        for(String key : getConfig().getConfigurationSection("rarities").getKeys(false)){
+        for (String key : getConfig().getConfigurationSection("rarities").getKeys(false)) {
             int id;
             try {
                 id = Integer.parseInt(key);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 getLogger().severe("Fatal config error on rarity ID: " + key);
                 getLogger().severe("Are you sure the ID is an integer?");
                 getServer().getPluginManager().disablePlugin(this);
@@ -310,9 +325,9 @@ public final class AcuteLoot extends JavaPlugin {
             // Add "tab completer-safe" name to HashMap of rarities
             rarityNames.put(name.replace(' ', '_'), id);
             String color = ChatColor.translateAlternateColorCodes('&', getConfig().getString("rarities." + id + ".color"));
-            int chance =  getConfig().getInt("rarities." + id + ".chance");
+            int chance = getConfig().getInt("rarities." + id + ".chance");
             double effectChance = getConfig().getInt("rarities." + id + ".effect-chance") / 100.0;
-            if(debug) {
+            if (debug) {
                 getLogger().info("Chance: " + chance);
                 getLogger().info("Effect Chance: " + effectChance);
             }
@@ -326,47 +341,52 @@ public final class AcuteLoot extends JavaPlugin {
         // Clear any existing effects
         LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).clear();
 
+        final List<LootMaterial> axeSwordMat = Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE);
+        final List<LootMaterial> bowMat = Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW);
+
         // Tool Particle
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_laser", LootSpecialEffect.AL_NS, 1, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.REDSTONE, true, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_note", LootSpecialEffect.AL_NS, 2, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.NOTE, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_lava", LootSpecialEffect.AL_NS, 3, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.LAVA, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_enchanting-table", LootSpecialEffect.AL_NS, 4, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.ENCHANTMENT_TABLE, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_potion-effect", LootSpecialEffect.AL_NS, 5, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.SPELL_MOB, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_nautilus", LootSpecialEffect.AL_NS, 6, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.NAUTILUS, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_slime", LootSpecialEffect.AL_NS, 7, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.SLIME, false, this));
-        LootSpecialEffect.registerEffect(new ToolParticleEffect("weapons_water-splash", LootSpecialEffect.AL_NS, 8, Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE), Particle.WATER_SPLASH, false, this));
+        registerEffect(new ToolParticleEffect("weapons_laser", 1, axeSwordMat, Particle.REDSTONE, true, this));
+        registerEffect(new ToolParticleEffect("weapons_note", 2, axeSwordMat, Particle.NOTE, false, this));
+        registerEffect(new ToolParticleEffect("weapons_lava", 3, axeSwordMat, Particle.LAVA, false, this));
+        registerEffect(new ToolParticleEffect("weapons_enchanting-table", 4, axeSwordMat, Particle.ENCHANTMENT_TABLE, false, this));
+        registerEffect(new ToolParticleEffect("weapons_potion-effect", 5, axeSwordMat, Particle.SPELL_MOB, false, this));
+        registerEffect(new ToolParticleEffect("weapons_nautilus", 6, axeSwordMat, Particle.NAUTILUS, false, this));
+        registerEffect(new ToolParticleEffect("weapons_slime", 7, axeSwordMat, Particle.SLIME, false, this));
+        registerEffect(new ToolParticleEffect("weapons_water-splash", 8, axeSwordMat, Particle.WATER_SPLASH, false, this));
 
         // Bow Teleport
-        LootSpecialEffect.registerEffect(new BowTeleportEffect("enderbow", LootSpecialEffect.AL_NS, 9,  Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), this));
+        registerEffect(new BowTeleportEffect("enderbow", 9, bowMat, this));
 
         // Bow Particle
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_heart", LootSpecialEffect.AL_NS, 10, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.HEART, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_purple-spark", LootSpecialEffect.AL_NS, 11, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.SPELL_WITCH, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_lava", LootSpecialEffect.AL_NS, 12, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.LAVA, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_drip", LootSpecialEffect.AL_NS, 13, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.DRIP_LAVA, this ));
-        LootSpecialEffect.registerEffect(new BowParticleEffect("bows_sparkle", LootSpecialEffect.AL_NS, 14, Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW), Particle.TOTEM, this ));
+        registerEffect(new BowParticleEffect("bows_heart", 10, bowMat, Particle.HEART, this));
+        registerEffect(new BowParticleEffect("bows_purple-spark", 11, bowMat, Particle.SPELL_WITCH, this));
+        registerEffect(new BowParticleEffect("bows_lava", 12, bowMat, Particle.LAVA, this));
+        registerEffect(new BowParticleEffect("bows_drip", 13, bowMat, Particle.DRIP_LAVA, this));
+        registerEffect(new BowParticleEffect("bows_sparkle", 14, bowMat, Particle.TOTEM, this));
 
         // Block Trail
-        LootSpecialEffect.registerEffect(new BlockTrailEffect("gardener", LootSpecialEffect.AL_NS, 15, Collections.singletonList(LootMaterial.BOOTS), this));
+        registerEffect(new BlockTrailEffect("gardener", 15, Collections.singletonList(LootMaterial.BOOTS), this));
 
         // XP Boost
-        LootSpecialEffect.registerEffect(new XPBoostEffect("xp-boost", LootSpecialEffect.AL_NS, 16, Collections.singletonList(LootMaterial.HELMET), this));
+        registerEffect(new XpBoostEffect("xp-boost", 16, Collections.singletonList(LootMaterial.HELMET), this));
 
         // Time Walker
-        LootSpecialEffect.registerEffect(new TimewalkEffect("timewalker", LootSpecialEffect.AL_NS, 17, Collections.singletonList(LootMaterial.BOOTS), this));
+        registerEffect(new TimewalkEffect("timewalker", 17, Collections.singletonList(LootMaterial.BOOTS), this));
 
         // Dead Eye
-        LootSpecialEffect.registerEffect(new DeadEyeEffect("dead-eye", LootSpecialEffect.AL_NS, 18, Collections.singletonList(LootMaterial.BOW), this));
+        registerEffect(new DeadEyeEffect("dead-eye", 18, Collections.singletonList(LootMaterial.BOW), this));
 
         //Medusa (Gorgon)
-        LootSpecialEffect.registerEffect(new MedusaEffect("medusa", LootSpecialEffect.AL_NS, 19, Collections.singletonList(LootMaterial.BOW), this));
+        registerEffect(new MedusaEffect("medusa", 19, Collections.singletonList(LootMaterial.BOW), this));
 
         // Rebuild the effect chance pool
         effectChancePool.clear();
         effectNames.clear();
         for (LootSpecialEffect effect : LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).values()) {
             int chance = getConfig().getInt("effects." + effect.getName().replace("_", ".") + ".chance");
-            if(debug) getLogger().info(effect.getName() + ": " + chance);
+            if (debug) {
+                getLogger().info(effect.getName() + ": " + chance);
+            }
             effectChancePool.addDiscardingInvalid(effect, chance);
             // Add "tab completer-safe" name to HashMap of effects
             //FIXME: Append namespace for duplicate effect names across different namespaces
@@ -374,7 +394,7 @@ public final class AcuteLoot extends JavaPlugin {
         }
 
         // Dev Effects (currently being tested)
-        if(debug) {
+        if (debug) {
 
             // Register effect, add effect to chancePool, add effect to effectNames
 
@@ -405,19 +425,29 @@ public final class AcuteLoot extends JavaPlugin {
         lootGenerator = new LootItemGenerator(rarityChancePool, effectChancePool, nameGenChancePool, this);
     }
 
-    public String getUIString(String messageName){
+    public String getUiString(String messageName) {
         if (getConfig().contains("msg." + messageName)) {
             return ChatColor.translateAlternateColorCodes('&', getConfig().getString("msg." + messageName));
         } else {
             getLogger().warning("Config message error at: msg." + messageName);
-            return ChatColor.DARK_RED + "[" +ChatColor.BLACK + "Config Error" + ChatColor.DARK_RED+ "]";
+            return ChatColor.DARK_RED + "[" + ChatColor.BLACK + "Config Error" + ChatColor.DARK_RED + "]";
         }
     }
 
+    /**
+     * Get the loot code off the given item, or null if it cannot be read.
+     *
+     * @param item the item to get the loot code from
+     * @return the loot code from the item
+     */
     public String getLootCode(ItemStack item) {
-        if (item == null || item.getType().isAir()) return null;
+        if (item == null || item.getType().isAir()) {
+            return null;
+        }
         ItemMeta meta = item.getItemMeta();
-        if (meta == null) return null;
+        if (meta == null) {
+            return null;
+        }
         NamespacedKey key = new NamespacedKey(this, "lootCodeKey");
         PersistentDataContainer container = meta.getPersistentDataContainer();
         if (container.has(key, PersistentDataType.STRING)) {
@@ -446,12 +476,16 @@ public final class AcuteLoot extends JavaPlugin {
                         if (!material.equals("")) {
                             try {
                                 Material mat = Material.matchMaterial(material);
-                                if (mat != null) lootMaterials.add(mat);
-                                else {
+                                if (mat != null) {
+                                    lootMaterials.add(mat);
+                                } else {
                                     throw new NullPointerException();
                                 }
                             } catch (IllegalArgumentException | NullPointerException e) {
-                                plugin.getLogger().warning(material + " not valid material for server version: " + Bukkit.getBukkitVersion() + ". Skipping...");
+                                plugin.getLogger()
+                                      .warning(material +
+                                              " not valid material for server version: " +
+                                              Bukkit.getBukkitVersion() + ". Skipping...");
                             }
                         }
                     }
@@ -459,13 +493,14 @@ public final class AcuteLoot extends JavaPlugin {
             }
         } catch (IOException e) {
             e.printStackTrace();
-            plugin.getLogger().severe("Fatal IO exception while initializing materials.txt. Is file missing or corrupted?");
+            plugin.getLogger()
+                  .severe("Fatal IO exception while initializing materials.txt. Is file missing or corrupted?");
         }
         LootMaterial.setGenericMaterialsList(lootMaterials);
         plugin.getLogger().info("Initialized " + lootMaterials.size() + " materials");
     }
 
-    public void configureCommands(final TabCompletedMultiCommand alCommand) {
+    private void configureCommands(final TabCompletedMultiCommand alCommand) {
         alCommand.setCannotBeUsedByConsole(CHAT_PREFIX + "You have to be a player!");
         alCommand.setCannotBeUsedByPlayer(CHAT_PREFIX + "You have to be a console!");
         alCommand.setUnknownCommand(CHAT_PREFIX + "Subcommand not found!");
@@ -497,9 +532,12 @@ public final class AcuteLoot extends JavaPlugin {
 
         final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
             switch (args.length) {
-                case 2: return StringUtil.copyPartialMatches(args[1], rarityNames.keySet(), new ArrayList<>());
-                case 3: return StringUtil.copyPartialMatches(args[2], effectNames.keySet(), new ArrayList<>());
-                default: return null;
+                case 2:
+                    return StringUtil.copyPartialMatches(args[1], rarityNames.keySet(), new ArrayList<>());
+                case 3:
+                    return StringUtil.copyPartialMatches(args[2], effectNames.keySet(), new ArrayList<>());
+                default:
+                    return null;
             }
         };
 
@@ -509,7 +547,8 @@ public final class AcuteLoot extends JavaPlugin {
             return addAndNewCompletion.onTabComplete(s, c, l, Arrays.copyOfRange(args, 1, args.length));
         };
 
-        final TabCompleter nameCompletion = (s, c, l, args) -> args.length == 2 ? StringUtil.copyPartialMatches(args[1], nameGeneratorNames.keySet(), new ArrayList<>()) : null;
+        final TabCompleter nameCompletion = (s, c, l, args) -> args.length == 2 ? StringUtil.copyPartialMatches(args[1], nameGeneratorNames
+                .keySet(), new ArrayList<>()) : null;
 
         alCommand.registerSubcompletion("add", addAndNewCompletion);
         alCommand.registerSubcompletion("new", addAndNewCompletion);
@@ -517,18 +556,21 @@ public final class AcuteLoot extends JavaPlugin {
         alCommand.registerSubcompletion("name", nameCompletion);
     }
 
-    public static void sendIncompatibleEffectsWarning(CommandSender sender, LootItem lootItem, ItemStack item){
-        if(lootItem == null) return;
-        for(LootSpecialEffect effect : lootItem.getEffects()){
-            if(!effect.getValidMaterials().contains(LootMaterial.lootMaterialForMaterial(item.getType()))){
-                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + effect.getName() + " not strictly compatible with this item!");
+    public static void sendIncompatibleEffectsWarning(CommandSender sender, LootItem lootItem, ItemStack item) {
+        if (lootItem == null) {
+            return;
+        }
+        for (LootSpecialEffect effect : lootItem.getEffects()) {
+            if (!effect.getValidMaterials().contains(LootMaterial.lootMaterialForMaterial(item.getType()))) {
+                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + effect
+                        .getName() + " not strictly compatible with this item!");
                 sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + "Effect may not work as expected/won't do anything");
             }
         }
     }
 
     public boolean hasPermission(CommandSender sender, String node) {
-        return (!getConfig().getBoolean("use-permissions") && sender.isOp())
-                || (getConfig().getBoolean("use-permissions") && sender.hasPermission(node));
+        return (!getConfig().getBoolean("use-permissions") && sender.isOp()) ||
+               (getConfig().getBoolean("use-permissions") && sender.hasPermission(node));
     }
 }
