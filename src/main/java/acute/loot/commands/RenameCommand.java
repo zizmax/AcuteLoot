@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+/**
+ * Rename command class.
+ */
 public class RenameCommand extends AcuteLootCommand<Player> {
 
     public RenameCommand(String permission, AcuteLoot plugin) {

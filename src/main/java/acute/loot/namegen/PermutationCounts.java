@@ -16,7 +16,7 @@ public final class PermutationCounts {
 
     /**
      * Try to find, with tolerance epsilon, the number of draws needed to have a `targetChance`
-     * chance of having a duplicate when drawing from a uniform distribution on `total` objects
+     * chance of having a duplicate when drawing from a uniform distribution on `total` objects.
      */
     public static long birthdayProblem(long total, double targetChance, double epsilon) {
         long x = total / 2;

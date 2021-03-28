@@ -11,6 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * New loot command class.
+ */
 public class NewLootCommand extends AcuteLootCommand<Player> {
 
     public NewLootCommand(String permission, AcuteLoot plugin) {

@@ -18,6 +18,9 @@ import org.bukkit.util.Vector;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Time walk effect class.
+ */
 public class TimewalkEffect extends AcuteLootSpecialEffect {
 
 
@@ -87,6 +90,15 @@ public class TimewalkEffect extends AcuteLootSpecialEffect {
         }
     }
 
+    /**
+     * Returns all blocks within a specified linear distance.
+     *
+     * @param location location of center point
+     * @param xLength x-axis length
+     * @param yLength y-axis length
+     * @param zLength z-axis length
+     * @return list of found blocks
+     */
     public static List<Block> getNearbyBlocks(Location location, int xLength, int yLength, int zLength) {
         List<Block> blocks = new ArrayList<Block>();
         for (int x = location.getBlockX() - xLength; x <= location.getBlockX() + xLength; x++) {
@@ -99,7 +111,12 @@ public class TimewalkEffect extends AcuteLootSpecialEffect {
         return blocks;
     }
 
-
+    /**
+     * Spawns particles indicating growth or decay near specified location.
+     *
+     * @param forward boolean indicating growth or decay
+     * @param location location for center of particle animation
+     */
     public void playGrowthParticles(boolean forward, Location location) {
         location = location.add(0, .5, 0);
         for (double x = location.getX() - .4; x <= location.getX() + .4; x += .1) {

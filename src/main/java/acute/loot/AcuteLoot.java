@@ -1,5 +1,7 @@
 package acute.loot;
 
+import static acute.loot.LootSpecialEffect.registerEffect;
+
 import acute.loot.commands.*;
 import acute.loot.namegen.*;
 import base.collections.IntegerChancePool;
@@ -25,8 +27,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static acute.loot.LootSpecialEffect.registerEffect;
 
 /**
  * Main plugin class.
@@ -170,6 +170,9 @@ public final class AcuteLoot extends JavaPlugin {
         return 0;
     }
 
+    /**
+     * Separate class for reloading the config and registering names/effects to do so on startup and /al reload.
+     */
     public void reloadConfiguration() {
         // Reload config
         saveDefaultConfig();
@@ -425,6 +428,12 @@ public final class AcuteLoot extends JavaPlugin {
         lootGenerator = new LootItemGenerator(rarityChancePool, effectChancePool, nameGenChancePool, this);
     }
 
+    /**
+     * Returns formatted UI message from config.
+     *
+     * @param messageName name of message name to construct YAML node
+     * @return the message or an error string
+     */
     public String getUiString(String messageName) {
         if (getConfig().contains("msg." + messageName)) {
             return ChatColor.translateAlternateColorCodes('&', getConfig().getString("msg." + messageName));
@@ -556,6 +565,13 @@ public final class AcuteLoot extends JavaPlugin {
         alCommand.registerSubcompletion("name", nameCompletion);
     }
 
+    /**
+     * Sends player a warning that the item they just generated has an effect that is not guaranteed to work.
+     *
+     * @param sender the player or console that executed the command
+     * @param lootItem the AcuteLoot item object
+     * @param item the ItemStack of the AcuteLoot item
+     */
     public static void sendIncompatibleEffectsWarning(CommandSender sender, LootItem lootItem, ItemStack item) {
         if (lootItem == null) {
             return;
@@ -564,7 +580,8 @@ public final class AcuteLoot extends JavaPlugin {
             if (!effect.getValidMaterials().contains(LootMaterial.lootMaterialForMaterial(item.getType()))) {
                 sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + effect
                         .getName() + " not strictly compatible with this item!");
-                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY + "Effect may not work as expected/won't do anything");
+                sender.sendMessage(ChatColor.GOLD + "[" + ChatColor.RED + "WARNING" + ChatColor.GOLD + "] " + ChatColor.GRAY +
+                        "Effect may not work as expected/won't do anything");
             }
         }
     }

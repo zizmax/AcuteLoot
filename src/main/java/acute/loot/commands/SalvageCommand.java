@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 
 import java.util.Objects;
 
+/**
+ * Salvage command class.
+ */
 public class SalvageCommand implements CommandHandler<CommandSender> {
 
     private final AcuteLoot plugin;

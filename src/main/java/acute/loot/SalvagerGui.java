@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GUI for the salvager feature.
+ * Salvager feature GUI class.
  */
 public class SalvagerGui implements Listener {
     private final Inventory inv;
@@ -33,6 +33,11 @@ public class SalvagerGui implements Listener {
     //FIXME: ...if InventoryCloseEvent is triggered, just catch it there. Otherwise will need to cover all events.
     //FIXME: ARMOR_STAND sound plays even when successfully salvaging
 
+    /**
+     * Initializes salvager inventory object.
+     *
+     * @param plugin AcuteLoot object
+     */
     public SalvagerGui(AcuteLoot plugin) {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         inv = Bukkit.createInventory(null, 54, plugin.getUiString("salvage.inv-name"));
@@ -40,12 +45,10 @@ public class SalvagerGui implements Listener {
         configureItems();
     }
 
-    // You can call this whenever you want to put the items in
     private void configureItems() {
         salvaged = null;
         for (int i = 0; i < 27; i++) {
             inv.setItem(i, createItem(Material.BLACK_STAINED_GLASS_PANE, " "));
-
         }
 
         inv.setItem(8, createItem(Material.OAK_SIGN, plugin.getUiString("salvage.help-name")));
@@ -167,10 +170,12 @@ public class SalvagerGui implements Listener {
                                                                                             .getString(dropIdNode + "material"));
                                                 }
                                                 Material material = base.util.Util.validateMaterial(plugin.getConfig()
-                                                                                                          .getString(dropIdNode + "material"));
+                                                                                                          .getString(dropIdNode +
+                                                                                                          "material"));
                                                 if (material != null) {
                                                     int slot = inv.first(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-                                                    inv.setItem(slot, createItem(material, ChatColor.translateAlternateColorCodes('&', ChatColor
+                                                    inv.setItem(slot, createItem(material,
+                                                            ChatColor.translateAlternateColorCodes('&', ChatColor
                                                             .stripColor(plugin.getConfig()
                                                                               .getString(dropIdNode + "name")))));
                                                     if (plugin.getConfig().contains(dropIdNode + "commands")) {
@@ -187,7 +192,8 @@ public class SalvagerGui implements Listener {
                                                         slotsToGive.add(slot);
                                                     }
                                                     player.playSound(player.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1, 1);
-                                                    inv.setItem(53, createItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Confirm"));
+                                                    inv.setItem(53, createItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN +
+                                                            "Confirm"));
                                                     salvaged = inv.getItem(13);
                                                 } else {
                                                     //FIXME: Better error string for players and admins

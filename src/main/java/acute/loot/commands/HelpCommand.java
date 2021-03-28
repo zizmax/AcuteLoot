@@ -4,6 +4,9 @@ import acute.loot.AcuteLoot;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+/**
+ * Help command class.
+ */
 public class HelpCommand extends AcuteLootCommand<CommandSender> {
 
     public HelpCommand(String permission, AcuteLoot plugin) {
@@ -12,9 +15,11 @@ public class HelpCommand extends AcuteLootCommand<CommandSender> {
 
     @Override
     protected void doHandle(CommandSender sender, String[] args) {
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.YELLOW + "==========| " + ChatColor.GRAY + "AcuteLoot Help" + ChatColor.YELLOW + " |==========");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.YELLOW + "==========| " + ChatColor.GRAY + "AcuteLoot Help" +
+                ChatColor.YELLOW + " |==========");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al reload" + ChatColor.GRAY + " Reload AL config and names");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al add <rarity> [effect]" + ChatColor.GRAY + " Add AcuteLoot to item");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al add <rarity> [effect]" + ChatColor.GRAY +
+                " Add AcuteLoot to item");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al remove" + ChatColor.GRAY + " Remove AcuteLoot from an item");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al new" + ChatColor.GRAY + " Create new random AcuteLoot");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al rename [name]" + ChatColor.GRAY + " Supports '&' codes!");

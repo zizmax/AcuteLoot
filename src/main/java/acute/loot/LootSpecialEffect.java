@@ -26,6 +26,7 @@ public abstract class LootSpecialEffect {
 
     /**
      * Construct a new LootSpecialEffect.
+     *
      * @param name the internal name, must not be empty
      * @param ns the effect namespace
      * @param id the effect id

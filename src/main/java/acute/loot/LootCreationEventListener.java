@@ -52,7 +52,8 @@ public class LootCreationEventListener implements Listener {
                 player.sendMessage("Raw chance: " + chance);
             }
             if (!plugin.getConfig().getBoolean("use-permissions") || (plugin.getConfig()
-                                                                            .getBoolean("use-permissions") && player.hasPermission("acuteloot.enchant"))) {
+                    .getBoolean("use-permissions") &&
+                    player.hasPermission("acuteloot.enchant"))) {
                 if (roll <= chance) {
                     Map<Enchantment, Integer> enchantments = event.getEnchantsToAdd();
                     int enchantRarity = getEnchantRarity(enchantments);
@@ -66,9 +67,11 @@ public class LootCreationEventListener implements Listener {
                                                                                                           .toString());
                             player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
                             player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
-                            player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA + String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
+                            player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA +
+                                    String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
                             player.sendMessage(ChatColor.GOLD + "Seed: " + ChatColor.AQUA + String.format("%.2f%%", seed * 100.0));
-                            player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA + String.format("%.2f%%", chance * 100.0));
+                            player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA +
+                                    String.format("%.2f%%", chance * 100.0));
                             player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta()
                                                                                                   .getLore()
                                                                                                   .get(0));

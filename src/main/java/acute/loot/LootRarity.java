@@ -34,6 +34,7 @@ public class LootRarity {
 
     /**
      * Register the given rarity. A rarity with the same ID must not already be registered.
+     *
      * @param rarity the rarity to register
      */
     public static void registerRarity(final LootRarity rarity) {
