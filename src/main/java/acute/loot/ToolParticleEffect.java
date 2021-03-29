@@ -12,11 +12,24 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Tool particle effect class.
+ */
 public class ToolParticleEffect extends AcuteLootSpecialEffect {
 
     private final Particle particle;
     private final boolean beamVisible;
 
+    /**
+     * Constructs a new tool particle effect object.
+     *
+     * @param name string
+     * @param id effect ID
+     * @param validLootMaterials loot materials that can have tool particle effect
+     * @param particle particle type
+     * @param beamVisible boolean to make beam visible like laser
+     * @param plugin AcuteLoot object
+     */
     public ToolParticleEffect(String name, int id, List<LootMaterial> validLootMaterials,
                               Particle particle, boolean beamVisible, AcuteLoot plugin) {
         super(name, id, validLootMaterials, plugin);
