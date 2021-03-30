@@ -1,13 +1,13 @@
 package acute.loot.namegen;
 
+import static acute.loot.namegen.NameGenerator.readNames;
+
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 import base.util.Util;
 
 import java.util.List;
 import java.util.Objects;
-
-import static acute.loot.namegen.NameGenerator.readNames;
 
 /**
  * NameGenerator the selects names from a fixed list based on the
@@ -54,6 +54,12 @@ public class MaterialNameGenerator implements NameGenerator {
         this.genericNames = readNames(builder.prefix + builder.genericFile);
     }
 
+    /**
+     * Get the individual names list for the given material.
+     *
+     * @param lootMaterial the material
+     * @return the names list for the material
+     */
     public List<String> getNamesForMaterial(LootMaterial lootMaterial) {
         switch (lootMaterial) {
             case SWORD:
@@ -101,8 +107,7 @@ public class MaterialNameGenerator implements NameGenerator {
         for (LootMaterial material : LootMaterial.values()) {
             try {
                 sum += getNamesForMaterial(material).size();
-            } catch (IllegalArgumentException ignored) {
-            } // Material not supported, ignore
+            } catch (IllegalArgumentException ignored) { /* Material not supported, ignore */ }
         }
         return sum;
     }
@@ -134,7 +139,8 @@ public class MaterialNameGenerator implements NameGenerator {
 
     @Override
     public int hashCode() {
-        return Objects.hash(swordNames, pickNames, bowNames, helmetNames, bootsNames, crossbowNames, shovelNames, hoeNames, axeNames, pantsNames, chestPlateNames, fishingRodNames, tridentNames, genericNames);
+        return Objects.hash(swordNames, pickNames, bowNames, helmetNames, bootsNames, crossbowNames, shovelNames,
+                            hoeNames, axeNames, pantsNames, chestPlateNames, fishingRodNames, tridentNames, genericNames);
     }
 
     /**
@@ -243,6 +249,11 @@ public class MaterialNameGenerator implements NameGenerator {
             return this;
         }
 
+        /**
+         * Initialize with the default name files.
+         *
+         * @return this builder
+         */
         public FileBuilder defaultNameFiles() {
             return swordFile(DEFAULT_SWORD_NAME_FILE)
                     .bowFile(DEFAULT_BOW_NAME_FILE)

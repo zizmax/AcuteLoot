@@ -11,7 +11,9 @@ import java.util.Optional;
 /**
  * Class for interfacing with AcuteLoot from external plugins.
  */
+//CHECKSTYLE:OFF
 public class API {
+    //CHECKSTYLE:ON
 
     /**
      * The current API version.

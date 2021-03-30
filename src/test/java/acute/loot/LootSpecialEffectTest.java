@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -71,8 +72,8 @@ public class LootSpecialEffectTest {
     @Test
     @DisplayName("Valid materials list cannot be null or empty")
     public void validMaterialsCannotBeNullOrEmpty() {
-        assertThrows(IllegalArgumentException.class, () -> new TestEffect("test", "AL", 1, Collections.emptyList()));
-        assertThrows(IllegalArgumentException.class, () -> new TestEffect("test", "AL", 1, null));
+        assertThrows(NoSuchElementException.class, () -> new TestEffect("test", "AL", 1, Collections.emptyList()));
+        assertThrows(NullPointerException.class, () -> new TestEffect("test", "AL", 1, null));
         assertDoesNotThrow(() -> new TestEffect("test", "LA", 1, Collections.singletonList(LootMaterial.SWORD)));
         assertDoesNotThrow(() -> new TestEffect("test", "TE-ST", 1, Arrays.asList(LootMaterial.SWORD, LootMaterial.PICK)));
     }

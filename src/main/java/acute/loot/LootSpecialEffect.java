@@ -35,6 +35,9 @@ public abstract class LootSpecialEffect {
      */
     public LootSpecialEffect(String name, String ns, int id, List<LootMaterial> validMaterials, String displayName) {
         this.name = Checks.requireNonEmpty(name, "Name cannot be empty");
+        if (name.contains(" ")) {
+            throw new IllegalArgumentException("Name cannot have spaces");
+        }
         this.id = new EffectId(ns, id);
         this.validMaterials = Checks.requireNonEmpty(validMaterials, "Materials list cannot be empty");
         this.displayName = displayName;

@@ -95,7 +95,7 @@ public class LootItemTest {
         assertThrows(IllegalArgumentException.class, () -> new LootItem("   "));
         assertThrows(IllegalArgumentException.class, () -> new LootItem("hello"));
         assertThrows(IllegalArgumentException.class, () -> new LootItem("hello, world!"));
-        assertThrows(IllegalArgumentException.class, () -> new LootItem(null));
+        assertThrows(NullPointerException.class, () -> new LootItem(null));
         assertThrows(IllegalArgumentException.class, () -> new LootItem("#AL:v0.0:1::#"));
     }
 

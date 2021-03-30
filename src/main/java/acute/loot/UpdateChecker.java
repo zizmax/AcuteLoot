@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 // Originally published by 2008Choco: https://www.spigotmc.org/threads/an-actually-decent-plugin-update-checker.344327/
 // Updated by ItsMeGlare (AKA darbyjack): https://gist.github.com/darbyjack/5978f9051cac812b5bb0e47f88ccbc42
 
-
+//CHECKSTYLE:OFF
 public final class UpdateChecker {
 
     public static final VersionScheme VERSION_SCHEME_DECIMAL = (first, second) -> {
@@ -316,3 +316,4 @@ public final class UpdateChecker {
     }
 
 }
+//CHECKSTYLE:ON

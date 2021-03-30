@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Representation of a piece of loot's rarity and effects.
+ */
 public class LootItem {
 
     private final int rarity;
@@ -17,6 +20,11 @@ public class LootItem {
         this.effects = effects;
     }
 
+    /**
+     * Parse a new LootItem from the given lootcode.
+     *
+     * @param lootcode the lootcode, cannot be empty or null and must be a known version
+     */
     public LootItem(String lootcode) {
         Checks.requireNonEmpty(lootcode, "LootCode cannot be null or empty");
         String[] parts = lootcode.split(":");

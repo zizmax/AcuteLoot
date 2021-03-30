@@ -43,8 +43,12 @@ public abstract class TransformationNameGenerator implements NameGenerator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         TransformationNameGenerator that = (TransformationNameGenerator) o;
         return Objects.equals(baseGenerator, that.baseGenerator);
     }

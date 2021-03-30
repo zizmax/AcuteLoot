@@ -7,6 +7,9 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+/**
+ * Utility classe for parameter validation.
+ */
 @SuppressWarnings("unused")
 public final class Checks {
 
@@ -83,6 +86,17 @@ public final class Checks {
         return check(t, predicate, message, IllegalArgumentException::new);
     }
 
+    /**
+     * Check that the value meets the predicate, throwing an exception produced
+     * by passing message to exceptionFunction otherwise.
+     *
+     * @param t the value to check
+     * @param predicate the predicate
+     * @param message the message to pass to exceptionFunction
+     * @param exceptionFunction the function to generate exceptions with
+     * @param <T> the type of the value
+     * @return the value
+     */
     public static <T> T check(final T t,
                               final Predicate<T> predicate,
                               final String message,

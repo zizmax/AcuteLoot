@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Random;
 
+/**
+ * Class for generating new pieces of loot.
+ */
 public class LootItemGenerator {
 
     private static final Random random = AcuteLoot.random;
@@ -25,6 +28,14 @@ public class LootItemGenerator {
     private final IntegerChancePool<NameGenerator> namePool;
     private final AcuteLoot plugin;
 
+    /**
+     * Construct a new LootItemGenerator.
+     *
+     * @param rarityPool the rarity pool for loot
+     * @param effectPool the effect pool for loot
+     * @param namePool the name pool for loot
+     * @param plugin the AcuteLoot instance
+     */
     public LootItemGenerator(IntegerChancePool<LootRarity> rarityPool,
                              IntegerChancePool<LootSpecialEffect> effectPool,
                              IntegerChancePool<NameGenerator> namePool,
@@ -188,6 +199,13 @@ public class LootItemGenerator {
         return item;
     }
 
+    /**
+     * Return a new random item stack from the loot materials list
+     * in the AcuteLoot instance. If it is damageable, the item will
+     * be given a random damage.
+     *
+     * @return a random new item stack
+     */
     public ItemStack getNewRandomLootItemStack() {
         ItemStack item = new ItemStack(Util.drawRandom(plugin.lootMaterials), 1);
 

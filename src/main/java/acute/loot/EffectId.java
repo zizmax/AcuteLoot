@@ -3,18 +3,33 @@ package acute.loot;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+/**
+ * Namespace'd ID for a loot effect.
+ */
 public final class EffectId {
     public final String ns;
     public final int id;
 
+    /**
+     * Construct a new EffectId with the given namespace and id.
+     *
+     * @param ns the namespace
+     * @param id the id
+     */
     public EffectId(String ns, int id) {
         if (!validNamespace(ns)) {
-            throw new IllegalArgumentException("Invalid namespace. Namespaces must be at least two characters long, consist solely of uppercase letters and dashes and may not start or end with a dash.");
+            throw new IllegalArgumentException("Invalid namespace. Namespaces must be at least two characters long, " +
+                                                "consist solely of uppercase letters and dashes and may not start or end with a dash.");
         }
         this.ns = ns;
         this.id = id;
     }
 
+    /**
+     * Construct a new EffectId from a string in ns;id format.
+     *
+     * @param str the string to parse
+     */
     public EffectId(String str) {
         String[] parts = str.split(";");
         if (parts.length != 2) {
@@ -22,7 +37,8 @@ public final class EffectId {
         }
         ns = parts[0];
         if (!validNamespace(ns)) {
-            throw new IllegalArgumentException("Invalid namespace. Namespaces must be at least two characters long, consist solely of uppercase letters and dashes and may not start or end with a dash.");
+            throw new IllegalArgumentException("Invalid namespace. Namespaces must be at least two characters long, " +
+                    "consist solely of uppercase letters and dashes and may not start or end with a dash.");
         }
         id = Integer.parseInt(parts[1]);
     }

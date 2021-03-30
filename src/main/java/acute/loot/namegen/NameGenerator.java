@@ -30,6 +30,7 @@ public interface NameGenerator {
     /**
      * Return the number of different names the NameGenerator can produce. This may be
      * an estimate, or can return 0 to signal that returning a count is not supported.
+     *
      * @return the number of different names the NameGenerator can produce
      */
     long countNumberOfNames();
