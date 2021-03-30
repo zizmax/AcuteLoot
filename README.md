@@ -2,6 +2,8 @@
 
 AcuteLoot adds customizable, RPG style loot to Minecraft servers with over **6 BILLION** unique possibilities. You can create AcuteLoot in an enchantment table, by fishing up rare treasures, or by finding loot in a naturally-generated chest.
 
+[![Build](https://github.com/zizmax/AcuteLoot/actions/workflows/maven.yml/badge.svg)](https://github.com/zizmax/AcuteLoot/actions/workflows/maven.yml)
+
 Features
 --------
 * **Custom Name Generator** - 6 billion not enough for you? Add or remove names from the algorithm as you see fit
