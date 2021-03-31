@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+/**
+ * Event listeners for creating loot.
+ */
 public class LootCreationEventListener implements Listener {
 
     private final AcuteLoot plugin;
@@ -48,7 +51,9 @@ public class LootCreationEventListener implements Listener {
                 player.sendMessage("Roll: " + roll);
                 player.sendMessage("Raw chance: " + chance);
             }
-            if (!plugin.getConfig().getBoolean("use-permissions") || (plugin.getConfig().getBoolean("use-permissions") && player.hasPermission("acuteloot.enchant"))) {
+            if (!plugin.getConfig().getBoolean("use-permissions") || (plugin.getConfig()
+                    .getBoolean("use-permissions") &&
+                    player.hasPermission("acuteloot.enchant"))) {
                 if (roll <= chance) {
                     Map<Enchantment, Integer> enchantments = event.getEnchantsToAdd();
                     int enchantRarity = getEnchantRarity(enchantments);
@@ -58,13 +63,18 @@ public class LootCreationEventListener implements Listener {
                         chance = (seed + (enchantRarity / 300.0)) / 2.0;
                         item = plugin.lootGenerator.createLootItem(item, chance);
                         if (plugin.debug) {
-                            player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType().toString());
+                            player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType()
+                                                                                                          .toString());
                             player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
                             player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
-                            player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA + String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
+                            player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA +
+                                    String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
                             player.sendMessage(ChatColor.GOLD + "Seed: " + ChatColor.AQUA + String.format("%.2f%%", seed * 100.0));
-                            player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA + String.format("%.2f%%", chance * 100.0));
-                            player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta().getLore().get(0));
+                            player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA +
+                                    String.format("%.2f%%", chance * 100.0));
+                            player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta()
+                                                                                                  .getLore()
+                                                                                                  .get(0));
                         }
                     }
                 }
@@ -72,12 +82,12 @@ public class LootCreationEventListener implements Listener {
         }
     }
 
-    public int getEnchantRarity(Map<Enchantment, Integer> enchantments) {
-        double total_levels = 0;
+    private int getEnchantRarity(Map<Enchantment, Integer> enchantments) {
+        double totalLevels = 0;
         for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-            total_levels = total_levels + (float) entry.getValue() / entry.getKey().getMaxLevel() * 100.0;
+            totalLevels = totalLevels + (float) entry.getValue() / entry.getKey().getMaxLevel() * 100.0;
         }
-        return Math.min((int) total_levels, 300);
+        return Math.min((int) totalLevels, 300);
     }
 
     @EventHandler
@@ -91,7 +101,7 @@ public class LootCreationEventListener implements Listener {
         Block block = event.getClickedBlock();
         if (block.getType() == Material.CHEST) {
             Chest chest = (Chest) block.getState();
-            if (!player.getWorld().getBlockAt(chest.getLocation().add(0,1,0)).getType().isOccluding()){
+            if (!player.getWorld().getBlockAt(chest.getLocation().add(0, 1, 0)).getType().isOccluding()) {
                 // Chests can only be opened when no opaque (occluding) block exists above
                 // Without this check AL chest-filling logic would run even if chest never actually opened
                 NamespacedKey key = new NamespacedKey(plugin, "chestMetadataKey");
@@ -99,29 +109,27 @@ public class LootCreationEventListener implements Listener {
                 // Only naturally-generated chests have lootTables
                 // And they only have the lootTable the very first time they are opened
                 if (plugin.debug || chest.getLootTable() != null || container.has(key, PersistentDataType.STRING)) {
-                    if(container.has(key, PersistentDataType.STRING)){
-                        if (plugin.debug) player.sendMessage("Has metadata code: "
-                                + container.get(key, PersistentDataType.STRING));
+                    if (container.has(key, PersistentDataType.STRING)) {
+                        if (plugin.debug) {
+                            player.sendMessage("Has metadata code: " + container.get(key, PersistentDataType.STRING));
+                        }
                         String[] chestMetadataCode = container.get(key, PersistentDataType.STRING).split(":");
                         String version = chestMetadataCode[0];
                         long timeStamp = Long.parseLong(chestMetadataCode[1]);
                         int refillCooldown = Integer.parseInt(chestMetadataCode[2]);
-                        if(refillCooldown != -1){
-                            if(System.currentTimeMillis() < timeStamp + ((double) refillCooldown * 60000d)){
-                                double remainingCooldown = (timeStamp + ((double) refillCooldown * 60000d)
-                                        - System.currentTimeMillis());
-                                int seconds = (int) (remainingCooldown / 1000) % 60 ;
-                                int minutes = (int) ((remainingCooldown / (1000*60)) % 60);
-                                int hours   = (int) (remainingCooldown / (1000*60*60));
-                                if(plugin.getConfig().getBoolean("loot-sources.chests.show-cooldown-msg")){
-                                    player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX
-                                                    + plugin.getUIString("chests.cooldown-remaining")
-                                                    + " %d:%d:%d",
-                                            hours, minutes, seconds));
+                        if (refillCooldown != -1) {
+                            if (System.currentTimeMillis() < timeStamp + ((double) refillCooldown * 60000d)) {
+                                double remainingCooldown = (timeStamp + ((double) refillCooldown * 60000d) - System.currentTimeMillis());
+                                int seconds = (int) (remainingCooldown / 1000) % 60;
+                                int minutes = (int) ((remainingCooldown / (1000 * 60)) % 60);
+                                int hours = (int) (remainingCooldown / (1000 * 60 * 60));
+                                if (plugin.getConfig().getBoolean("loot-sources.chests.show-cooldown-msg")) {
+                                    player.sendMessage(String.format(AcuteLoot.CHAT_PREFIX +
+                                                       plugin.getUiString("chests.cooldown-remaining") + " %d:%d:%d",
+                                                       hours, minutes, seconds));
                                 }
                                 return;
-                            }
-                            else {
+                            } else {
                                 // Opened AcuteLoot chest with expired cooldown
                                 // Reset timestamp
                                 //TODO: Add sound?
@@ -129,8 +137,7 @@ public class LootCreationEventListener implements Listener {
                                         System.currentTimeMillis(), refillCooldown));
                                 chest.update();
                             }
-                        }
-                        else {
+                        } else {
                             // Opened AcuteLoot chest with no cooldown
                             // Remove persistentDataContainer
                             container.remove(key);
@@ -154,7 +161,9 @@ public class LootCreationEventListener implements Listener {
                                     int slotIndex = 0;
                                     for (ItemStack itemStack : chest.getInventory().getContents()) {
                                         // Only add null (empty) slots so they can later be filled with loot
-                                        if (itemStack == null) emptySlots.add(slotIndex);
+                                        if (itemStack == null) {
+                                            emptySlots.add(slotIndex);
+                                        }
                                         slotIndex++;
                                     }
                                     int origEmptySlotsSize = emptySlots.size();
@@ -167,7 +176,9 @@ public class LootCreationEventListener implements Listener {
 
                                         for (int i = 1; i <= origEmptySlotsSize - 1; i++) {
                                             roll = random.nextDouble();
-                                            if (plugin.debug) player.sendMessage("Roll: " + roll);
+                                            if (plugin.debug) {
+                                                player.sendMessage("Roll: " + roll);
+                                            }
                                             if (roll <= chance) {
                                                 newLoot = plugin.lootGenerator.createLootItem();
                                                 slotIndex = random.nextInt(emptySlots.size());
@@ -205,8 +216,9 @@ public class LootCreationEventListener implements Listener {
                                        .getInventory()
                                        .getItemInMainHand()
                                        .getEnchantmentLevel(Enchantment.LUCK) * .021;
-                if (plugin.debug)
+                if (plugin.debug) {
                     event.getPlayer().sendMessage("Enchanted chance: " + chance);
+                }
                 if (roll <= chance) {
                     random.nextInt();
                     Item itemEntity = (Item) caught;
@@ -215,7 +227,9 @@ public class LootCreationEventListener implements Listener {
                     // BAMBOO_SAPLING appears to be the block material ONLY, so will error when applied to an ItemStack
                     // The original material lists include BAMBOO_SAPLING instead of the correct BAMBOO
                     // This is a sanity check in case someone is running on the old version
-                    if(item.getType().equals(Material.BAMBOO_SAPLING)) item.setType(Material.BAMBOO);
+                    if (item.getType().equals(Material.BAMBOO_SAPLING)) {
+                        item.setType(Material.BAMBOO);
+                    }
                     itemEntity.setItemStack(item);
                 }
             }
@@ -226,13 +240,15 @@ public class LootCreationEventListener implements Listener {
     @EventHandler
     public void anvilListener(PrepareAnvilEvent event) {
         AnvilInventory inv = event.getInventory();
-        if (event.getViewers().isEmpty() || inv.getItem(0) == null || plugin.getLootCode(inv.getItem(0)) == null) return;
+        if (event.getViewers().isEmpty() || inv.getItem(0) == null || plugin.getLootCode(inv.getItem(0)) == null) {
+            return;
+        }
         if (inv.getItem(0).hasItemMeta() && inv.getItem(0).getItemMeta().hasDisplayName()) {
             String origName = getDisplayName(inv.getItem(0));
             ItemStack result = event.getResult();
 
             if (result != null && !result.getType().equals(Material.AIR) && origName.contains(String.valueOf('§'))) {
-                String newName = origName.substring(0,2) + result.getItemMeta().getDisplayName();
+                String newName = origName.substring(0, 2) + result.getItemMeta().getDisplayName();
                 ItemMeta meta = result.getItemMeta();
                 meta.setDisplayName(newName);
                 result.setItemMeta(meta);
@@ -241,7 +257,7 @@ public class LootCreationEventListener implements Listener {
         }
     }
 
-    public String getDisplayName(ItemStack item) {
+    private String getDisplayName(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
             return item.getItemMeta().getDisplayName();
         }
@@ -249,8 +265,10 @@ public class LootCreationEventListener implements Listener {
     }
 
     @EventHandler
-    public void lootWellListener(PlayerDropItemEvent event){
-        if (plugin.debug) plugin.lootWell.onWish(event);
+    public void lootWellListener(PlayerDropItemEvent event) {
+        if (plugin.debug) {
+            plugin.lootWell.onWish(event);
+        }
     }
 
 }

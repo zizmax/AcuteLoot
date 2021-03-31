@@ -10,15 +10,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class MedusaEffect extends AcuteLootSpecialEffect{
+/**
+ * Medusa effect class.
+ */
+public class MedusaEffect extends AcuteLootSpecialEffect {
 
 
-    public MedusaEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+    public MedusaEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, id, validLootMaterials, plugin);
     }
 
     @Override
@@ -27,16 +29,17 @@ public class MedusaEffect extends AcuteLootSpecialEffect{
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
             if (event.getDamager() instanceof Arrow && event.getEntity() instanceof LivingEntity) {
                 LivingEntity livingEntity = (LivingEntity) event.getEntity();
-                Arrow arrow = (Arrow) event.getDamager();
                 event.getEntity().playEffect(EntityEffect.ENTITY_POOF);
                 World world = event.getEntity().getWorld();
                 world.playSound(event.getEntity().getLocation(), Sound.BLOCK_STONE_PLACE, 2, 1);
                 Material[] stoneBlockTypes;
                 if (world.getEnvironment().equals(World.Environment.NETHER)) {
-                    if (AcuteLoot.serverVersion > 15)
-                        stoneBlockTypes = new Material[]{Material.BLACKSTONE, Material.CRACKED_POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE};
-                    else
+                    if (AcuteLoot.serverVersion > 15) {
+                        stoneBlockTypes = new Material[]{Material.BLACKSTONE, Material.CRACKED_POLISHED_BLACKSTONE_BRICKS,
+                            Material.POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE};
+                    } else {
                         stoneBlockTypes = new Material[]{Material.GRAVEL, Material.SOUL_SAND};
+                    }
 
                 } else if (world.getEnvironment().equals(World.Environment.THE_END)) {
                     stoneBlockTypes = new Material[]{Material.END_STONE};
@@ -49,12 +52,15 @@ public class MedusaEffect extends AcuteLootSpecialEffect{
                     if (plugin.getConfig().getBoolean("effects.medusa.affect-players")) {
                         player.setMetadata("turnedToStone", new FixedMetadataValue(plugin, true));
                         player.setHealth(0);
-                    } else return;
+                    } else {
+                        return;
+                    }
                 } else {
                     if (plugin.getConfig().getBoolean("effects.medusa.drop-loot")) {
                         for (ItemStack item : livingEntity.getEquipment().getArmorContents()) {
-                            if (item != null && !item.getType().isAir())
+                            if (item != null && !item.getType().isAir()) {
                                 livingEntity.getWorld().dropItemNaturally(livingEntity.getLocation(), item);
+                            }
                         }
                         ItemStack mainHand = livingEntity.getEquipment().getItemInMainHand();
                         ItemStack offHand = livingEntity.getEquipment().getItemInOffHand();
@@ -67,10 +73,17 @@ public class MedusaEffect extends AcuteLootSpecialEffect{
                     }
                     livingEntity.remove();
                 }
+                Arrow arrow = (Arrow) event.getDamager();
 
                 arrow.remove();
                 event.setCancelled(true);
-                List<Block> blocks = getMobBoundingBlocks(event.getEntity().getLocation(), (int) Math.round(event.getEntity().getBoundingBox().getWidthX() / 2), (int) Math.round(event.getEntity().getBoundingBox().getHeight() / 2), (int) Math.round(event.getEntity().getBoundingBox().getWidthZ() / 2));
+                List<Block> blocks = getMobBoundingBlocks(event.getEntity()
+                                                               .getLocation(), (int) Math.round(event.getEntity()
+                                                                                                     .getBoundingBox()
+                                                                                                     .getWidthX() / 2), (int) Math
+                        .round(event.getEntity().getBoundingBox().getHeight() / 2), (int) Math.round(event.getEntity()
+                                                                                                          .getBoundingBox()
+                                                                                                          .getWidthZ() / 2));
                 for (Block block : blocks) {
                     if (block.getType().equals(Material.AIR) || block.isLiquid() || !block.getType().isSolid()) {
                         block.setType(stoneBlockTypes[AcuteLoot.random.nextInt(stoneBlockTypes.length)]);
@@ -80,11 +93,20 @@ public class MedusaEffect extends AcuteLootSpecialEffect{
         }
     }
 
-    public static List<Block> getMobBoundingBlocks(Location location, int x_length, int y_length, int z_length) {
+    /**
+     * Returns blocks within the bounding box of a mob.
+     *
+     * @param location location of mob
+     * @param xLength length of bounding box x-axis
+     * @param yLength length of bounding box y-axis
+     * @param zLength length of bounding box z-axis
+     * @return list of blocks within bounding box
+     */
+    public static List<Block> getMobBoundingBlocks(Location location, int xLength, int yLength, int zLength) {
         List<Block> blocks = new ArrayList<>();
-        for(int x = location.getBlockX(); x <= location.getBlockX() + x_length; x ++) {
-            for(int y = location.getBlockY(); y <= location.getBlockY() + y_length; y ++) {
-                for(int z = location.getBlockZ(); z <= location.getBlockZ() + z_length; z ++) {
+        for (int x = location.getBlockX(); x <= location.getBlockX() + xLength; x++) {
+            for (int y = location.getBlockY(); y <= location.getBlockY() + yLength; y++) {
+                for (int z = location.getBlockZ(); z <= location.getBlockZ() + zLength; z++) {
                     blocks.add(location.getWorld().getBlockAt(x, y, z));
                 }
             }

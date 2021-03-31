@@ -2,6 +2,7 @@ package acute.loot.namegen;
 
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
+import base.util.Checks;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,7 @@ public class CompoundNameGenerator implements NameGenerator {
     /**
      * Construct a new CompoundNameGenerator with the given NameGenerator
      * parts and " " as the joining string.
+     *
      * @param parts the NameGenerator parts, must be non-null and non-empty
      */
     public CompoundNameGenerator(NameGenerator... parts) {
@@ -29,6 +31,7 @@ public class CompoundNameGenerator implements NameGenerator {
     /**
      * Construct a new CompoundNameGenerator with the given NameGenerator
      * parts and " " as the joining string.
+     *
      * @param parts the NameGenerator parts, must be non-null and non-empty
      */
     public CompoundNameGenerator(List<NameGenerator> parts) {
@@ -38,12 +41,12 @@ public class CompoundNameGenerator implements NameGenerator {
     /**
      * Construct a new CompoundNameGenerator with the given NameGenerator
      * parts and joining string.
-     * @param parts the NameGenerator parts, must be non-null and non-empty
+     *
+     * @param parts         the NameGenerator parts, must be non-null and non-empty
      * @param joiningString the joining string, must be non-null
      */
     public CompoundNameGenerator(List<NameGenerator> parts, String joiningString) {
-        this.parts = Objects.requireNonNull(parts);
-        if (parts.isEmpty()) throw new IllegalArgumentException("Parts must not be empty");
+        this.parts = Checks.requireNonEmpty(parts);
         this.joiningString = Objects.requireNonNull(joiningString);
     }
 
@@ -61,8 +64,12 @@ public class CompoundNameGenerator implements NameGenerator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         CompoundNameGenerator that = (CompoundNameGenerator) o;
         return Objects.equals(parts, that.parts) &&
                 Objects.equals(joiningString, that.joiningString);

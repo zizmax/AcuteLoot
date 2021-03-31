@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * the element's chance divided by the sum of all element chances.
  * This later value is referred to as the chance pool's maximum or max.
  *
- * The chance pool works by partitioning the integers 0 &le; x &lt; max
+ * <p>The chance pool works by partitioning the integers 0 &le; x &lt; max
  * into blocks for each added element with respect to their chance. For
  * example, the situation above with "A", "B", and "C" would result
  * in {0, 1} being associated with "A", {2, 3, 4} being associated
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * one of which maps the double range [0, 1) to integers 0 &le; x &lt; max and
  * the other of which returns the element associated with the integer 0 &le; x &lt; max.
  *
- * The chance pool respects the order of added elements, meaning for example that
+ * <p>The chance pool respects the order of added elements, meaning for example that
  * invoking draw with parameter 0 will always draw the first element added and
  * invoking draw with parameter (max - 1) will always draw the last element added.
  */
@@ -66,6 +66,7 @@ public class IntegerChancePool<T> {
     /**
      * Construct a new IntegerChancePool with the given
      * Random instance. The Random instance must be non-nul.
+     *
      * @param random the Random instance
      */
     public IntegerChancePool(Random random) {
@@ -76,7 +77,8 @@ public class IntegerChancePool<T> {
 
     /**
      * Add an element to the chance pool with the given relative chance.
-     * @param val the value to add
+     *
+     * @param val            the value to add
      * @param relativeChance the relative chance to draw the element, must be positive
      */
     public void add(T val, int relativeChance) {
@@ -89,7 +91,8 @@ public class IntegerChancePool<T> {
      * Add the value to the pool with the given relative chance.
      * If the chance is not positive, the element is silently ignored
      * and not added.
-     * @param val the value to add to the chance pool
+     *
+     * @param val            the value to add to the chance pool
      * @param relativeChance the relative chance for the value to be drawn
      */
     public void addDiscardingInvalid(T val, int relativeChance) {
@@ -101,6 +104,7 @@ public class IntegerChancePool<T> {
     /**
      * Draw a random element from the chance pool. The element is selected
      * with respect to the relative chance it was added with.
+     *
      * @return a random element from the chance pool
      */
     public T draw() {
@@ -111,6 +115,7 @@ public class IntegerChancePool<T> {
     /**
      * Draw the element from the chance pool that is associated with the given double in [0.0, 1.0].
      * This operation is NOT random, see class documentation.
+     *
      * @param d the double to get the element for
      * @return the element in the chance pool associated with the double
      */
@@ -124,6 +129,7 @@ public class IntegerChancePool<T> {
     /**
      * Draw the element from the chance pool that is associated with the given integer in 0 &le; x &lt; max.
      * This operation is NOT random, see class documentation.
+     *
      * @param x the integer to get the element for
      * @return the element in the chance pool associated with the integer
      */
@@ -135,12 +141,13 @@ public class IntegerChancePool<T> {
                        .filter(e -> e.lower <= x && e.upper > x)
                        .findFirst()
                        .orElseThrow(() -> new IllegalStateException("Value " + x + " not in range of any pool elements."))
-                       .val;
+                .val;
     }
 
     /**
      * Draw an element from the subset of elements matching the predicate.
      * This is equivalent to filter(predicate).draw().
+     *
      * @param predicate the predicate to test items with
      * @return an element drawn from the subset of elements matching the predicate
      */
@@ -152,6 +159,7 @@ public class IntegerChancePool<T> {
      * Return a filtered version of the chance pool containing only elements that
      * match the predicate. The original object is unmodified. Note that the returned
      * chance pool will have a different max() unless all elements match the predicate.
+     *
      * @param predicate the predicate to test elements with
      * @return a filtered version of this chance pool containing only elements that match the predicate
      */
@@ -172,6 +180,7 @@ public class IntegerChancePool<T> {
      * Remove all elements from the chance pool that DO match the given predicate.
      * This is similar to the negation of filter(), but will modify this object instead
      * of returning another one.
+     *
      * @param predicate the predicate to test element with
      */
     public void removeWithPredicate(Predicate<T> predicate) {
@@ -187,6 +196,7 @@ public class IntegerChancePool<T> {
      * more than the greatest value accepted by draw(). This is
      * generally used to bound a random number generator being used
      * with draw().
+     *
      * @return the chance pool maximum
      */
     public int max() {
@@ -196,6 +206,7 @@ public class IntegerChancePool<T> {
     /**
      * Return a list of the values in the chance pool. No
      * guarantee is made as to the order of returned values.
+     *
      * @return the values in the chance pool
      */
     public List<T> values() {

@@ -5,6 +5,9 @@ import acute.loot.LootItem;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+/** Command with no arguments class.
+ *
+ */
 public class NoArgsCommand extends AcuteLootCommand<CommandSender> {
 
     public NoArgsCommand(String permission, AcuteLoot plugin) {

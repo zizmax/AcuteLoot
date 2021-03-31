@@ -16,6 +16,7 @@ public abstract class TransformationNameGenerator implements NameGenerator {
 
     /**
      * Construct a new TransformationNameGenerator with the given base NameGenerator.
+     *
      * @param baseGenerator the base NameGenerator, must not be null.
      */
     public TransformationNameGenerator(NameGenerator baseGenerator) {
@@ -24,6 +25,7 @@ public abstract class TransformationNameGenerator implements NameGenerator {
 
     /**
      * The transform, called with the result of the base NameGenerator.
+     *
      * @param input the string to transform, likely the result of invoking the base NameGenerator
      * @return the transformed string
      */
@@ -41,8 +43,12 @@ public abstract class TransformationNameGenerator implements NameGenerator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         TransformationNameGenerator that = (TransformationNameGenerator) o;
         return Objects.equals(baseGenerator, that.baseGenerator);
     }
@@ -55,6 +61,7 @@ public abstract class TransformationNameGenerator implements NameGenerator {
     /**
      * Wrap the given NameGenerator in a TransformationNameGenerator that
      * ensures the first character in the generated name is uppercase.
+     *
      * @param baseGenerator the base NameGenerator to wrap
      * @return a TransformationNameGenerator that ensures the first character of the name is uppercase
      */

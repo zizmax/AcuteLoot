@@ -2,6 +2,9 @@ package acute.loot;
 
 import java.util.*;
 
+/**
+ * The rarity of an AcuteLoot item.
+ */
 public class LootRarity {
 
     protected final String rarityColor;
@@ -11,6 +14,14 @@ public class LootRarity {
 
     private static final Map<Integer, LootRarity> rarities = new HashMap<>();
 
+    /**
+     * Construct a new LootRarity.
+     *
+     * @param id the rarity id
+     * @param name the rarity name
+     * @param effectChance the rarity effect chance
+     * @param rarityColor the rarity color, for the item lore
+     */
     public LootRarity(int id, String name, double effectChance, String rarityColor) {
         this.id = id;
         this.name = name;
@@ -21,6 +32,11 @@ public class LootRarity {
         this.effectChance = effectChance;
     }
 
+    /**
+     * Register the given rarity. A rarity with the same ID must not already be registered.
+     *
+     * @param rarity the rarity to register
+     */
     public static void registerRarity(final LootRarity rarity) {
         if (rarities.containsKey(rarity.getId())) {
             throw new IllegalArgumentException("Rarity with id '" + rarity.getId() + "' already registered.");
@@ -54,8 +70,12 @@ public class LootRarity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         LootRarity that = (LootRarity) o;
         return id == that.id &&
                 Double.compare(that.effectChance, effectChance) == 0 &&

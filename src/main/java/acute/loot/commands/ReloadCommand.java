@@ -12,6 +12,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+/** Reload command class.
+ *
+ * @param <T> Command sender
+ */
 public abstract class ReloadCommand<T extends CommandSender> extends AcuteLootCommand<T> {
 
     public ReloadCommand(String permission, AcuteLoot plugin) {
@@ -45,6 +49,9 @@ public abstract class ReloadCommand<T extends CommandSender> extends AcuteLootCo
 
     protected abstract void sendUpdateMessage(T sender, UpdateChecker.UpdateResult result);
 
+    /**
+     * Reload command sent by player class.
+     */
     public static class PlayerReloadCommand extends ReloadCommand<Player> {
 
         public PlayerReloadCommand(String permission, AcuteLoot plugin) {
@@ -53,18 +60,22 @@ public abstract class ReloadCommand<T extends CommandSender> extends AcuteLootCo
 
         @Override
         protected void sendUpdateMessage(Player sender, UpdateChecker.UpdateResult result) {
-            BaseComponent message = new TextComponent(TextComponent.fromLegacyText(String.format(AcuteLoot.CHAT_PREFIX
-                    + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE, result.getNewestVersion())));
-            TextComponent link = new TextComponent( "here" );
+            final String messageStr = String.format(AcuteLoot.CHAT_PREFIX + ChatColor.RED + AcuteLoot.UPDATE_AVAILABLE,
+                                                    result.getNewestVersion());
+            TextComponent link = new TextComponent("here");
             link.setUnderlined(true);
             link.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL,
                     AcuteLoot.SPIGOT_URL));
             link.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(ChatColor.GOLD + "SpigotMC.org")));
+            BaseComponent message = new TextComponent(TextComponent.fromLegacyText(messageStr));
             message.addExtra(link);
             sender.spigot().sendMessage(message);
         }
     }
 
+    /**
+     * Reload command sent by console.
+     */
     public static class ConsoleReloadCommand extends ReloadCommand<ConsoleCommandSender> {
 
         public ConsoleReloadCommand(String permission, AcuteLoot plugin) {

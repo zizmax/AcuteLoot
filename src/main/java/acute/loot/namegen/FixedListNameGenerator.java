@@ -2,6 +2,7 @@ package acute.loot.namegen;
 
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
+import base.util.Checks;
 import base.util.Util;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ public class FixedListNameGenerator implements NameGenerator {
 
     /**
      * Construct a new FixedListNameGenerator with the given names.
+     *
      * @param names the names, must be non-null and non-empty
      */
     public FixedListNameGenerator(String... names) {
@@ -26,11 +28,11 @@ public class FixedListNameGenerator implements NameGenerator {
 
     /**
      * Construct a new FixedListNameGenerator with the given names.
+     *
      * @param names the names, must be non-null and non-empty
      */
     public FixedListNameGenerator(List<String> names) {
-        this.names = Objects.requireNonNull(names);
-        if (names.isEmpty()) throw new IllegalArgumentException("Names list must not be empty");
+        this.names = Checks.requireNonEmpty(names);
     }
 
     @Override
@@ -45,6 +47,7 @@ public class FixedListNameGenerator implements NameGenerator {
 
     /**
      * Get a FixedListNameGenerator for the given names file.
+     *
      * @param namesFile the names file
      * @return a FixedListNameGenerator the given names file.
      */
@@ -54,8 +57,12 @@ public class FixedListNameGenerator implements NameGenerator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         FixedListNameGenerator that = (FixedListNameGenerator) o;
         return Objects.equals(names, that.names);
     }

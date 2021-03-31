@@ -6,10 +6,13 @@ import org.bukkit.event.player.PlayerExpChangeEvent;
 
 import java.util.List;
 
-public class XPBoostEffect extends AcuteLootSpecialEffect {
+/**
+ * Effect that applies a boost to player XP gain.
+ */
+public class XpBoostEffect extends AcuteLootSpecialEffect {
 
-    public XPBoostEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+    public XpBoostEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, id, validLootMaterials, plugin);
     }
 
     @Override

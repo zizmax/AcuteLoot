@@ -16,16 +16,16 @@ import java.util.*;
  * This allows, for example, subcommands that can only be run by the player or the console,
  * or ones that have different handlers for the player and the console.
  *
- * A subcommand can either be registered with just a player handler, just a console
+ * <p>A subcommand can either be registered with just a player handler, just a console
  * handler, a player handler and a console handler, or a "generic" handler. All other
  * combinations are invalid and will throw an IllegalStateException if created. Please
  * note that generic handlers will be invoked for ANY CommandSender, not just ones implementing
  * Player or ConsoleCommandSender.
  *
- * Additionally, a generic CommandHandler may be registered in the event that the command
+ * <p>Additionally, a generic CommandHandler may be registered in the event that the command
  * is executed without a subcommand (that is, with no arguments).
  *
- * Please note that the arguments list is passed to the delegate CommandHandler's as is,
+ * <p>Please note that the arguments list is passed to the delegate CommandHandler's as is,
  * so args[0] in the handler will always be the subcommand, with the subcommand's arguments
  * starting at args[1] if present.
  */
@@ -47,7 +47,8 @@ public class MultiCommand implements CommandExecutor {
     /**
      * Register a subcommand with a player CommandHandler. The subcommand must not already be
      * registered as a player subcommand or as a generic subcommand.
-     * @param subcommand the subcommand, must be non-empty
+     *
+     * @param subcommand     the subcommand, must be non-empty
      * @param commandHandler the handler for the subcommand, must be non-null
      */
     public void registerPlayerSubcommand(final String subcommand, final CommandHandler<Player> commandHandler) {
@@ -58,7 +59,8 @@ public class MultiCommand implements CommandExecutor {
     /**
      * Register a subcommand with a console CommandHandler. The subcommand must not already be
      * registered as a console subcommand or as a generic subcommand.
-     * @param subcommand the subcommand, must be non-empty
+     *
+     * @param subcommand     the subcommand, must be non-empty
      * @param commandHandler the handler for the subcommand, must be non-null
      */
     public void registerConsoleSubcommand(final String subcommand, final CommandHandler<ConsoleCommandSender> commandHandler) {
@@ -69,7 +71,8 @@ public class MultiCommand implements CommandExecutor {
     /**
      * Register a subcommand with a console CommandHandler. The subcommand must not already be
      * registered as any other kind of subcommand.
-     * @param subcommand the subcommand, must be non-empty
+     *
+     * @param subcommand     the subcommand, must be non-empty
      * @param commandHandler the handler for the subcommand, must be non-null
      */
     public void registerGenericSubcommand(final String subcommand, final CommandHandler<CommandSender> commandHandler) {
@@ -87,6 +90,7 @@ public class MultiCommand implements CommandExecutor {
      * Set the handler for when no subcommand is specified. This may be null,
      * in which case if no subcommand is specified onCommand() will do nothing
      * and return false.
+     *
      * @param noArgsCommand the handler for when no subcommand is specified
      */
     public void setNoArgsCommand(final CommandHandler<CommandSender> noArgsCommand) {
@@ -122,9 +126,9 @@ public class MultiCommand implements CommandExecutor {
         final String subcommand = args[0].toLowerCase();
         try {
             final Dispatcher visitor = new Dispatcher(playerSubcommands.get(subcommand),
-                                                consoleSubcommands.get(subcommand),
-                                                genericSubcommands.get(subcommand),
-                                                args);
+                    consoleSubcommands.get(subcommand),
+                    genericSubcommands.get(subcommand),
+                    args);
             if (commandSender instanceof Player) {
                 visitor.dispatch((Player) commandSender);
             } else if (commandSender instanceof ConsoleCommandSender) {
@@ -144,6 +148,7 @@ public class MultiCommand implements CommandExecutor {
 
     /**
      * Set the message for when a console-only subcommand is executed by a player.
+     *
      * @param cannotBeUsedByPlayer the messages, must be non-null
      */
     public void setCannotBeUsedByPlayer(String cannotBeUsedByPlayer) {
@@ -152,6 +157,7 @@ public class MultiCommand implements CommandExecutor {
 
     /**
      * Set the message for when a player-only subcommand is executed by a console..
+     *
      * @param cannotBeUsedByConsole the messages, must be non-null
      */
     public void setCannotBeUsedByConsole(String cannotBeUsedByConsole) {
@@ -160,6 +166,7 @@ public class MultiCommand implements CommandExecutor {
 
     /**
      * Set the message for when an unknown subcommand is executed.
+     *
      * @param unknownCommand the messages, must be non-null
      */
     public void setUnknownCommand(String unknownCommand) {
@@ -168,6 +175,7 @@ public class MultiCommand implements CommandExecutor {
 
     /**
      * Return a list of all registered subcommands valid for the give sender.
+     *
      * @param sender the sender for whom subcommands will be returned
      * @return a list of all registered subcommands valid for the given sender
      */
@@ -190,7 +198,8 @@ public class MultiCommand implements CommandExecutor {
 
         private final String[] args;
 
-        public Dispatcher(CommandHandler<Player> playerHandler, CommandHandler<ConsoleCommandSender> consoleHandler, CommandHandler<CommandSender> genericHandler, String[] args) {
+        public Dispatcher(CommandHandler<Player> playerHandler, CommandHandler<ConsoleCommandSender> consoleHandler,
+                          CommandHandler<CommandSender> genericHandler, String[] args) {
             this.playerHandler = playerHandler;
             this.consoleHandler = consoleHandler;
             this.genericHandler = genericHandler;

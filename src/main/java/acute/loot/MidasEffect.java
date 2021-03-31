@@ -15,13 +15,16 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
 
+/**
+ * Effect to turn things to gold.
+ */
 public class MidasEffect extends AcuteLootSpecialEffect {
     //TODO: Config option to only send block change packets, not actually change the blocks
     //FIXME: Does calling setType() work as intended for all types of blocks?
     private final AcuteLoot plugin;
 
     public MidasEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+        super(name, id, validLootMaterials, plugin);
         this.plugin = plugin;
     }
 
@@ -40,7 +43,8 @@ public class MidasEffect extends AcuteLootSpecialEffect {
                         entity.playEffect(EntityEffect.ENTITY_POOF);
                         int fragmentsNum = AcuteLoot.random.nextInt(20);
                         for (int i = 0; i < fragmentsNum; i++) {
-                            entity.getWorld().dropItemNaturally(((LivingEntity) entity).getEyeLocation(), getGoldItemStack());
+                            entity.getWorld()
+                                  .dropItemNaturally(((LivingEntity) entity).getEyeLocation(), getGoldItemStack());
                         }
                         new BukkitRunnable() {
                             int count = 0;
@@ -50,7 +54,9 @@ public class MidasEffect extends AcuteLootSpecialEffect {
                                 if (count == fragmentsNum) {
                                     this.cancel();
                                 }
-                                entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, AcuteLoot.random.nextFloat() + 1);
+                                entity.getWorld()
+                                      .playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP,
+                                                 1, AcuteLoot.random.nextFloat() + 1);
                                 count++;
                             }
                         }.runTaskTimer(plugin, 2, 2);
@@ -114,7 +120,7 @@ public class MidasEffect extends AcuteLootSpecialEffect {
         }
     }
 
-    private ItemStack getGoldItemStack(){
+    private ItemStack getGoldItemStack() {
         Material[] materials = {Material.GOLD_NUGGET, Material.GOLD_INGOT};
         return new ItemStack(materials[AcuteLoot.random.nextInt(materials.length)], 1);
     }

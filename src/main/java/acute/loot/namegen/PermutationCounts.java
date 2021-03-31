@@ -2,6 +2,9 @@ package acute.loot.namegen;
 
 import base.collections.IntegerChancePool;
 
+/**
+ * Utility class for computing permutation statistics.
+ */
 public final class PermutationCounts {
 
     private PermutationCounts() {
@@ -11,8 +14,10 @@ public final class PermutationCounts {
         return namePool.values().stream().mapToLong(NameGenerator::countNumberOfNames).sum();
     }
 
-    // Try to find, with tolerance epsilon, the number of draws needed to have a `targetChance`
-    // chance of having a duplicate when drawing from a uniform distribution on `total` objects
+    /**
+     * Try to find, with tolerance epsilon, the number of draws needed to have a `targetChance`
+     * chance of having a duplicate when drawing from a uniform distribution on `total` objects.
+     */
     public static long birthdayProblem(long total, double targetChance, double epsilon) {
         long x = total / 2;
         long lower = 0;

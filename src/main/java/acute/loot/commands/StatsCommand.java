@@ -8,6 +8,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * Stats command class.
+ *
+ * @param <T> Command sender
+ */
 public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCommand<T>  {
 
     public StatsCommand(String permission, AcuteLoot plugin) {
@@ -16,15 +21,20 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
 
     @Override
     protected void doHandle(T sender, String[] args) {
-        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(plugin().nameGenChancePool), 0.5, 0.0001);
+        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(plugin()
+                .nameGenChancePool), 0.5, 0.0001);
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "General stats:");
-        sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(plugin().nameGenChancePool)));
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Total number of possible names: ~%,d",
+                                                                 PermutationCounts.totalPermutations(plugin().nameGenChancePool)));
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Names for 50%% chance of duplicate: ~%,d", birthdayCount));
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of rarities: " + plugin().rarityChancePool.values().size());
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of effects: " + plugin().effectChancePool.values().size());
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of loot materials: " + plugin().lootMaterials.size());
     }
 
+    /**
+     * Stats command sent by player.
+     */
     public static class PlayerStatsCommand extends StatsCommand<Player> {
 
         public PlayerStatsCommand(String permission, AcuteLoot plugin) {
@@ -46,6 +56,9 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
         }
     }
 
+    /**
+     * Stats command sent by console.
+     */
     public static class ConsoleStatsCommand extends StatsCommand<ConsoleCommandSender> {
 
         public ConsoleStatsCommand(String permission, AcuteLoot plugin) {

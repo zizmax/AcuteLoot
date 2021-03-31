@@ -13,10 +13,12 @@ public final class Util {
 
     private static Random random = new Random();
 
-    private Util() {}
+    private Util() {
+    }
 
     /**
      * Set the Random instance used for operations requiring randomness.
+     *
      * @param random the random instance, must be non-null
      */
     public static void setRandom(final Random random) {
@@ -25,8 +27,9 @@ public final class Util {
 
     /**
      * Return the given items as a queue.
+     *
      * @param items the items
-     * @param <T> type of the items and the resulting queue
+     * @param <T>   type of the items and the resulting queue
      * @return the items as a queue
      */
     @SafeVarargs
@@ -37,21 +40,24 @@ public final class Util {
     /**
      * Draw a random element from a list. If the list is empty, throw a NoSuchElementException.
      *
-     * @param <T> type of the list
+     * @param <T>  type of the list
      * @param list the List to draw from
      * @return a random element from the list
      */
     public static <T> T drawRandom(List<T> list) {
         Objects.requireNonNull(list);
         Checks.requireNonEmpty(list);
-        if (list.size() == 1) return list.get(0);
+        if (list.size() == 1) {
+            return list.get(0);
+        }
         return list.get(random.nextInt(list.size()));
     }
 
     /**
      * Raytrace a line from the given Location going distance with step size
      * of addition.
-     * @param from the origin vector
+     *
+     * @param from     the origin vector
      * @param distance the distance to trace the line
      * @param addition the step size
      * @return a list of Locations less than distance away from from with step size addition
@@ -69,11 +75,14 @@ public final class Util {
     /**
      * Return the Material for the given string, if it exists. If it does not
      * exist, or the String is null or empty, return null.
+     *
      * @param materialString the string for the material to be returned
      * @return the material for the string
      */
     public static Material validateMaterial(String materialString) {
-        if (materialString == null || materialString.trim().isEmpty()) return null;
+        if (Checks.isEmpty(materialString)) {
+            return null;
+        }
         try {
             return Material.matchMaterial(materialString.trim());
         } catch (IllegalArgumentException | NullPointerException e) {

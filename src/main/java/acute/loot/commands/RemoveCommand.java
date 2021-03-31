@@ -9,6 +9,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 
+/**
+ * Remove command class.
+ */
 public class RemoveCommand extends AcuteLootCommand<Player> {
 
     public RemoveCommand(String permission, AcuteLoot plugin) {

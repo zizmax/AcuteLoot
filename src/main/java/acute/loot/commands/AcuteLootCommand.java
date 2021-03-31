@@ -6,6 +6,11 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Objects;
 
+/**
+ * CommandHandler with an AcuteLoot instance and permission.
+ *
+ * @param <T> the type of CommandHandler
+ */
 public abstract class AcuteLootCommand<T extends CommandSender> implements CommandHandler<T> {
 
     private final String permission;

@@ -21,13 +21,18 @@ public class RepeatedNameGenerator implements NameGenerator {
 
     /**
      * Construct a new RepeatedNameGenerator with the given base NameGenerator and repetition range.
-     * @param baseGenerator the base NameGenerator, must not be null
+     *
+     * @param baseGenerator  the base NameGenerator, must not be null
      * @param minRepetitions the minimum number of repetitions, must be positive
      * @param maxRepetitions the maximum number of repetitions, must be positive and greater than minRepetitions
      */
     public RepeatedNameGenerator(NameGenerator baseGenerator, int minRepetitions, int maxRepetitions) {
-        if (minRepetitions <= 0 || maxRepetitions <= 0) throw new IllegalArgumentException("min and max repetitions must be positive");
-        if (minRepetitions >= maxRepetitions) throw new IllegalArgumentException("Max repetitions must be greater than min repetitions");
+        if (minRepetitions <= 0 || maxRepetitions <= 0) {
+            throw new IllegalArgumentException("min and max repetitions must be positive");
+        }
+        if (minRepetitions >= maxRepetitions) {
+            throw new IllegalArgumentException("Max repetitions must be greater than min repetitions");
+        }
         this.baseGenerator = Objects.requireNonNull(baseGenerator);
         this.minRepetitions = minRepetitions;
         this.maxRepetitions = maxRepetitions;
@@ -50,8 +55,12 @@ public class RepeatedNameGenerator implements NameGenerator {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         RepeatedNameGenerator that = (RepeatedNameGenerator) o;
         return minRepetitions == that.minRepetitions &&
                 maxRepetitions == that.maxRepetitions &&

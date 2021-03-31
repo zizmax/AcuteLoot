@@ -10,10 +10,13 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
 
+/**
+ * Moon Boots effect class.
+ */
 public class MoonBootsEffect extends AcuteLootSpecialEffect {
 
     public MoonBootsEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+        super(name, id, validLootMaterials, plugin);
     }
 
     @Override

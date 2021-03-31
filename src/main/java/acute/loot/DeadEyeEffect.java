@@ -23,12 +23,15 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.List;
 
-public class DeadEyeEffect extends AcuteLootSpecialEffect{
+/**
+ * Dead Eye effect class.
+ */
+public class DeadEyeEffect extends AcuteLootSpecialEffect {
 
     public static HashMap<Player, Integer> deadEyeArrowsShot = new HashMap<>();
 
-    public DeadEyeEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
-        super(name, ns, id, validLootMaterials, plugin);
+    public DeadEyeEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+        super(name, id, validLootMaterials, plugin);
     }
 
     @Override
@@ -38,7 +41,7 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
         // -3: No bow
         // -4: No bow and no arrows
 
-        if(origEvent instanceof PlayerInteractEvent) {
+        if (origEvent instanceof PlayerInteractEvent) {
             Player player = ((PlayerInteractEvent) origEvent).getPlayer();
             ItemStack item = player.getInventory().getItemInMainHand();
             if (deadEyeArrowsShot.get(player) != null && deadEyeArrowsShot.get(player) <= -1) {
@@ -62,7 +65,10 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
                             }
                         }
 
-                        if (!locations.get(i).getBlock().getType().isAir() || entities.size() > 0 || i == locations.size() - 1) {
+                        if (!locations.get(i)
+                                      .getBlock()
+                                      .getType()
+                                      .isAir() || entities.size() > 0 || i == locations.size() - 1) {
                             Particle.DustOptions dustOptions = new Particle.DustOptions(Color.fromRGB(255, 0, 0), 2);
                             Location location;
                             if (locations.size() == 0 || i == 0) {
@@ -75,28 +81,56 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {
-                                    if (!player.hasPotionEffect(PotionEffectType.SLOW)) this.cancel();
+                                    if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
+                                        this.cancel();
+                                    }
                                     player.getWorld().spawnParticle(Particle.REDSTONE, location, 1, dustOptions);
                                 }
 
                             }.runTaskTimer(plugin, 0L, 2L);
                             long timeLeft = 0L;
-                            if(player.hasPotionEffect(PotionEffectType.SLOW)) timeLeft =  player.getPotionEffect(PotionEffectType.SLOW).getDuration();
+                            if (player.hasPotionEffect(PotionEffectType.SLOW)) {
+                                timeLeft = player.getPotionEffect(PotionEffectType.SLOW).getDuration();
+                            }
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {
-                                    if ((player.getInventory().contains(Material.ARROW) && player.getInventory().contains(Material.BOW)) || (player.getGameMode().equals(GameMode.CREATIVE) && player.getInventory().contains(Material.BOW))) {
+                                    if ((player.getInventory().contains(Material.ARROW) && player.getInventory()
+                                                                                                 .contains(Material.BOW)) || (player
+                                            .getGameMode()
+                                            .equals(GameMode.CREATIVE) && player.getInventory()
+                                                                                .contains(Material.BOW))) {
                                         int bowSlot = -1;
                                         for (int i = 0; i < 36; i++) {
-                                            if(player.getInventory().getItem(i) != null && player.getInventory().getItem(i).getType().equals(Material.BOW) && player.getInventory().getItem(i).hasItemMeta() && player.getInventory().getItem(i).getItemMeta().hasLore() && player.getInventory().getItem(i).getItemMeta().getLore().get(player.getInventory().getItem(i).getItemMeta().getLore().size() -1).contains("Activated") ){
+                                            if (player.getInventory().getItem(i) != null && player.getInventory()
+                                                                                                  .getItem(i)
+                                                                                                  .getType()
+                                                                                                  .equals(Material.BOW) && player
+                                                    .getInventory()
+                                                    .getItem(i)
+                                                    .hasItemMeta() && player.getInventory()
+                                                                            .getItem(i)
+                                                                            .getItemMeta()
+                                                                            .hasLore() && player.getInventory()
+                                                                                                .getItem(i)
+                                                                                                .getItemMeta()
+                                                                                                .getLore()
+                                                                                                .get(player.getInventory()
+                                                                                                           .getItem(i)
+                                                                                                           .getItemMeta()
+                                                                                                           .getLore()
+                                                                                                           .size() - 1)
+                                                                                                .contains("Activated")) {
                                                 bowSlot = i;
                                                 break;
                                             }
                                         }
 
-                                        if(bowSlot == -1){
-                                            if(deadEyeArrowsShot.get(player) != -3) {
-                                                player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow"));
+                                        if (bowSlot == -1) {
+                                            if (deadEyeArrowsShot.get(player) != -3) {
+                                                player.spigot()
+                                                      .sendMessage(ChatMessageType.ACTION_BAR,
+                                                      TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow"));
                                                 player.playSound(player.getEyeLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
                                             }
                                             deadEyeArrowsShot.replace(player, -3);
@@ -108,7 +142,11 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
                                         if (!player.getGameMode().equals(GameMode.CREATIVE)) {
                                             int arrowSlot = player.getInventory().first(Material.ARROW);
                                             int arrowAmount = player.getInventory().getItem(arrowSlot).getAmount();
-                                            if((!plugin.getConfig().getBoolean("effects.dead-eye.vanilla-enchantments")) || (plugin.getConfig().getBoolean("effects.dead-eye.vanilla-enchantments") && !bow.getEnchantments().containsKey(Enchantment.ARROW_INFINITE))) {
+                                            if ((!plugin.getConfig()
+                                                        .getBoolean("effects.dead-eye.vanilla-enchantments")) || (plugin
+                                                    .getConfig()
+                                                    .getBoolean("effects.dead-eye.vanilla-enchantments") && !bow.getEnchantments()
+                                                    .containsKey(Enchantment.ARROW_INFINITE))) {
                                                 player.getInventory().getItem(arrowSlot).setAmount(arrowAmount - 1);
                                             }
                                             if (((Damageable) bowMeta).getDamage() > bow.getType().getMaxDurability()) {
@@ -118,7 +156,9 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
                                                 player.getInventory().setItem(bowSlot, null);
                                                 return;
                                             }
-                                            ((Damageable) bowMeta).setDamage(((Damageable) bowMeta).getDamage() + plugin.getConfig().getInt("effects.dead-eye.durability-modifier"));
+                                            ((Damageable) bowMeta).setDamage(((Damageable) bowMeta).getDamage() + plugin
+                                                    .getConfig()
+                                                    .getInt("effects.dead-eye.durability-modifier"));
                                             bow.setItemMeta(bowMeta);
                                         }
                                         Vector from = player.getEyeLocation().toVector();
@@ -127,17 +167,17 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
                                         direction.normalize();
                                         direction.multiply(3); // Set speed
                                         Arrow arrow;
-                                        try{
+                                        try {
                                             direction.checkFinite();
                                             arrow = player.launchProjectile(Arrow.class, direction);
-                                        }
-                                        catch(IllegalArgumentException e){
+                                        } catch (IllegalArgumentException e) {
                                             arrow = player.launchProjectile(Arrow.class, direction);
                                         }
                                         arrow.setMetadata("deadEye", new FixedMetadataValue(plugin, true));
                                         arrow.setCritical(true);
-                                        player.getWorld().playSound(player.getEyeLocation(), Sound.ENTITY_ARROW_SHOOT, 1, 1);
-                                        if(plugin.getConfig().getBoolean("effects.dead-eye.vanilla-enchantments")) {
+                                        player.getWorld()
+                                              .playSound(player.getEyeLocation(), Sound.ENTITY_ARROW_SHOOT, 1, 1);
+                                        if (plugin.getConfig().getBoolean("effects.dead-eye.vanilla-enchantments")) {
                                             if (bow.getEnchantments().containsKey(Enchantment.ARROW_KNOCKBACK)) {
                                                 arrow.setKnockbackStrength(bow.getEnchantmentLevel(Enchantment.ARROW_KNOCKBACK));
                                             }
@@ -145,22 +185,32 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
                                                 arrow.setFireTicks(2000);
                                             }
                                             if (bow.getEnchantments().containsKey(Enchantment.ARROW_DAMAGE)) {
-                                                arrow.setDamage(arrow.getDamage() * (1 + (0.25 * (bow.getEnchantmentLevel(Enchantment.ARROW_DAMAGE) + 1))));
+                                                arrow.setDamage(arrow.getDamage() * (1 + (0.25 *
+                                                    (bow.getEnchantmentLevel(Enchantment.ARROW_DAMAGE) + 1))));
                                             }
                                         }
                                     } else {
-                                        if (deadEyeArrowsShot.get(player) >= -1 && player.getInventory().contains(Material.BOW)) {
-                                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.DARK_RED + "Out of arrows"));
+                                        if (deadEyeArrowsShot.get(player) >= -1 && player.getInventory()
+                                                                                         .contains(Material.BOW)) {
+                                            player.spigot()
+                                                  .sendMessage(ChatMessageType.ACTION_BAR,
+                                                  TextComponent.fromLegacyText(ChatColor.DARK_RED + "Out of arrows"));
                                             player.playSound(player.getEyeLocation(), Sound.ENTITY_VILLAGER_WORK_FLETCHER, 1, 1);
                                             deadEyeArrowsShot.replace(player, -2);
-                                        }
-                                        else if(deadEyeArrowsShot.get(player) >= -1 && player.getInventory().contains(Material.ARROW)) {
-                                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow"));
+                                        } else if (deadEyeArrowsShot.get(player) >= -1 && player.getInventory()
+                                                                                                .contains(Material.ARROW)) {
+                                            player.spigot()
+                                                  .sendMessage(ChatMessageType.ACTION_BAR,
+                                                          TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow"));
                                             player.playSound(player.getEyeLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
                                             deadEyeArrowsShot.replace(player, -3);
-                                        }
-                                        else if (deadEyeArrowsShot.get(player) >= -1 && (!player.getInventory().contains(Material.ARROW) && !player.getInventory().contains(Material.BOW))){
-                                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow or arrows"));
+                                        } else if (deadEyeArrowsShot.get(player) >= -1 && (!player.getInventory()
+                                                                                                  .contains(Material.ARROW) && !player
+                                                .getInventory()
+                                                .contains(Material.BOW))) {
+                                            player.spigot()
+                                                  .sendMessage(ChatMessageType.ACTION_BAR,
+                                                          TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow or arrows"));
                                             player.playSound(player.getEyeLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
                                             deadEyeArrowsShot.replace(player, -4);
                                         }
@@ -177,7 +227,9 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
 
                 } else {
                     // Activate Dead Eye
-                    player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD + "[" + ChatColor.GREEN + "Dead Eye" + ChatColor.GOLD + "]"));
+                    player.spigot()
+                          .sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD + "[" +
+                                  ChatColor.GREEN + "Dead Eye" + ChatColor.GOLD + "]"));
                     deadEyeArrowsShot.put(player, 0);
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, deadEyeLength, 5, true));
                     player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, deadEyeLength, 5, true));
@@ -213,19 +265,39 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect{
                             }
                             player.stopSound(Sound.AMBIENT_UNDERWATER_LOOP);
                             player.stopSound(Sound.BLOCK_CAMPFIRE_CRACKLE);
-                            player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD + "[" + ChatColor.RED + "Dead Eye" + ChatColor.GOLD + "]"));
+                            player.spigot()
+                                  .sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD +
+                                          "[" + ChatColor.RED + "Dead Eye" + ChatColor.GOLD + "]"));
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {
                                     // Remove lore that marks bow as Dead Eye "active" after all arrows have been shot
                                     int bowSlot = -1;
                                     for (int i = 0; i < 36; i++) {
-                                        if(player.getInventory().getItem(i) != null && player.getInventory().getItem(i).getType().equals(Material.BOW) && player.getInventory().getItem(i).hasItemMeta() && player.getInventory().getItem(i).getItemMeta().hasLore() && player.getInventory().getItem(i).getItemMeta().getLore().get(player.getInventory().getItem(i).getItemMeta().getLore().size() -1).contains("Activated") ){
+                                        if (player.getInventory().getItem(i) != null && player.getInventory()
+                                                                                              .getItem(i)
+                                                                                              .getType()
+                                                                                              .equals(Material.BOW) && player
+                                                .getInventory()
+                                                .getItem(i)
+                                                .hasItemMeta() && player.getInventory()
+                                                                        .getItem(i)
+                                                                        .getItemMeta()
+                                                                        .hasLore() && player.getInventory()
+                                                                                            .getItem(i)
+                                                                                            .getItemMeta()
+                                                                                            .getLore()
+                                                                                            .get(player.getInventory()
+                                                                                                       .getItem(i)
+                                                                                                       .getItemMeta()
+                                                                                                       .getLore()
+                                                                                                       .size() - 1)
+                                                                                            .contains("Activated")) {
                                             bowSlot = i;
                                             break;
                                         }
                                     }
-                                    if(bowSlot != -1) {
+                                    if (bowSlot != -1) {
                                         ItemMeta bowMeta = player.getInventory().getItem(bowSlot).getItemMeta();
                                         List<String> bowLore = bowMeta.getLore();
                                         bowLore.remove(bowLore.size() - 1);

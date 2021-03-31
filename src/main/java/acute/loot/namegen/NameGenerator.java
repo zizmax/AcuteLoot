@@ -30,6 +30,7 @@ public interface NameGenerator {
     /**
      * Return the number of different names the NameGenerator can produce. This may be
      * an estimate, or can return 0 to signal that returning a count is not supported.
+     *
      * @return the number of different names the NameGenerator can produce
      */
     long countNumberOfNames();
@@ -37,11 +38,14 @@ public interface NameGenerator {
     /**
      * Utility method for reading a names file. Returns an empty list on
      * null input or if an IOException occurs while reading.
+     *
      * @param file the names file
      * @return the lines of the file, or an empty list if it cannot be read
      */
     static List<String> readNames(String file) {
-        if (file == null) return Collections.emptyList();
+        if (file == null) {
+            return Collections.emptyList();
+        }
 
         try (Stream<String> stream = Files.lines(Paths.get(file))) {
             return stream.collect(Collectors.toList());
@@ -72,28 +76,28 @@ public interface NameGenerator {
      * Compile an expression into a NameGenerator using the given variable map. The expression is
      * first split into words which are then evaluated in one of three ways:
      *
-     * * if the word is of the form [variable_name], it is treated as a variable referencing the name
+     * <p>* if the word is of the form [variable_name], it is treated as a variable referencing the name
      * generator variable_name in the variable map, throwing an IllegalArgumentException if it does not
      * exist.
      *
-     * * if the word is of the form [variable_name](min-max), it is treated as a variable referencing the
+     * <p>* if the word is of the form [variable_name](min-max), it is treated as a variable referencing the
      * name generator variable_name in the variable map, throwing an IllegalArgumentException if it does not exist.
      * the name generator referenced by the variable will be repeated between min and max times, where min and max
      * are integers. A NumberFormatException will be thrown if min or max cannot be parsed into integers.
      *
-     * * otherwise the word is treated as constant expression. If a constant expression looks like it may be intended
+     * <p>* otherwise the word is treated as constant expression. If a constant expression looks like it may be intended
      * to be a variable or a repeated variable, but was not parsed as such, a warning message will be supplied
      * to the warningLogger.
      *
-     * This method requires all parameters to be non-null and will throw an IllegalArgumentException if
+     * <p>This method requires all parameters to be non-null and will throw an IllegalArgumentException if
      * if the expression is all-whitespace. The result of this method is a name generator that will join
      * the result of each parsed word together with spaces.
      *
-     * Examples:
+     * <p>Examples:
      *
-     * * "[foo]" parses to a NameGenerator that invokes the NameGenerator foo from the variable map
+     * <p>* "[foo]" parses to a NameGenerator that invokes the NameGenerator foo from the variable map
      *
-     * * "[foo] of [bar]" parses to a NameGenerator that produces names of the form "$foo of $bar" where
+     * <p>* "[foo] of [bar]" parses to a NameGenerator that produces names of the form "$foo of $bar" where
      * "$foo" and "$bar" are results of invoking the name generators foo and bar from the variable map.
      *
      * @param expression the expression to compile
@@ -107,7 +111,9 @@ public interface NameGenerator {
         Objects.requireNonNull(expression);
         Objects.requireNonNull(variableMap);
         Objects.requireNonNull(warningLogger);
-        if (expression.trim().isEmpty()) throw new IllegalArgumentException("Expression cannot be empty");
+        if (expression.trim().isEmpty()) {
+            throw new IllegalArgumentException("Expression cannot be empty");
+        }
         final String[] words = expression.split(" ");
 
         final List<NameGenerator> parts = new ArrayList<>();

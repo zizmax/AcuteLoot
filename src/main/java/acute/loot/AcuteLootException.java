@@ -1,5 +1,8 @@
 package acute.loot;
 
+/**
+ * Wrapper exception for exceptions raised in AcuteLoot.
+ */
 public class AcuteLootException extends RuntimeException {
     public AcuteLootException() {
         super();

@@ -1,10 +1,15 @@
 package acute.loot;
 
+import base.util.Checks;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Representation of a piece of loot's rarity and effects.
+ */
 public class LootItem {
 
     private final int rarity;
@@ -15,10 +20,17 @@ public class LootItem {
         this.effects = effects;
     }
 
+    /**
+     * Parse a new LootItem from the given lootcode.
+     *
+     * @param lootcode the lootcode, cannot be empty or null and must be a known version
+     */
     public LootItem(String lootcode) {
-        if (lootcode == null || lootcode.trim().isEmpty()) throw new IllegalArgumentException("LootCode cannot be null or empty");
+        Checks.requireNonEmpty(lootcode, "LootCode cannot be null or empty");
         String[] parts = lootcode.split(":");
-        if (parts.length < 2) throw new IllegalArgumentException("Invalid loot code, could not read version");
+        if (parts.length < 2) {
+            throw new IllegalArgumentException("Invalid loot code, could not read version");
+        }
 
         String version = parts[1];
 
@@ -66,7 +78,7 @@ public class LootItem {
     // $vn is the string "1.0"
     // $rarity is the integer rarity ID
     // $effects is an underscore '_' separated list of effect IDs, possible empty
-    public String lootCodeV1() {
+    protected String lootCodeV1() {
         if (effects.stream().anyMatch(e -> !e.ns.equals(LootSpecialEffect.AL_NS))) {
             throw new IllegalStateException("Cannot use v1.0 lootcode with non-AcuteLoot namespace effects");
         }
@@ -77,7 +89,9 @@ public class LootItem {
         str.append(rarity);
         str.append(':');
         for (int i = 0; i < effects.size(); i++) {
-            if (i != 0) str.append("_");
+            if (i != 0) {
+                str.append("_");
+            }
             str.append(effects.get(i).id);
         }
         str.append(":#");
@@ -93,7 +107,7 @@ public class LootItem {
     //
     // a namespaced effect id is of the form $NS;$id, where $NS is the namespace of the plugin
     // that added the effect and $id is the integer effect ID
-    public String lootCodeV2() {
+    protected String lootCodeV2() {
         StringBuilder str = new StringBuilder();
         str.append("#AL:");
         str.append("2.0");
@@ -101,7 +115,9 @@ public class LootItem {
         str.append(rarity);
         str.append(':');
         for (int i = 0; i < effects.size(); i++) {
-            if (i != 0) str.append("_");
+            if (i != 0) {
+                str.append("_");
+            }
             str.append(effects.get(i).ns);
             str.append(';');
             str.append(effects.get(i).id);
@@ -116,8 +132,12 @@ public class LootItem {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         LootItem lootItem = (LootItem) o;
         return rarity == lootItem.rarity &&
                 effects.equals(lootItem.effects);

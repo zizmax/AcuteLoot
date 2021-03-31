@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
  * class are accessed, {@link #init(JavaPlugin, int)} must be invoked by the plugin,
  * preferrably in its {@link JavaPlugin#onEnable()} method, though that is not a
  * requirement.
- * <p>
- * This class performs asynchronous queries to <a href="https://spiget.org">SpiGet</a>,
+ *
+ * <p>This class performs asynchronous queries to <a href="https://spiget.org">SpiGet</a>,
  * an REST server which is updated periodically. If the results of {@link #requestUpdateCheck()}
  * are inconsistent with what is published on SpigotMC, it may be due to SpiGet's cache.
  * Results will be updated in due time.
@@ -34,15 +34,19 @@ import java.util.regex.Pattern;
 // Originally published by 2008Choco: https://www.spigotmc.org/threads/an-actually-decent-plugin-update-checker.344327/
 // Updated by ItsMeGlare (AKA darbyjack): https://gist.github.com/darbyjack/5978f9051cac812b5bb0e47f88ccbc42
 
-
+//CHECKSTYLE:OFF
 public final class UpdateChecker {
 
     public static final VersionScheme VERSION_SCHEME_DECIMAL = (first, second) -> {
-        String[] firstSplit = splitVersionInfo(first), secondSplit = splitVersionInfo(second);
-        if (firstSplit == null || secondSplit == null) return null;
+        String[] firstSplit = splitVersionInfo(first);
+        String[] secondSplit = splitVersionInfo(second);
+        if (firstSplit == null || secondSplit == null) {
+            return null;
+        }
 
         for (int i = 0; i < Math.min(firstSplit.length, secondSplit.length); i++) {
-            int currentValue = NumberUtils.toInt(firstSplit[i]), newestValue = NumberUtils.toInt(secondSplit[i]);
+            int currentValue = NumberUtils.toInt(firstSplit[i]);
+            int newestValue = NumberUtils.toInt(secondSplit[i]);
 
             if (newestValue > currentValue) {
                 return second;
@@ -93,8 +97,8 @@ public final class UpdateChecker {
                 reader.close();
 
                 JsonObject versionObject = element.getAsJsonObject();
-                String current = plugin.getDescription().getVersion(), newest = versionObject.get("current_version")
-                                                                                             .getAsString();
+                String current = plugin.getDescription().getVersion();
+                String newest = versionObject.get("current_version").getAsString();
                 String latest = versionScheme.compareVersions(current, newest);
 
                 if (latest == null) {
@@ -126,7 +130,9 @@ public final class UpdateChecker {
 
     private static String[] splitVersionInfo(String version) {
         Matcher matcher = DECIMAL_SCHEME_PATTERN.matcher(version);
-        if (!matcher.find()) return null;
+        if (!matcher.find()) {
+            return null;
+        }
 
         return matcher.group().split("\\.");
     }
@@ -273,7 +279,8 @@ public final class UpdateChecker {
         }
 
         private UpdateResult(UpdateReason reason) {
-            Preconditions.checkArgument(reason != UpdateReason.NEW_UPDATE, "Reasons that require updates must also provide the latest version String");
+            Preconditions.checkArgument(reason != UpdateReason.NEW_UPDATE,
+                    "Reasons that require updates must also provide the latest version String");
             this.reason = reason;
             this.newestVersion = plugin.getDescription().getVersion();
         }
@@ -309,3 +316,4 @@ public final class UpdateChecker {
     }
 
 }
+//CHECKSTYLE:ON
