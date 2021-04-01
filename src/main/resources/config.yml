@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 1 # Don't change this!
+config-version: 2 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -50,6 +50,11 @@ debug: false
 # |                                                                                              | #
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
+reroll:
+  enabled: true
+  mode: xp # Currently only xp mode available
+  cost: 1
+
 loot-sources:
   enchanting:
     enabled: true

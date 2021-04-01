@@ -40,3 +40,5 @@ permissions:
     default: op
   acuteloot.give:
     default: op
+  acuteloot.reroll:
+    default: true

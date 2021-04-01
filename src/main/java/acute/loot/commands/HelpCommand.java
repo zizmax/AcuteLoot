@@ -23,6 +23,7 @@ public class HelpCommand extends AcuteLootCommand<CommandSender> {
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al remove" + ChatColor.GRAY + " Remove AcuteLoot from an item");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al new" + ChatColor.GRAY + " Create new random AcuteLoot");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al rename [name]" + ChatColor.GRAY + " Supports '&' codes!");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al reroll" + ChatColor.GRAY + " Reroll your AcuteLoot for a price");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al name [generator]" + ChatColor.GRAY + " Name item using generator");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al stats" + ChatColor.GRAY + " Stats about an item or general stats");
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.AQUA + "/al chest [minutes]" + ChatColor.GRAY + " Set AL chests");
