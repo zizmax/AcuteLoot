@@ -69,7 +69,7 @@ public final class AcuteLoot extends JavaPlugin {
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
 
-    public static final int configVersion = 1;
+    public static final int configVersion = 2;
 
     @Override
     public void onEnable() {
@@ -533,6 +533,8 @@ public final class AcuteLoot extends JavaPlugin {
         alCommand.registerPlayerSubcommand("remove", new RemoveCommand("acuteloot.remove", this));
 
         alCommand.registerPlayerSubcommand("rename", new RenameCommand("acuteloot.rename", this));
+
+        alCommand.registerPlayerSubcommand("reroll", new RerollCommand("acuteloot.reroll", this));
 
         alCommand.registerGenericSubcommand("salvage", new SalvageCommand(this));
 
