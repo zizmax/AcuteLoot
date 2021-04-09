@@ -21,12 +21,12 @@ public class AddCommand extends AcuteLootCommand<Player> {
         if (sender.getInventory().getItemInMainHand().getType() != Material.AIR) {
             ItemStack item = sender.getInventory().getItemInMainHand();
             if (plugin().getLootCode(item) == null) {
+                final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
+                if (lootMaterial == LootMaterial.UNKNOWN) {
+                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
+                    return;
+                }
                 if (args.length == 1) {
-                    final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-                    if (lootMaterial == LootMaterial.UNKNOWN) {
-                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
-                        return;
-                    }
                     plugin().lootGenerator.createLootItem(item, AcuteLoot.random.nextDouble());
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with random rarity");
                 } else {
