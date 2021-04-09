@@ -69,7 +69,7 @@ public final class AcuteLoot extends JavaPlugin {
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
 
-    public static final int configVersion = 2;
+    public static final int configVersion = 3;
 
     @Override
     public void onEnable() {
