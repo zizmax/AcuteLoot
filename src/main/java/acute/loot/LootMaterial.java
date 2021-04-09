@@ -13,7 +13,8 @@ import java.util.Map;
 public enum LootMaterial {
 
     SWORD, BOW, HELMET, BOOTS, CROSSBOW, // Can have effects (for now)
-    PICK, SHOVEL, HOE, AXE, PANTS, CHEST_PLATE, FISHING_ROD, TRIDENT, // Have names
+    PICK, SHOVEL, HOE, AXE, PANTS, CHEST_PLATE, FISHING_ROD, TRIDENT, // Have names only
+    SHIELD, // Only become AcuteLoot from anvils
     GENERIC, UNKNOWN;
 
     private static List<Material> genericMaterialsList = Collections.emptyList();
@@ -140,6 +141,9 @@ public enum LootMaterial {
 
         // Trident
         matMap.put(Material.TRIDENT, TRIDENT);
+
+        // Shield
+        matMap.put(Material.SHIELD, SHIELD);
 
         materialMap = Collections.unmodifiableMap(matMap);
     }

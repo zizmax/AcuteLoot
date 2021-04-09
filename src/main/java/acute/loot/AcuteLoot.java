@@ -205,10 +205,10 @@ public final class AcuteLoot extends JavaPlugin {
 
         String[] namesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
                                 "helmets", "hoes", "kana", "leggings", "picks", "prefixes", "shovels", "suffixes",
-                                "swords", "tridents"};
+                                "swords", "tridents", "shields"};
 
         String[] fixedNamesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
-                                     "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents"};
+                                     "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents", "shields"};
 
         for (String fileName : namesFiles) {
             File fileToCheck = new File("plugins/AcuteLoot/names/" + fileName + ".txt");
