@@ -249,7 +249,6 @@ public class LootCreationEventListener implements Listener {
 
         if (result != null && !result.getType().equals(Material.AIR)) {
             if (inv.getItem(0).hasItemMeta() && inv.getItem(0).getItemMeta().hasDisplayName()) {
-                plugin.getServer().broadcastMessage("Not null event!");
                 if (plugin.getLootCode(inv.getItem(0)) == null && origName.contains(String.valueOf('§'))) {
                     String newName = origName.substring(0, 2) + result.getItemMeta().getDisplayName();
                     ItemMeta meta = result.getItemMeta();
@@ -259,11 +258,11 @@ public class LootCreationEventListener implements Listener {
                 }
             }
             if (result.getType().equals(Material.SHIELD)) {
-                plugin.getServer().broadcastMessage("Shield event!");
                 //TODO Add configurable anvil chance
                 //TODO Check for anvil permission and register permission
+                //TODO Add name and other details to player to avoid free re-rolls in anvil use event
+                //TODO Shield that is already AL gets overwritten since this block comes after first check
                 double chance = AcuteLoot.random.nextDouble();
-                chance = .99;
                 result = plugin.lootGenerator.createLootItem(result, chance);
                 event.setResult(result);
             }
