@@ -30,6 +30,7 @@ public class MaterialNameGenerator implements NameGenerator {
     private final List<String> fishingRodNames;
     private final List<String> tridentNames;
     private final List<String> genericNames;
+    private final List<String> shieldNames;
 
     /**
      * Construct a new MaterialNameGenerator using the given FileBuilder.
@@ -52,6 +53,7 @@ public class MaterialNameGenerator implements NameGenerator {
         this.fishingRodNames = readNames(builder.prefix + builder.fishingRodFile);
         this.tridentNames = readNames(builder.prefix + builder.tridentFile);
         this.genericNames = readNames(builder.prefix + builder.genericFile);
+        this.shieldNames = readNames(builder.prefix + builder.shieldFile);
     }
 
     /**
@@ -90,6 +92,8 @@ public class MaterialNameGenerator implements NameGenerator {
                 return tridentNames;
             case GENERIC:
                 return genericNames;
+            case SHIELD:
+                return shieldNames;
 
             default:
                 throw new IllegalArgumentException("Loot material " + lootMaterial + " not implemented.");
@@ -134,13 +138,14 @@ public class MaterialNameGenerator implements NameGenerator {
                 chestPlateNames.equals(namePool.chestPlateNames) &&
                 fishingRodNames.equals(namePool.fishingRodNames) &&
                 tridentNames.equals(namePool.tridentNames) &&
-                genericNames.equals(namePool.genericNames);
+                genericNames.equals(namePool.genericNames) &&
+                shieldNames.equals(namePool.shieldNames);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(swordNames, pickNames, bowNames, helmetNames, bootsNames, crossbowNames, shovelNames,
-                            hoeNames, axeNames, pantsNames, chestPlateNames, fishingRodNames, tridentNames, genericNames);
+                            hoeNames, axeNames, pantsNames, chestPlateNames, fishingRodNames, tridentNames, genericNames, shieldNames);
     }
 
     /**
@@ -164,6 +169,7 @@ public class MaterialNameGenerator implements NameGenerator {
         private String fishingRodFile;
         private String tridentFile;
         private String genericFile;
+        private String shieldFile;
 
         private String prefix = "";
 
@@ -244,6 +250,11 @@ public class MaterialNameGenerator implements NameGenerator {
             return this;
         }
 
+        public FileBuilder shieldFile(String shieldFile) {
+            this.shieldFile = shieldFile;
+            return this;
+        }
+
         public FileBuilder prefix(String prefix) {
             this.prefix = prefix;
             return this;
@@ -268,7 +279,8 @@ public class MaterialNameGenerator implements NameGenerator {
                     .pantsFile(DEFAULT_LEGGINGS_NAME_FILE)
                     .chestPlateFile(DEFAULT_CHEST_PLATE_NAME_FILE)
                     .helmetFile(DEFAULT_HELMET_NAME_FILE)
-                    .genericFile(DEFAULT_GENERIC_NAME_FILE);
+                    .genericFile(DEFAULT_GENERIC_NAME_FILE)
+                    .shieldFile(DEFAULT_SHIELD_NAME_FILE);
 
         }
 
@@ -286,6 +298,7 @@ public class MaterialNameGenerator implements NameGenerator {
         public static final String DEFAULT_CHEST_PLATE_NAME_FILE = "chest_plates.txt";
         public static final String DEFAULT_HELMET_NAME_FILE = "helmets.txt";
         public static final String DEFAULT_GENERIC_NAME_FILE = "generic.txt";
+        public static final String DEFAULT_SHIELD_NAME_FILE = "shields.txt";
     }
 
 }

@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 2 # Don't change this!
+config-version: 3 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -74,6 +74,7 @@ loot-sources:
 # Example: 1 enchantment = 65% chance, 2 enchantments = 0.65 * 0.65 = 42.25% chance and so on
 enchantment-chance: 65 #Percentage
 
+# Adds a lore line to AcuteLoot items based on material type
 loot-category-lore:
   enabled: true
   axe:
@@ -104,6 +105,8 @@ loot-category-lore:
     - "&7Trident"
   unknown:
     - "&7Unknown"
+  shield:
+    - "&7Shield"
 
 
 # +----------------------------------------------------------------------------------------------+ #
