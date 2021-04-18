@@ -3,6 +3,7 @@ package acute.loot;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
@@ -24,10 +25,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Event listeners for creating loot.
@@ -36,6 +34,7 @@ public class LootCreationEventListener implements Listener {
 
     private final AcuteLoot plugin;
     private final Random random = AcuteLoot.random;
+    private final Map<ItemStack, ItemStack> anvilHistory = new HashMap<>();
 
     public LootCreationEventListener(AcuteLoot plugin) {
         this.plugin = plugin;
@@ -239,6 +238,7 @@ public class LootCreationEventListener implements Listener {
 
     @EventHandler
     public void anvilListener(PrepareAnvilEvent event) {
+        Player player = (Player) event.getView().getPlayer();
         AnvilInventory inv = event.getInventory();
         if (event.getViewers().isEmpty() || inv.getItem(0) == null) {
             return;
@@ -257,17 +257,21 @@ public class LootCreationEventListener implements Listener {
                     event.setResult(result);
                 }
             }
-            if (result.getType().equals(Material.SHIELD)) {
-                //TODO Add configurable anvil chance
-                //TODO Check for anvil permission and register permission
-                //TODO Add name and other details to player to avoid free re-rolls in anvil use event
-                //TODO Shield that is already AL gets overwritten since this block comes after first check
-                double chance = AcuteLoot.random.nextDouble();
-                result = plugin.lootGenerator.createLootItem(result, chance);
-                event.setResult(result);
+            if (plugin.getConfig().getBoolean("loot-sources.anvils.enabled")) {
+                if (result.getType().equals(Material.SHIELD)) {
+                    //TODO Add configurable anvil chance
+                    //TODO Check for anvil permission and register permission
+                    //TODO Shield that is already AL gets overwritten since this block comes after first check
+                    double chance = AcuteLoot.random.nextDouble();
+                    result = plugin.lootGenerator.createLootItem(result, chance);
+                    event.setResult(result);
+                    player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                }
             }
         }
     }
+
+
 
     private String getDisplayName(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
