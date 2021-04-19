@@ -1,9 +1,9 @@
 package acute.loot;
 
+import base.util.UnorderedPair;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -34,7 +35,8 @@ public class LootCreationEventListener implements Listener {
 
     private final AcuteLoot plugin;
     private final Random random = AcuteLoot.random;
-    private final Map<ItemStack, ItemStack> anvilHistory = new HashMap<>();
+    private final Map<UnorderedPair, ItemStack> anvilHistoryPairKey = new HashMap<>();
+    private final Map<ItemStack, UnorderedPair> anvilHistoryItemKey = new HashMap<>();
 
     public LootCreationEventListener(AcuteLoot plugin) {
         this.plugin = plugin;
@@ -262,15 +264,32 @@ public class LootCreationEventListener implements Listener {
                     //TODO Add configurable anvil chance
                     //TODO Check for anvil permission and register permission
                     //TODO Shield that is already AL gets overwritten since this block comes after first check
-                    double chance = AcuteLoot.random.nextDouble();
-                    result = plugin.lootGenerator.createLootItem(result, chance);
-                    event.setResult(result);
-                    player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                    if (!anvilHistoryPairKey.containsKey(UnorderedPair.of(inv.getItem(0), inv.getItem(1)))) {
+                        player.sendMessage("PUT");
+                        double chance = AcuteLoot.random.nextDouble();
+                        result = plugin.lootGenerator.createLootItem(result, chance);
+                        event.setResult(result);
+                        anvilHistoryPairKey.put(UnorderedPair.of(inv.getItem(0), inv.getItem(1)), result);
+                        anvilHistoryItemKey.put(result, UnorderedPair.of(inv.getItem(0), inv.getItem(1)));
+                    } else {
+                        event.setResult(anvilHistoryPairKey.get(UnorderedPair.of(inv.getItem(0), inv.getItem(1))));
+                        player.sendMessage("GET");
+                    }
                 }
             }
         }
     }
 
+
+    @EventHandler
+    public void onPlayerFinishAnvil(InventoryClickEvent event) {
+        Player player = (Player) event.getView().getPlayer();
+        if (anvilHistoryItemKey.containsKey(event.getCurrentItem())) {
+            anvilHistoryPairKey.remove(anvilHistoryItemKey.get(event.getCurrentItem()));
+            anvilHistoryItemKey.remove(event.getCurrentItem());
+            player.sendMessage("RESET");
+        }
+    }
 
 
     private String getDisplayName(ItemStack item) {
