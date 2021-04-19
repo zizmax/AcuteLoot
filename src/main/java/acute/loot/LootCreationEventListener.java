@@ -264,17 +264,25 @@ public class LootCreationEventListener implements Listener {
                     //TODO Add configurable anvil chance
                     //TODO Check for anvil permission and register permission
                     //TODO Shield that is already AL gets overwritten since this block comes after first check
+                    for (Map.Entry<UnorderedPair, ItemStack> entry : anvilHistoryPairKey.entrySet()) {
+                        UnorderedPair pair = entry.getKey();
+                        ItemStack item = entry.getValue();
+                        player.sendMessage(pair.toString());
+                        player.sendMessage(item.toString());
+                        player.sendMessage("======");
+                    }
                     if (!anvilHistoryPairKey.containsKey(UnorderedPair.of(inv.getItem(0), inv.getItem(1)))) {
                         player.sendMessage("PUT");
                         double chance = AcuteLoot.random.nextDouble();
                         result = plugin.lootGenerator.createLootItem(result, chance);
-                        event.setResult(result);
                         anvilHistoryPairKey.put(UnorderedPair.of(inv.getItem(0), inv.getItem(1)), result);
                         anvilHistoryItemKey.put(result, UnorderedPair.of(inv.getItem(0), inv.getItem(1)));
+                        event.setResult(result);
                     } else {
                         event.setResult(anvilHistoryPairKey.get(UnorderedPair.of(inv.getItem(0), inv.getItem(1))));
                         player.sendMessage("GET");
                     }
+                    printHashes(inv.getItem(0), inv.getItem(1), inv.getItem(2));
                 }
             }
         }
@@ -291,6 +299,19 @@ public class LootCreationEventListener implements Listener {
         }
     }
 
+    /**
+     * does thing.
+     *
+     * @param one j
+     * @param two k
+     * @param three k
+     */
+    public void printHashes(ItemStack one, ItemStack two, ItemStack three) {
+        plugin.getServer().broadcastMessage(String.valueOf(one.hashCode()));
+        plugin.getServer().broadcastMessage(String.valueOf(two.hashCode()));
+        plugin.getServer().broadcastMessage(String.valueOf(three.hashCode()));
+        plugin.getServer().broadcastMessage(String.valueOf(UnorderedPair.of(one, two).hashCode()));
+    }
 
     private String getDisplayName(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
