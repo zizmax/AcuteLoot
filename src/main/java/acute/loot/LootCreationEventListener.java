@@ -1,5 +1,6 @@
 package acute.loot;
 
+import base.util.UnorderedPair;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -14,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.enchantment.EnchantItemEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -24,10 +26,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Event listeners for creating loot.
@@ -36,6 +35,8 @@ public class LootCreationEventListener implements Listener {
 
     private final AcuteLoot plugin;
     private final Random random = AcuteLoot.random;
+    private final Map<Integer, ItemStack> anvilHistoryPairKey = new HashMap<>();
+    private final Map<ItemStack, Integer> anvilHistoryItemKey = new HashMap<>();
 
     public LootCreationEventListener(AcuteLoot plugin) {
         this.plugin = plugin;
@@ -239,6 +240,7 @@ public class LootCreationEventListener implements Listener {
 
     @EventHandler
     public void anvilListener(PrepareAnvilEvent event) {
+        Player player = (Player) event.getView().getPlayer();
         AnvilInventory inv = event.getInventory();
         if (event.getViewers().isEmpty() || inv.getItem(0) == null) {
             return;
@@ -257,17 +259,37 @@ public class LootCreationEventListener implements Listener {
                     event.setResult(result);
                 }
             }
-            if (result.getType().equals(Material.SHIELD)) {
-                //TODO Add configurable anvil chance
-                //TODO Check for anvil permission and register permission
-                //TODO Add name and other details to player to avoid free re-rolls in anvil use event
-                //TODO Shield that is already AL gets overwritten since this block comes after first check
-                double chance = AcuteLoot.random.nextDouble();
-                result = plugin.lootGenerator.createLootItem(result, chance);
-                event.setResult(result);
+            if (plugin.getConfig().getBoolean("loot-sources.anvils.enabled")) {
+                UnorderedPair pair = UnorderedPair.of(inv.getItem(0), inv.getItem(1));
+                if (result.getType().equals(Material.SHIELD)) {
+                    //TODO Add configurable anvil chance
+                    //TODO Check for anvil permission and register permission
+                    //TODO Shield that is already AL gets overwritten since this block comes after first check
+
+                    if (!anvilHistoryPairKey.containsKey(pair.hashCode())) {
+                        double chance = AcuteLoot.random.nextDouble();
+                        result = plugin.lootGenerator.createLootItem(result, chance);
+                        anvilHistoryPairKey.put(pair.hashCode(), result);
+                        anvilHistoryItemKey.put(result, pair.hashCode());
+                        event.setResult(result);
+                    } else {
+                        event.setResult(anvilHistoryPairKey.get(pair.hashCode()));
+                    }
+                }
             }
         }
     }
+
+
+    @EventHandler
+    public void onPlayerFinishAnvil(InventoryClickEvent event) {
+        Player player = (Player) event.getView().getPlayer();
+        if (anvilHistoryItemKey.containsKey(event.getCurrentItem())) {
+            anvilHistoryPairKey.remove(anvilHistoryItemKey.get(event.getCurrentItem()));
+            anvilHistoryItemKey.remove(event.getCurrentItem());
+        }
+    }
+
 
     private String getDisplayName(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {

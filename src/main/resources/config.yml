@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 3 # Don't change this!
+config-version: 4 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -68,6 +68,8 @@ loot-sources:
     # Example: 1 loot = 65% chance, 2 loot = 0.65 * 0.65 = 42.25% chance and so on
     chance: 65 #Percentage
     show-cooldown-msg: true
+  anvils: # Currently only for shields (elytra soon)
+    enabled: true
 
 # This is the chance for the "next" vanilla enchantment for random loot (from fishing, chests and /al new command
 # All individual enchantments have an equal chance. i.e. Sharpness is just as common as Bane of Arthropods
