@@ -35,8 +35,8 @@ public class LootCreationEventListener implements Listener {
 
     private final AcuteLoot plugin;
     private final Random random = AcuteLoot.random;
-    private final Map<UnorderedPair, ItemStack> anvilHistoryPairKey = new HashMap<>();
-    private final Map<ItemStack, UnorderedPair> anvilHistoryItemKey = new HashMap<>();
+    private final Map<Integer, ItemStack> anvilHistoryPairKey = new HashMap<>();
+    private final Map<ItemStack, Integer> anvilHistoryItemKey = new HashMap<>();
 
     public LootCreationEventListener(AcuteLoot plugin) {
         this.plugin = plugin;
@@ -260,29 +260,32 @@ public class LootCreationEventListener implements Listener {
                 }
             }
             if (plugin.getConfig().getBoolean("loot-sources.anvils.enabled")) {
+                plugin.getServer().broadcastMessage("~~~HASHES~~~");
+                printHashes(inv.getItem(0), inv.getItem(1), inv.getItem(2));
+                plugin.getServer().broadcastMessage("~~~~~~~~~~~");
+                UnorderedPair pair = UnorderedPair.of(inv.getItem(0), inv.getItem(1));
                 if (result.getType().equals(Material.SHIELD)) {
                     //TODO Add configurable anvil chance
                     //TODO Check for anvil permission and register permission
                     //TODO Shield that is already AL gets overwritten since this block comes after first check
-                    for (Map.Entry<UnorderedPair, ItemStack> entry : anvilHistoryPairKey.entrySet()) {
-                        UnorderedPair pair = entry.getKey();
-                        ItemStack item = entry.getValue();
-                        player.sendMessage(pair.toString());
-                        player.sendMessage(item.toString());
+                    for (Map.Entry<Integer, ItemStack> entry : anvilHistoryPairKey.entrySet()) {
+                        int printPair = entry.getKey();
+                        //ItemStack item = entry.getValue();
+                        plugin.getServer().broadcastMessage(String.valueOf(printPair));
+                        //player.sendMessage(item.toString());
                         player.sendMessage("======");
                     }
-                    if (!anvilHistoryPairKey.containsKey(UnorderedPair.of(inv.getItem(0), inv.getItem(1)))) {
+                    if (!anvilHistoryPairKey.containsKey(pair.hashCode())) {
                         player.sendMessage("PUT");
                         double chance = AcuteLoot.random.nextDouble();
                         result = plugin.lootGenerator.createLootItem(result, chance);
-                        anvilHistoryPairKey.put(UnorderedPair.of(inv.getItem(0), inv.getItem(1)), result);
-                        anvilHistoryItemKey.put(result, UnorderedPair.of(inv.getItem(0), inv.getItem(1)));
+                        anvilHistoryPairKey.put(pair.hashCode(), result);
+                        anvilHistoryItemKey.put(result, pair.hashCode());
                         event.setResult(result);
                     } else {
-                        event.setResult(anvilHistoryPairKey.get(UnorderedPair.of(inv.getItem(0), inv.getItem(1))));
+                        event.setResult(anvilHistoryPairKey.get(pair.hashCode()));
                         player.sendMessage("GET");
                     }
-                    printHashes(inv.getItem(0), inv.getItem(1), inv.getItem(2));
                 }
             }
         }
