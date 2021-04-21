@@ -260,23 +260,13 @@ public class LootCreationEventListener implements Listener {
                 }
             }
             if (plugin.getConfig().getBoolean("loot-sources.anvils.enabled")) {
-                plugin.getServer().broadcastMessage("~~~HASHES~~~");
-                printHashes(inv.getItem(0), inv.getItem(1), inv.getItem(2));
-                plugin.getServer().broadcastMessage("~~~~~~~~~~~");
                 UnorderedPair pair = UnorderedPair.of(inv.getItem(0), inv.getItem(1));
                 if (result.getType().equals(Material.SHIELD)) {
                     //TODO Add configurable anvil chance
                     //TODO Check for anvil permission and register permission
                     //TODO Shield that is already AL gets overwritten since this block comes after first check
-                    for (Map.Entry<Integer, ItemStack> entry : anvilHistoryPairKey.entrySet()) {
-                        int printPair = entry.getKey();
-                        //ItemStack item = entry.getValue();
-                        plugin.getServer().broadcastMessage(String.valueOf(printPair));
-                        //player.sendMessage(item.toString());
-                        player.sendMessage("======");
-                    }
+
                     if (!anvilHistoryPairKey.containsKey(pair.hashCode())) {
-                        player.sendMessage("PUT");
                         double chance = AcuteLoot.random.nextDouble();
                         result = plugin.lootGenerator.createLootItem(result, chance);
                         anvilHistoryPairKey.put(pair.hashCode(), result);
@@ -284,7 +274,6 @@ public class LootCreationEventListener implements Listener {
                         event.setResult(result);
                     } else {
                         event.setResult(anvilHistoryPairKey.get(pair.hashCode()));
-                        player.sendMessage("GET");
                     }
                 }
             }
@@ -298,23 +287,9 @@ public class LootCreationEventListener implements Listener {
         if (anvilHistoryItemKey.containsKey(event.getCurrentItem())) {
             anvilHistoryPairKey.remove(anvilHistoryItemKey.get(event.getCurrentItem()));
             anvilHistoryItemKey.remove(event.getCurrentItem());
-            player.sendMessage("RESET");
         }
     }
 
-    /**
-     * does thing.
-     *
-     * @param one j
-     * @param two k
-     * @param three k
-     */
-    public void printHashes(ItemStack one, ItemStack two, ItemStack three) {
-        plugin.getServer().broadcastMessage(String.valueOf(one.hashCode()));
-        plugin.getServer().broadcastMessage(String.valueOf(two.hashCode()));
-        plugin.getServer().broadcastMessage(String.valueOf(three.hashCode()));
-        plugin.getServer().broadcastMessage(String.valueOf(UnorderedPair.of(one, two).hashCode()));
-    }
 
     private String getDisplayName(ItemStack item) {
         if (item != null && item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
