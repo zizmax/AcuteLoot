@@ -14,7 +14,7 @@ public enum LootMaterial {
 
     SWORD, BOW, HELMET, BOOTS, CROSSBOW, // Can have effects (for now)
     PICK, SHOVEL, HOE, AXE, PANTS, CHEST_PLATE, FISHING_ROD, TRIDENT, // Have names only
-    SHIELD, // Only become AcuteLoot from anvils
+    SHIELD, ELYTRA, // Only become AcuteLoot from anvils
     GENERIC, UNKNOWN;
 
     private static List<Material> genericMaterialsList = Collections.emptyList();
@@ -144,6 +144,9 @@ public enum LootMaterial {
 
         // Shield
         matMap.put(Material.SHIELD, SHIELD);
+
+        //Elytra
+        matMap.put(Material.ELYTRA, ELYTRA);
 
         materialMap = Collections.unmodifiableMap(matMap);
     }

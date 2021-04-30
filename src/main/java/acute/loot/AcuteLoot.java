@@ -69,7 +69,7 @@ public final class AcuteLoot extends JavaPlugin {
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
 
-    public static final int configVersion = 4;
+    public static final int configVersion = 5;
 
     @Override
     public void onEnable() {
@@ -205,10 +205,10 @@ public final class AcuteLoot extends JavaPlugin {
 
         String[] namesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
                                 "helmets", "hoes", "kana", "leggings", "picks", "prefixes", "shovels", "suffixes",
-                                "swords", "tridents", "shields"};
+                                "swords", "tridents", "shields", "elytras"};
 
         String[] fixedNamesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
-                                     "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents", "shields"};
+                                     "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents", "shields", "elytras"};
 
         for (String fileName : namesFiles) {
             File fileToCheck = new File("plugins/AcuteLoot/names/" + fileName + ".txt");

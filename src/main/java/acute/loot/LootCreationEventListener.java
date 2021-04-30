@@ -261,7 +261,7 @@ public class LootCreationEventListener implements Listener {
             }
             if (plugin.getConfig().getBoolean("loot-sources.anvils.enabled")) {
                 UnorderedPair pair = UnorderedPair.of(inv.getItem(0), inv.getItem(1));
-                if (result.getType().equals(Material.SHIELD)) {
+                if (result.getType().equals(Material.SHIELD) || result.getType().equals(Material.ELYTRA)) {
                     //TODO Add configurable anvil chance
                     //TODO Check for anvil permission and register permission
                     //TODO Shield that is already AL gets overwritten since this block comes after first check
