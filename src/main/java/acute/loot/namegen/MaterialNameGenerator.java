@@ -31,6 +31,7 @@ public class MaterialNameGenerator implements NameGenerator {
     private final List<String> tridentNames;
     private final List<String> genericNames;
     private final List<String> shieldNames;
+    private final List<String> elytraNames;
 
     /**
      * Construct a new MaterialNameGenerator using the given FileBuilder.
@@ -54,6 +55,7 @@ public class MaterialNameGenerator implements NameGenerator {
         this.tridentNames = readNames(builder.prefix + builder.tridentFile);
         this.genericNames = readNames(builder.prefix + builder.genericFile);
         this.shieldNames = readNames(builder.prefix + builder.shieldFile);
+        this.elytraNames = readNames(builder.prefix + builder.elytraFile);
     }
 
     /**
@@ -94,6 +96,8 @@ public class MaterialNameGenerator implements NameGenerator {
                 return genericNames;
             case SHIELD:
                 return shieldNames;
+            case ELYTRA:
+                return elytraNames;
 
             default:
                 throw new IllegalArgumentException("Loot material " + lootMaterial + " not implemented.");
@@ -139,13 +143,15 @@ public class MaterialNameGenerator implements NameGenerator {
                 fishingRodNames.equals(namePool.fishingRodNames) &&
                 tridentNames.equals(namePool.tridentNames) &&
                 genericNames.equals(namePool.genericNames) &&
-                shieldNames.equals(namePool.shieldNames);
+                shieldNames.equals(namePool.shieldNames) &&
+                elytraNames.equals(namePool.elytraNames);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(swordNames, pickNames, bowNames, helmetNames, bootsNames, crossbowNames, shovelNames,
-                            hoeNames, axeNames, pantsNames, chestPlateNames, fishingRodNames, tridentNames, genericNames, shieldNames);
+                            hoeNames, axeNames, pantsNames, chestPlateNames, fishingRodNames, tridentNames,
+                            genericNames, shieldNames, elytraNames);
     }
 
     /**
@@ -170,6 +176,7 @@ public class MaterialNameGenerator implements NameGenerator {
         private String tridentFile;
         private String genericFile;
         private String shieldFile;
+        private String elytraFile;
 
         private String prefix = "";
 
@@ -255,6 +262,11 @@ public class MaterialNameGenerator implements NameGenerator {
             return this;
         }
 
+        public FileBuilder elytraFile(String elytraFile) {
+            this.elytraFile = elytraFile;
+            return this;
+        }
+
         public FileBuilder prefix(String prefix) {
             this.prefix = prefix;
             return this;
@@ -280,7 +292,8 @@ public class MaterialNameGenerator implements NameGenerator {
                     .chestPlateFile(DEFAULT_CHEST_PLATE_NAME_FILE)
                     .helmetFile(DEFAULT_HELMET_NAME_FILE)
                     .genericFile(DEFAULT_GENERIC_NAME_FILE)
-                    .shieldFile(DEFAULT_SHIELD_NAME_FILE);
+                    .shieldFile(DEFAULT_SHIELD_NAME_FILE)
+                    .elytraFile(DEFAULT_ELYTRA_NAME_FILE);
 
         }
 
@@ -299,6 +312,7 @@ public class MaterialNameGenerator implements NameGenerator {
         public static final String DEFAULT_HELMET_NAME_FILE = "helmets.txt";
         public static final String DEFAULT_GENERIC_NAME_FILE = "generic.txt";
         public static final String DEFAULT_SHIELD_NAME_FILE = "shields.txt";
+        public static final String DEFAULT_ELYTRA_NAME_FILE = "elytras.txt";
     }
 
 }
