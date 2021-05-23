@@ -1,10 +1,14 @@
 package acute.loot;
 
+import acute.loot.namegen.NameGenerator;
+import base.collections.IntegerChancePool;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Event;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 /**
  * This class will set up a "standard" set of test effects and rarities.
@@ -22,8 +26,17 @@ public class TestHelper {
     public final VoidEffect ns_effect2;
     public final VoidEffect ns_effect3;
 
+    public final NameGenerator capitalGenerator;
+    public final NameGenerator numberGenerator;
+    public final NameGenerator matEchoGenerator;
+    public final NameGenerator rarityEchoGenerator;
+
     public final List<LootRarity> rarities;
     public final List<LootSpecialEffect> effects;
+
+    public final IntegerChancePool<LootRarity> rarityChancePool;
+    public final IntegerChancePool<LootSpecialEffect> effectChancePool;
+    public final IntegerChancePool<NameGenerator> nameGeneratorChancePool;
 
     public TestHelper() {
         common = new LootRarity(-10, "Common", 0.0, ChatColor.AQUA.toString());
@@ -40,6 +53,80 @@ public class TestHelper {
 
         rarities = Arrays.asList(common, uncommon, rare);
         effects = Arrays.asList(effect1, effect2, effect3, ns_effect1, ns_effect2, ns_effect3);
+
+        rarityChancePool = new IntegerChancePool<>();
+        rarityChancePool.add(common, 6);
+        rarityChancePool.add(uncommon, 3);
+        rarityChancePool.add(rare, 1);
+
+        effectChancePool = new IntegerChancePool<>();
+        effectChancePool.add(effect1, 10);
+        effectChancePool.add(effect2, 20);
+        effectChancePool.add(effect3, 30);
+        effectChancePool.add(ns_effect1, 15);
+        effectChancePool.add(ns_effect2, 25);
+        effectChancePool.add(ns_effect3, 35);
+
+        nameGeneratorChancePool = new IntegerChancePool<>();
+
+        final Random random = new Random();
+        capitalGenerator = new NameGenerator() {
+            @Override
+            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+                return "" + ((char) ('A' + random.nextInt(26)));
+            }
+
+            @Override
+            public long countNumberOfNames() {
+                return 26;
+            }
+        };
+        nameGeneratorChancePool.add(capitalGenerator, 1);
+
+        numberGenerator = new NameGenerator() {
+            @Override
+            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+                return String.valueOf(random.nextInt(10));
+            }
+
+            @Override
+            public long countNumberOfNames() {
+                return 10;
+            }
+        };
+        nameGeneratorChancePool.add(numberGenerator, 2);
+
+        matEchoGenerator = new NameGenerator() {
+            @Override
+            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+                if (lootMaterial == null) {
+                    throw new NoSuchElementException();
+                }
+                return lootMaterial.name();
+            }
+
+            @Override
+            public long countNumberOfNames() {
+                return 0;
+            }
+        };
+        nameGeneratorChancePool.add(matEchoGenerator, 1);
+
+        rarityEchoGenerator = new NameGenerator() {
+            @Override
+            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+                if (rarity == null) {
+                    throw new NoSuchElementException();
+                }
+                return rarity.getName();
+            }
+
+            @Override
+            public long countNumberOfNames() {
+                return 0;
+            }
+        };
+        nameGeneratorChancePool.add(rarityEchoGenerator, 2);
     }
 
     public void addTestResources() {
