@@ -59,7 +59,11 @@ public class ChestCommand extends AcuteLootCommand<Player> {
 
         if (args.length >= 2) {
             try {
-                Integer.parseInt(args[1]);
+                int parsedRefillCooldown = Integer.parseInt(args[1]);
+                if (parsedRefillCooldown < 0) {
+                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown (minutes) must be 0 or greater");
+                    return;
+                }
                 refillCooldown = args[1];
             } catch (NumberFormatException e) {
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Refill cooldown (minutes) must be an integer");
@@ -74,7 +78,7 @@ public class ChestCommand extends AcuteLootCommand<Player> {
 
         if (targetedBlock != null && targetedBlock.getType()
                                                   .equals(Material.CHEST) && targetedBlock.getState() instanceof Chest) {
-            if (((Chest) targetedBlock.getState()).getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+            if (((Chest) (targetedBlock.getState())).getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
                 String chestMetadata = ((Chest) targetedBlock).getPersistentDataContainer()
                                                               .get(key, PersistentDataType.STRING);
             } else {
