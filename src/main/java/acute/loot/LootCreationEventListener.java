@@ -105,20 +105,34 @@ public class LootCreationEventListener implements Listener {
             if (!player.getWorld().getBlockAt(chest.getLocation().add(0, 1, 0)).getType().isOccluding()) {
                 // Chests can only be opened when no opaque (occluding) block exists above
                 // Without this check AL chest-filling logic would run even if chest never actually opened
+
+                // Get AL metadata from persisentDataContainer
                 NamespacedKey key = new NamespacedKey(plugin, "chestMetadataKey");
                 PersistentDataContainer container = chest.getPersistentDataContainer();
+                String[] chestMetadataCode;
+                if (container.has(key, PersistentDataType.STRING)) {
+                    chestMetadataCode = container.get(key, PersistentDataType.STRING).split(":");
+                } else {
+                    chestMetadataCode = new String[]{"null", "-1000", "-1000"};
+                }
+                String version = chestMetadataCode[0];
+                long timeStamp = Long.parseLong(chestMetadataCode[1]);
+                int refillCooldown = Integer.parseInt(chestMetadataCode[2]);
+
+                //refillCooldown >= 1: Standard cooldown measured in minutes
+                //refillCooldown == -1: No cooldown, not yet opened (created with /al chest)
+                //refillCooldown == -2: Expired chest
+
+
                 // Only naturally-generated chests have lootTables
                 // And they only have the lootTable the very first time they are opened
-                if (plugin.debug || chest.getLootTable() != null || container.has(key, PersistentDataType.STRING)) {
-                    if (container.has(key, PersistentDataType.STRING)) {
+                if (plugin.debug || chest.getLootTable() != null || version != "null") {
+                    if (version != "null") {
                         if (plugin.debug) {
                             player.sendMessage("Has metadata code: " + container.get(key, PersistentDataType.STRING));
                         }
-                        String[] chestMetadataCode = container.get(key, PersistentDataType.STRING).split(":");
-                        String version = chestMetadataCode[0];
-                        long timeStamp = Long.parseLong(chestMetadataCode[1]);
-                        int refillCooldown = Integer.parseInt(chestMetadataCode[2]);
-                        if (refillCooldown != -1) {
+
+                        if (refillCooldown >= 1) {
                             if (System.currentTimeMillis() < timeStamp + ((double) refillCooldown * 60000d)) {
                                 double remainingCooldown = (timeStamp + ((double) refillCooldown * 60000d) - System.currentTimeMillis());
                                 int seconds = (int) (remainingCooldown / 1000) % 60;
@@ -138,11 +152,9 @@ public class LootCreationEventListener implements Listener {
                                         System.currentTimeMillis(), refillCooldown));
                                 chest.update();
                             }
-                        } else {
-                            // Opened AcuteLoot chest with no cooldown
-                            // Remove persistentDataContainer
-                            container.remove(key);
-                            chest.update();
+                        } else if (refillCooldown == -2) {
+                            // Opened expired AcuteLoot chest
+                            return;
                         }
                     }
 
@@ -194,6 +206,14 @@ public class LootCreationEventListener implements Listener {
                                 }
                             }
                         });
+
+                        // Create container to mark that chest has been looted, if it doesn't already exist
+                        // Intended to fix Issue #21, possibly relating to the lootables config options in Paper
+                        if (version == "null" || refillCooldown == -1) {
+                            container.set(key, PersistentDataType.STRING, String.format("%s:%d:%d", version,
+                                    System.currentTimeMillis(), -2));
+                            chest.update();
+                        }
                     }
                 }
             }
