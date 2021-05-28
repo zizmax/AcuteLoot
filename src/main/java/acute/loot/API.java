@@ -18,10 +18,10 @@ public class API {
     /**
      * The current API version.
      */
-    public static final String API_VERSION = "1.0.0-beta";
+    public static final String API_VERSION = "1.1.0";
 
     // Known API versions
-    private static final List<String> API_ITERATIONS = Arrays.asList("1.0.0-beta", "1.0.0");
+    private static final List<String> API_ITERATIONS = Arrays.asList("1.1.0", "1.0.0-beta", "1.0.0");
 
     // The AcuteLoot instance, shared between API instances
     private static AcuteLoot acuteLoot;
@@ -119,6 +119,37 @@ public class API {
      */
     public AcuteLoot getAcuteLoot() {
         return acuteLoot;
+    }
+
+    /**
+     * Shorthand for {@code rollName(ItemStack, LootRarity)} with a randomly
+     * drawn rarity.
+     *
+     * @param itemStack the ItemStack to roll a name for, may be null
+     * @return a new name
+     * @throws AcuteLootException if a name could not be created
+     */
+    public String rollName(final ItemStack itemStack) throws AcuteLootException {
+        return rollName(itemStack, acuteLoot.rarityChancePool().draw());
+    }
+
+    /**
+     * Roll a new name for the give ItemStack and LootRarity. Either of these may be null,
+     * but this may shrink the number of available name generators (as these may depend on
+     * the item type or rarity) and may make it impossible to generate a name.
+     *
+     * @param itemStack the ItemStack to roll a name for, may be null
+     * @param rarity the LootRarity to roll a name for, may be null
+     * @return a new name
+     * @throws AcuteLootException if a name could not be created
+     */
+    public String rollName(final ItemStack itemStack, final LootRarity rarity) throws AcuteLootException {
+        final LootMaterial material = itemStack == null ? null : LootMaterial.lootMaterialForMaterial(itemStack.getType());
+        final String name = acuteLoot.lootGenerator().rollName(material, rarity);
+        if (name == null) {
+            throw new AcuteLootException("Could not roll name");
+        }
+        return name;
     }
 
     /**

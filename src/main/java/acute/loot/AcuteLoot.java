@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 /**
  * Main plugin class.
  */
-public final class AcuteLoot extends JavaPlugin {
+public class AcuteLoot extends JavaPlugin {
 
     public static final Random random = new Random();
 
@@ -591,5 +591,13 @@ public final class AcuteLoot extends JavaPlugin {
     public boolean hasPermission(CommandSender sender, String node) {
         return (!getConfig().getBoolean("use-permissions") && sender.isOp()) ||
                (getConfig().getBoolean("use-permissions") && sender.hasPermission(node));
+    }
+
+    protected IntegerChancePool<LootRarity> rarityChancePool() {
+        return rarityChancePool;
+    }
+
+    public LootItemGenerator lootGenerator() {
+        return lootGenerator;
     }
 }

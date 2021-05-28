@@ -139,22 +139,7 @@ public class LootItemGenerator {
             return item;
         }
 
-        String name = null;
-        int attempts = 100;
-        NameGenerator nameGenerator = null;
-        do {
-            try {
-                nameGenerator = namePool.draw();
-                name = nameGenerator.generate(lootMaterial, loot.rarity());
-            } catch (NoSuchElementException e) {
-                // Couldn't draw a name for some reason, try again
-                attempts--;
-            }
-        } while (name == null && attempts > 0);
-        if (attempts == 0) {
-            plugin.getLogger().severe("Could not generate a name in 100 attempts! Are name files empty or corrupted?");
-            plugin.getLogger().severe("Name Generator: " + nameGenerator.toString());
-        }
+        String name = rollName(lootMaterial, loot.rarity());
 
         // Add loot info to lore and display name
         ItemMeta meta = item.getItemMeta();
@@ -197,6 +182,26 @@ public class LootItemGenerator {
         item.setItemMeta(meta);
 
         return item;
+    }
+
+    protected String rollName(LootMaterial lootMaterial, LootRarity rarity) {
+        String name = null;
+        int attempts = 100;
+        NameGenerator nameGenerator = null;
+        do {
+            try {
+                nameGenerator = namePool.draw();
+                name = nameGenerator.generate(lootMaterial, rarity);
+            } catch (NoSuchElementException e) {
+                // Couldn't draw a name for some reason, try again
+                attempts--;
+            }
+        } while (name == null && attempts > 0);
+        if (attempts == 0) {
+            plugin.getLogger().severe("Could not generate a name in 100 attempts! Are name files empty or corrupted?");
+            plugin.getLogger().severe("Name Generator: " + nameGenerator.toString());
+        }
+        return name;
     }
 
     /**
