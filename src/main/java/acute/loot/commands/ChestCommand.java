@@ -79,11 +79,11 @@ public class ChestCommand extends AcuteLootCommand<Player> {
         if (targetedBlock != null && targetedBlock.getType()
                                                   .equals(Material.CHEST) && targetedBlock.getState() instanceof Chest) {
             if (((Chest) (targetedBlock.getState())).getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-                String chestMetadata = ((Chest) targetedBlock).getPersistentDataContainer()
+                String chestMetadata = ((Chest) targetedBlock.getState()).getPersistentDataContainer()
                                                               .get(key, PersistentDataType.STRING);
             } else {
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + ChatColor.GRAY + "Mode: " + ChatColor.AQUA + "targeted block");
-                createChest((Chest) targetedBlock.getState(), sender, key, refillCooldown);
+                createChest((Chest) (targetedBlock.getState()), sender, key, refillCooldown);
                 numFoundChests++;
             }
         } else {
