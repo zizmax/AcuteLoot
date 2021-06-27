@@ -2,6 +2,8 @@ package acute.loot;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Light;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -23,28 +25,41 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
         if (origEvent instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
 
-            // Gardener effect
-            Location flowerTrail = event.getFrom();
-            Material soilBlock = flowerTrail.clone().subtract(0, 1, 0).getBlock().getType();
-            if (soilBlock.equals(Material.DIRT) ||
-                    soilBlock.equals(Material.GRASS_BLOCK) ||
-                    soilBlock.equals(Material.GRASS_PATH) ||
-                    soilBlock.equals(Material.COARSE_DIRT)) {
-                int f = AcuteLoot.random.nextInt(FLOWER_TYPES.length);
-                if (flowerTrail.getBlock().getType().equals(Material.AIR)) {
-                    for (Player p : plugin.getServer().getOnlinePlayers()) {
-                        p.sendBlockChange(flowerTrail, FLOWER_TYPES[f].createBlockData());
-                    }
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            for (Player p : plugin.getServer().getOnlinePlayers()) {
-                                p.sendBlockChange(flowerTrail, Material.AIR.createBlockData());
-                            }
-                        }
 
-                    }.runTaskLater(plugin, 40L);
+
+            Location trailBlock = event.getFrom();
+            Material soilBlock = trailBlock.clone().subtract(0, 1, 0).getBlock().getType();
+            BlockData trailBlockData = Material.AIR.createBlockData();
+
+            // Gardener effect
+            if (this.getName().equals("gardener")) {
+                if (soilBlock.equals(Material.DIRT) ||
+                        soilBlock.equals(Material.GRASS_BLOCK) ||
+                        soilBlock.equals(Material.COARSE_DIRT)) {
+                    int f = AcuteLoot.random.nextInt(FLOWER_TYPES.length);
+                    trailBlockData = FLOWER_TYPES[f].createBlockData();
                 }
+
+            } else if (this.getName().equals("light-walker")) {
+                // Light Walker effect
+                trailBlockData = Material.LIGHT.createBlockData();
+                ((Light) trailBlockData).setLevel(12);
+            }
+
+
+            if (trailBlock.getBlock().getType().isAir()) {
+                for (Player p : plugin.getServer().getOnlinePlayers()) {
+                    p.sendBlockChange(trailBlock, trailBlockData);
+                }
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        for (Player p : plugin.getServer().getOnlinePlayers()) {
+                            p.sendBlockChange(trailBlock, Material.AIR.createBlockData());
+                        }
+                    }
+
+                }.runTaskLater(plugin, 40L);
             }
         }
     }

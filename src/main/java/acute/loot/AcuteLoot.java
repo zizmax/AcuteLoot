@@ -247,6 +247,10 @@ public class AcuteLoot extends JavaPlugin {
         // MC version 1.16 or above
         if (serverVersion > 15) {
             version = "1.16";
+            if (serverVersion > 16) {
+                version = "1.17";
+
+            }
         } else { // MC version 1.15 or below
             version = "1.15";
         }
@@ -381,6 +385,20 @@ public class AcuteLoot extends JavaPlugin {
 
         //Medusa (Gorgon)
         registerEffect(new MedusaEffect("medusa", 19, Collections.singletonList(LootMaterial.BOW), this));
+
+        if (serverVersion >= 17) {
+            registerEffect(new ToolParticleEffect("weapons_dripstone", 20, axeSwordMat, Particle.DRIPPING_DRIPSTONE_LAVA, false, this));
+            registerEffect(new ToolParticleEffect("weapons_spark", 21, axeSwordMat, Particle.ELECTRIC_SPARK, false, this));
+            registerEffect(new ToolParticleEffect("weapons_glow", 22, axeSwordMat, Particle.GLOW, false, this));
+            registerEffect(new ToolParticleEffect("weapons_ink", 23, axeSwordMat, Particle.GLOW_SQUID_INK, false, this));
+            registerEffect(new ToolParticleEffect("weapons_scrape", 24, axeSwordMat, Particle.SCRAPE, false, this));
+            registerEffect(new ToolParticleEffect("weapons_spore", 25, axeSwordMat, Particle.SPORE_BLOSSOM_AIR, false, this));
+            registerEffect(new ToolParticleEffect("weapons_vibration", 26, axeSwordMat, Particle.VIBRATION, false, this));
+            registerEffect(new ToolParticleEffect("weapons_waxon", 27, axeSwordMat, Particle.WAX_OFF, false, this));
+            registerEffect(new ToolParticleEffect("weapons_waxoff", 28, axeSwordMat, Particle.WAX_ON, false, this));
+            registerEffect(new BlockTrailEffect("light-walker", 29, Collections.singletonList(LootMaterial.BOOTS), this));
+
+        }
 
         // Rebuild the effect chance pool
         effectChancePool.clear();

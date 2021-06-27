@@ -4,6 +4,7 @@ import base.util.Util;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Vibration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -100,7 +101,7 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
                     } else if (particle == Particle.LAVA) {
                         player.getWorld().spawnParticle(particle, location, 5);
                     } else {
-                        player.getWorld().spawnParticle(particle, location, 1);
+                        player.getWorld().spawnParticle(particle, location, 100);
                     }
                     return;
                 }

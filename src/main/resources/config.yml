@@ -68,7 +68,7 @@ loot-sources:
     # Example: 1 loot = 65% chance, 2 loot = 0.65 * 0.65 = 42.25% chance and so on
     chance: 65 #Percentage
     show-cooldown-msg: true
-  anvils: # Currently only for shields (elytra soon)
+  anvils: # Currently only for shields and elytra
     enabled: true
 
 # This is the chance for the "next" vanilla enchantment for random loot (from fishing, chests and /al new command
@@ -198,6 +198,9 @@ effects:
     name: "Gardener"
     chance: 90
     enabled: true
+  light-walker:
+    enabled: true
+    name: "Natty Light"
   timewalker: #Applicable only to boots
     affect-world-time: true
     time-shift: 150 # Measured in ticks. E.g. 150 / 20 = 7.5 seconds (20 ticks/second under normal conditions)
@@ -292,6 +295,42 @@ effects:
       enabled: true
     water-splash:
       name: "Splash"
+      chance: 30
+      enabled: true
+    glow:
+      name: "Glow"
+      chance: 30
+      enabled: true
+    dripstone:
+      name: "Dripstone"
+      chance: 30
+      enabled: true
+    ink:
+      name: "Ink"
+      chance: 30
+      enabled: true
+    spore:
+      name: "Spore"
+      chance: 30
+      enabled: true
+    vibration:
+      name: "Vibe"
+      chance: 30
+      enabled: true
+    waxon:
+      name: "Wax On"
+      chance: 30
+      enabled: true
+    waxoff:
+      name: "Wax Off"
+      chance: 30
+      enabled: true
+    spark:
+      name: "Spark"
+      chance: 30
+      enabled: true
+    scrape:
+      name: "Scrape"
       chance: 30
       enabled: true
 
