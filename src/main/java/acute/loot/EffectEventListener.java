@@ -1,6 +1,7 @@
 package acute.loot;
 
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -45,7 +46,7 @@ public class EffectEventListener implements Listener {
         if (event.getDamager() instanceof Arrow) {
             Arrow arrow = (Arrow) event.getDamager();
             if (arrow.getShooter() instanceof Player) {
-                if (plugin.getConfig().getBoolean("effects.enabled") && ((Player) arrow.getShooter()).getInventory()
+                if (plugin.effectsEnabled(arrow.getWorld()) && ((Player) arrow.getShooter()).getInventory()
                                                                                                      .getItemInMainHand()
                                                                                                      .getType() == Material.BOW) {
                     if (event.getEntity() instanceof LivingEntity) {
@@ -69,7 +70,7 @@ public class EffectEventListener implements Listener {
                             }.runTaskLater(plugin, 20L);
                         }
 
-                        applyEventToItem(event, ((Player) arrow.getShooter()).getInventory().getItemInMainHand());
+                        applyEventToItem(event, ((Player) arrow.getShooter()).getInventory().getItemInMainHand(), arrow.getWorld());
                     }
                 }
             }
@@ -201,16 +202,16 @@ public class EffectEventListener implements Listener {
     }
 
     private void applyEventWithPlayer(final Event event, final Player player) {
-        applyEventToItem(event, player.getInventory().getItemInMainHand());
-        applyEventToItem(event, player.getInventory().getItemInOffHand());
-        applyEventToItem(event, player.getInventory().getHelmet());
-        applyEventToItem(event, player.getInventory().getChestplate());
-        applyEventToItem(event, player.getInventory().getLeggings());
-        applyEventToItem(event, player.getInventory().getBoots());
+        applyEventToItem(event, player.getInventory().getItemInMainHand(), player.getWorld());
+        applyEventToItem(event, player.getInventory().getItemInOffHand(), player.getWorld());
+        applyEventToItem(event, player.getInventory().getHelmet(), player.getWorld());
+        applyEventToItem(event, player.getInventory().getChestplate(), player.getWorld());
+        applyEventToItem(event, player.getInventory().getLeggings(), player.getWorld());
+        applyEventToItem(event, player.getInventory().getBoots(), player.getWorld());
     }
 
-    private void applyEventToItem(final Event event, final ItemStack item) {
-        if (!plugin.getConfig().getBoolean("effects.enabled")) {
+    private void applyEventToItem(final Event event, final ItemStack item, final World world) {
+        if (!plugin.effectsEnabled(world)) {
             return;
         }
         String lootCode = plugin.getLootCode(item);

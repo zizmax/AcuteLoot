@@ -69,6 +69,9 @@ public class AcuteLoot extends JavaPlugin {
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
 
+    private AlConfig globalConfig;
+    private final Map<String, AlConfig> worldConfigs = new HashMap<>();
+
     public static final int configVersion = 5;
 
     @Override
@@ -267,6 +270,17 @@ public class AcuteLoot extends JavaPlugin {
         }
         // Initialize materials array
         createMaterials(this, "plugins/AcuteLoot/" + fileName + ".txt");
+
+        // Set up global and per-world configs
+        worldConfigs.clear();
+        globalConfig = AlConfig.buildConfig(getConfig().getValues(true));
+        for (Map<?, ?> worldConfig : getConfig().getMapList("world-settings")) {
+            worldConfigs.put((String) worldConfig.get("world-name"), AlConfig.buildConfig(worldConfig));
+        }
+        getLogger().fine("GLOBAL CONFIG:");
+        getLogger().fine(globalConfig.toString());
+        getLogger().fine("WORLD CONFIGS:");
+        worldConfigs.forEach((key1, value) -> getLogger().fine(key1 + ": " + value));
 
         // Set up name generators
 
@@ -617,5 +631,25 @@ public class AcuteLoot extends JavaPlugin {
 
     public LootItemGenerator lootGenerator() {
         return lootGenerator;
+    }
+
+    public boolean effectsEnabled(final World world) {
+        return worldConfigs.getOrDefault(world.getName(), globalConfig).isEffectsEnabled();
+    }
+
+    public boolean enchantingLootEnabled(final World world) {
+        return worldConfigs.getOrDefault(world.getName(), globalConfig).isEnchantingEnabled();
+    }
+
+    public boolean chestLootEnabled(final World world) {
+        return worldConfigs.getOrDefault(world.getName(), globalConfig).isChestsEnabled();
+    }
+
+    public boolean fishingLootEnabled(final World world) {
+        return worldConfigs.getOrDefault(world.getName(), globalConfig).isFishingEnabled();
+    }
+
+    public boolean anvilLootEnabled(final World world) {
+        return worldConfigs.getOrDefault(world.getName(), globalConfig).isAnvilsEnabled();
     }
 }
