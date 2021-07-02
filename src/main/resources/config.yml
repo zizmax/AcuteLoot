@@ -121,6 +121,11 @@ loot-category-lore:
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
+# If this is "false" rarities will not be displayed in item lore. Please note
+# that rarities will still be selected for items regardless of what value
+# is set here.
+display-rarities: true
+
 # Rarities MUST be listed in order of ID number and chance (Most common to least common)
 # ID numbers are arbitrary (they are used internally by the plugin to keep track of a rarity even if the name changes)
 # You can add new (and remove old) rarities as you see fit as long as you edit the ID's to match

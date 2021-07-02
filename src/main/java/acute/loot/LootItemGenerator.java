@@ -150,7 +150,9 @@ public class LootItemGenerator {
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, loot.lootCode());
 
         // Add loot info to lore
-        lore.add(loot.rarity().getRarityColor() + loot.rarity().getName());
+        if (!Boolean.FALSE.equals(plugin.getConfig().getBoolean(("display-rarities")))) {
+            lore.add(loot.rarity().getRarityColor() + loot.rarity().getName());
+        }
         for (LootSpecialEffect effect : loot.getEffects()) {
             //String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
             String effectName = effect.getDisplayName();
