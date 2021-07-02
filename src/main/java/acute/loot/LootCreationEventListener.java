@@ -45,7 +45,7 @@ public class LootCreationEventListener implements Listener {
     @EventHandler
     public void onEnchant(EnchantItemEvent event) {
         Player player = event.getEnchanter();
-        if (plugin.getConfig().getBoolean("loot-sources.enchanting.enabled")) {
+        if (plugin.enchantingLootEnabled(player.getWorld())) {
             double roll = random.nextDouble();
             double chance = plugin.getConfig().getDouble("loot-sources.enchanting.chance") / 100.0;
             if (plugin.debug) {
@@ -158,7 +158,7 @@ public class LootCreationEventListener implements Listener {
                         }
                     }
 
-                    if (plugin.getConfig().getBoolean("loot-sources.chests.enabled")) {
+                    if (plugin.chestLootEnabled(player.getWorld())) {
                         // Runs chest-filling logic on next tick to account for items placed by vanilla loot table
                         plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
                             @Override
@@ -225,7 +225,7 @@ public class LootCreationEventListener implements Listener {
     public void onPlayerFish(PlayerFishEvent event) {
         Entity caught = event.getCaught();
         if (caught instanceof Item && event.getExpToDrop() > 0) {
-            if (plugin.getConfig().getBoolean("loot-sources.fishing.enabled")) {
+            if (plugin.fishingLootEnabled(event.getPlayer().getWorld())) {
                 double roll = random.nextDouble();
                 double chance = plugin.getConfig().getDouble("loot-sources.fishing.chance") / 100.0;
                 if (plugin.debug) {
@@ -279,7 +279,7 @@ public class LootCreationEventListener implements Listener {
                     event.setResult(result);
                 }
             }
-            if (plugin.getConfig().getBoolean("loot-sources.anvils.enabled")) {
+            if (plugin.anvilLootEnabled(player.getWorld())) {
                 UnorderedPair pair = UnorderedPair.of(inv.getItem(0), inv.getItem(1));
                 if (result.getType().equals(Material.SHIELD) || result.getType().equals(Material.ELYTRA)) {
                     //TODO Add configurable anvil chance

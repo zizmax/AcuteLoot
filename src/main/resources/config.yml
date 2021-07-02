@@ -342,6 +342,31 @@ effects:
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
 # |                                                                                              | #
+# |                                    World-Specific Settings                                   | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+# Here you can optionally configure behavior specific to a world. Currently
+# the only supported settings are whether different loot creation methods are
+# enabled and whether effects are enabled, but more may be added in the future.
+world-settings:
+#    -
+#        world-name: world
+#        effects:
+#          enabled: false
+#        loot-sources:
+#          enchanting:
+#            enabled: true
+#          fishing:
+#            enabled: true
+#          chests: # Naturally generated chests ONLY e.g. chests in dungeons
+#            enabled: true
+#          anvils: # Currently only for shields and elytra
+#            enabled: true
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
 # |                                           Salvager                                           | #
 # |                                                                                              | #
 # |                                                                                              | #
