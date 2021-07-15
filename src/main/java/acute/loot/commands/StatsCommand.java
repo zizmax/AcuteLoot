@@ -5,10 +5,7 @@ import acute.loot.LootItem;
 import acute.loot.Util;
 import acute.loot.namegen.PermutationCounts;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -77,15 +74,24 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
             final HoverEvent hover = Util.getLootHover(name, new LootItem(lootCode));
             final BaseComponent[] prefix = TextComponent.fromLegacyText(AcuteLoot.CHAT_PREFIX);
             final BaseComponent[] first = new ComponentBuilder().append(prefix)
-                                                                .append("\"")
+                                                                .append("[")
                                                                 .color(ChatColor.WHITE)
                                                                 .event(hover)
                                                                 .append(Util.colorLootName(name, loot.rarity()))
-                                                                .append("\"")
+                                                                .append("]")
                                                                 .color(ChatColor.WHITE)
                                                                 .create();
             final BaseComponent[] second = new ComponentBuilder().append(" (hover me!)").color(ChatColor.WHITE).create();
             sender.spigot().sendMessage(base.util.Util.concat(BaseComponent[]::new, first, second));
+
+            if (sender.hasPermission("acuteloot.share")) {
+                final ClickEvent click = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/al share");
+                sender.spigot().sendMessage(new ComponentBuilder("Click here to share this loot!")
+                        .color(ChatColor.AQUA)
+                        .event(click)
+                        .create());
+            }
+
         } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is not AcuteLoot");
         }
