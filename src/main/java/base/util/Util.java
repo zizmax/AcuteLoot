@@ -2,6 +2,8 @@ package base.util;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -109,5 +111,36 @@ public final class Util {
                   .filter(e -> predicate.test(e.getValue()))
                   .map(Map.Entry::getKey)
                   .collect(Collectors.toList());
+    }
+
+    /**
+     * Apply the given player selector from the given sender. @p, @a, @r, and a specific player
+     * are supported. If no player matches the selector an empty list is returned. @p is only supported
+     * if the sender is a Player.
+     *
+     * @param selector the selector, must be non-empty
+     * @param sender the sender, must be non-null
+     * @return the result of the given selector, possibly empty
+     */
+    public static List<? extends Player> handlePlayerSelector(final String selector, final CommandSender sender) {
+        Checks.requireNonEmpty(selector);
+        Objects.requireNonNull(sender);
+        if (selector.equals("@p") && sender instanceof Player) {
+            return sender.getServer()
+                         .getOnlinePlayers()
+                         .stream()
+                         .filter(p -> p.getWorld().equals(((Player) sender).getWorld()))
+                         .filter(p -> !p.equals(sender))
+                         .max(Comparator.comparingDouble(a -> a.getLocation().distanceSquared(((Player) sender).getLocation())))
+                         .map(Collections::singletonList)
+                         .orElse(Collections.emptyList());
+        } else if (selector.equals("@r")) {
+            return Collections.singletonList(drawRandom(new ArrayList<>(sender.getServer().getOnlinePlayers())));
+        } else if (selector.equals("@a")) {
+            return new ArrayList<>(sender.getServer().getOnlinePlayers());
+        } else if (sender.getServer().getPlayerExact(selector) != null) {
+            return Collections.singletonList(sender.getServer().getPlayerExact(selector));
+        }
+        return Collections.emptyList();
     }
 }
