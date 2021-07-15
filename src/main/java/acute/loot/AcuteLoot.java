@@ -87,6 +87,7 @@ public class AcuteLoot extends JavaPlugin {
         // Register events
         getServer().getPluginManager().registerEvents(new EffectEventListener(this), this);
         getServer().getPluginManager().registerEvents(new LootCreationEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new UiEventListener(this), this);
 
         // Save/read config.yml
         saveDefaultConfig();

@@ -342,6 +342,30 @@ effects:
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
 # |                                                                                              | #
+# |                                              UI                                              | #
+# |                                                                                              | #
+# |                                                                                              | #
+# +----------------------------------------------------------------------------------------------+ #
+# Here you can configure various user interface settings
+
+# AcuteLoot can display information about loot when it appears in a death message.
+# At the moment this only works for player deaths caused by other players.
+#
+# item-death-message-pattern and bow-death-message-pattern are the patterns used for
+# death messages caused by normal items and arrows respectively. They support the variables
+# [killed] (the player who died), [killer] (the player who killed the other player), and [item]
+# (the AcuteLoot used to kill the player, will be displayed with hover text).
+#
+# Note: if you have other plugins that edit the death messages you may want to disable this,
+# as it may be incompatible.
+death-messages:
+    enabled: true
+    item-death-message-pattern: "[killed] was slain by [killer] using [[item]]"
+    bow-death-message-pattern: "[killed] was shot by [killer] using [[item]]"
+
+# +----------------------------------------------------------------------------------------------+ #
+# |                                                                                              | #
+# |                                                                                              | #
 # |                                    World-Specific Settings                                   | #
 # |                                                                                              | #
 # |                                                                                              | #
