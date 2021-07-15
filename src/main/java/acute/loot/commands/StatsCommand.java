@@ -2,7 +2,7 @@ package acute.loot.commands;
 
 import acute.loot.AcuteLoot;
 import acute.loot.LootItem;
-import acute.loot.LootSpecialEffect;
+import acute.loot.Util;
 import acute.loot.namegen.PermutationCounts;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -67,38 +67,26 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
         if (lootCode != null) {
             final LootItem loot = new LootItem(lootCode);
             String name;
+            // todo this is kind of dumb
             try {
                 name = item.getItemMeta().getDisplayName();
             } catch (NullPointerException e) {
                 name = item.getType().name();
             }
 
-            final ComponentBuilder stats = new ComponentBuilder()
-                    .append(name + "\n\n")
-                    .append("Rarity: ")
-                    .append(TextComponent.fromLegacyText(loot.rarity().getRarityColor() + loot.rarity().getName()))
-                    .append("\n")
-                    .color(ChatColor.WHITE);
-            if (!loot.getEffects().isEmpty()) {
-                stats.append("Effects:\n");
-                for (LootSpecialEffect effect : loot.getEffects()) {
-                    stats.append(" - ");
-                    stats.append(effect.getDisplayName() + "\n");
-                }
-            }
-            stats.append("Loot code: ")
-                 .append(lootCode)
-                 .color(net.md_5.bungee.api.ChatColor.AQUA);
-
+            final BaseComponent[] styledName = TextComponent.fromLegacyText(loot.rarity().getRarityColor() + name);
+            final HoverEvent hover = Util.getLootHover(name, new LootItem(lootCode));
             final BaseComponent[] prefix = TextComponent.fromLegacyText(AcuteLoot.CHAT_PREFIX);
-            final BaseComponent[] message = new ComponentBuilder()
-                    .append(prefix)
-                    .append("\"" + name + "\"")
-                    .event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(stats.create())))
-                    .append(" (hover me!)")
-                    .color(net.md_5.bungee.api.ChatColor.WHITE)
-                    .create();
-            sender.spigot().sendMessage(message);
+            final BaseComponent[] first = new ComponentBuilder().append(prefix)
+                                                                .append("\"")
+                                                                .color(ChatColor.WHITE)
+                                                                .event(hover)
+                                                                .append(styledName)
+                                                                .append("\"")
+                                                                .color(ChatColor.WHITE)
+                                                                .create();
+            final BaseComponent[] second = new ComponentBuilder().append(" (hover me!)").color(ChatColor.WHITE).create();
+            sender.spigot().sendMessage(base.util.Util.concat(BaseComponent[]::new, first, second));
         } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is not AcuteLoot");
         }

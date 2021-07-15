@@ -5,8 +5,10 @@ import org.bukkit.Material;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Various utilities.
@@ -109,5 +111,11 @@ public final class Util {
                   .filter(e -> predicate.test(e.getValue()))
                   .map(Map.Entry::getKey)
                   .collect(Collectors.toList());
+    public static <T> T[] concat(IntFunction<T[]> generator, T[]...items) {
+        return Stream.of(items).flatMap(Stream::of).toArray(generator);
+    }
+
+    public static String stripLegacyFormattingCodes(final String input) {
+        return input.charAt(0) == '§' ? stripLegacyFormattingCodes(input.substring(2)) : input;
     }
 }
