@@ -67,8 +67,7 @@ public class UiEventListener implements Listener {
                                               .replace("[item]", "%SPLIT%" + name + "%SPLIT%")
                                               .split("%SPLIT%");
 
-                final BaseComponent[] styledName = TextComponent.fromLegacyText(loot.rarity().getRarityColor() + name);
-                final BaseComponent[] hover = new ComponentBuilder().append(styledName)
+                final BaseComponent[] hover = new ComponentBuilder().append(Util.colorLootName(name, loot.rarity()))
                                               .event(Util.getLootHover(name, loot))
                                               .create();
                 final BaseComponent[] message = Arrays.stream(parts)

@@ -115,7 +115,19 @@ public final class Util {
         return Stream.of(items).flatMap(Stream::of).toArray(generator);
     }
 
+    /**
+     * Strip out any legacy formatting codes from the given string.
+     * If the string is null, shorter than two characters, or contains
+     * no formatting codes the original string is returned.
+     *
+     * @param input the string to strip
+     * @return the input stripped of any legacy formatting codes
+     */
     public static String stripLegacyFormattingCodes(final String input) {
-        return input.charAt(0) == '§' ? stripLegacyFormattingCodes(input.substring(2)) : input;
+        if (input == null || input.length() < 2) {
+            return input;
+        }
+        return input.charAt(0) == '§' ? stripLegacyFormattingCodes(input.substring(2))
+                                      : input.substring(0, 1) + stripLegacyFormattingCodes(input.substring(1));
     }
 }

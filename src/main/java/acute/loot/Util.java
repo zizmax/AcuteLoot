@@ -50,4 +50,8 @@ public final class Util {
         return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(stats.create()));
     }
 
+    public static BaseComponent[] colorLootName(final String name, final LootRarity rarity) {
+        return TextComponent.fromLegacyText(rarity.getRarityColor() + name);
+    }
+
 }

@@ -74,14 +74,13 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
                 name = item.getType().name();
             }
 
-            final BaseComponent[] styledName = TextComponent.fromLegacyText(loot.rarity().getRarityColor() + name);
             final HoverEvent hover = Util.getLootHover(name, new LootItem(lootCode));
             final BaseComponent[] prefix = TextComponent.fromLegacyText(AcuteLoot.CHAT_PREFIX);
             final BaseComponent[] first = new ComponentBuilder().append(prefix)
                                                                 .append("\"")
                                                                 .color(ChatColor.WHITE)
                                                                 .event(hover)
-                                                                .append(styledName)
+                                                                .append(Util.colorLootName(name, loot.rarity()))
                                                                 .append("\"")
                                                                 .color(ChatColor.WHITE)
                                                                 .create();
