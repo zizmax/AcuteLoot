@@ -549,7 +549,7 @@ public class AcuteLoot extends JavaPlugin {
 
         alCommand.registerPlayerSubcommand("add", new AddCommand("acuteloot.add", this));
 
-        alCommand.registerPlayerSubcommand("chest", new ChestCommand("acuteloot.chest", this));
+        alCommand.registerPlayerSubcommand("chest", new ChestCommand.CreateChestCommand("acuteloot.chest", this));
 
         alCommand.registerGenericSubcommand("give", new GiveCommand("acuteloot.give", this));
 
@@ -573,7 +573,7 @@ public class AcuteLoot extends JavaPlugin {
         alCommand.registerPlayerSubcommand("stats", new StatsCommand.PlayerStatsCommand("acuteloot.stats", this));
         alCommand.registerConsoleSubcommand("stats", new StatsCommand.ConsoleStatsCommand("acuteloot.stats", this));
 
-        alCommand.registerPlayerSubcommand("rmchest", new RmChestCommand("acuteloot.rmchest", this));
+        alCommand.registerPlayerSubcommand("rmchest", new ChestCommand.RemoveChestCommand("acuteloot.rmchest", this));
 
         final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
             switch (args.length) {

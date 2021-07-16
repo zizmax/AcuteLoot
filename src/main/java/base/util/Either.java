@@ -3,6 +3,7 @@ package base.util;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * A class representing an object that is either one type or another.
@@ -31,6 +32,10 @@ public final class Either<A, B> {
     public void acceptOr(final Consumer<A> aConsumer, final Consumer<B> bConsumer) {
         left().ifPresent(aConsumer);
         right().ifPresent(bConsumer);
+    }
+
+    public <C> C reduce(final Function<A, C> aReducer, final Function<B, C> bReducer) {
+        return left != null ? aReducer.apply(left) : bReducer.apply(right);
     }
 
     public static <A, B> Either<A, B> ofLeft(final A a) {

@@ -53,4 +53,16 @@ public class EitherTest {
         assertThat(right.hits, is(1));
     }
 
+    @Test
+    @DisplayName("Either reduce() correct")
+    public void eitherReduceCorrect() {
+        final Either<String, Integer> left = Either.ofLeft("Hello, world!");
+        final Either<String, Integer> right = Either.ofRight(123);
+
+        final int lReduce = left.reduce(String::length, i -> -i);
+        final int rReduce = right.reduce(String::length, i -> -i);
+        assertThat(lReduce, is(13));
+        assertThat(rReduce, is(-123));
+    }
+
 }
