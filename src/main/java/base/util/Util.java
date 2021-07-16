@@ -1,7 +1,9 @@
 package base.util;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.util.Vector;
 
 import java.util.*;
@@ -109,5 +111,44 @@ public final class Util {
                   .filter(e -> predicate.test(e.getValue()))
                   .map(Map.Entry::getKey)
                   .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the chunks in a give radius around the provided entity. The chunks returned are
+     * those in grid of side length [-radius, radius] around the entity.
+     *
+     * @param e the entity
+     * @param radius the radius
+     * @return the chinks around the entity
+     */
+    public static List<Chunk> chunksAround(final Entity e, final int radius) {
+        Objects.requireNonNull(e);
+        if (radius < 1) {
+            return Collections.emptyList();
+        }
+
+        final int effectiveRadius = radius - 1;
+        final List<Chunk> chunks = new ArrayList<>();
+        for (int x = -effectiveRadius; x <= effectiveRadius; x++) {
+            for (int z = -effectiveRadius; z <= effectiveRadius; z++) {
+                chunks.add(e.getLocation().add(new Vector(x * 16, 0, z * 16)).getChunk());
+            }
+        }
+        return chunks;
+    }
+
+    /**
+     * Parse the provided string to an Integer if possible, otherwise
+     * return empty.
+     *
+     * @param s the string to parse
+     * @return the parsed string if possible, otherwise empty
+     */
+    public static Optional<Integer> parseIntOptional(final String s) {
+        try {
+            return Optional.of(Integer.parseInt(s));
+        } catch (NumberFormatException e) {
+            return Optional.empty();
+        }
     }
 }
