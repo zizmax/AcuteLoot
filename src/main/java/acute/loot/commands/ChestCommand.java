@@ -12,11 +12,13 @@ import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -38,6 +40,25 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
                                         .map(t -> (Chest) t)
                                         .collect(Collectors.toList()));
         }
+    }
+
+    protected void updateChestData(Chest chest, Consumer<PersistentDataContainer> updater) {
+        updater.accept(chest.getPersistentDataContainer());
+        chest.update();
+
+        final Inventory inventory = chest.getInventory();
+        if (inventory instanceof DoubleChestInventory) {
+            // There's definitely a cleaner way of making sure the other half of a double chest is processed...
+            final DoubleChest doubleChest = (((DoubleChestInventory) inventory).getHolder());
+            final Chest leftChest = (Chest) doubleChest.getLeftSide();
+            final Chest rightChest = (Chest) doubleChest.getRightSide();
+            updater.accept(leftChest.getPersistentDataContainer());
+            leftChest.update();
+            updater.accept(rightChest.getPersistentDataContainer());
+            rightChest.update();
+        }
+
+        chest.getWorld().spawnParticle(Particle.SMOKE_NORMAL, chest.getBlock().getLocation().add(.5, 1, .5), 100);
     }
 
     /**
@@ -108,28 +129,14 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
         private void createChest(Chest chest, Player sender, String refillCooldown) {
             // chestMetadataCode Version 1.0 = "1.0:currentTimeMillis():refillCooldown (minutes)"
             // i.e. "1.0:1606604412:90"
-            String version = "1.0";
-            String currentTime = String.valueOf(System.currentTimeMillis());
-            String chestMetadataCode = String.format("%s:%s:%s", version, currentTime, refillCooldown);
+            final String version = "1.0";
+            final String currentTime = String.valueOf(System.currentTimeMillis());
+            final String chestMetadataCode = String.format("%s:%s:%s", version, currentTime, refillCooldown);
 
             if (plugin().debug) {
                 sender.sendMessage("Code: " + chestMetadataCode);
             }
-            chest.getPersistentDataContainer().set(key, PersistentDataType.STRING, chestMetadataCode);
-            chest.update();
-
-            Inventory inventory = chest.getInventory();
-            if (inventory instanceof DoubleChestInventory) {
-                // There's definitely a cleaner way of making sure the other half of a double chest is processed...
-                DoubleChest doubleChest = (((DoubleChestInventory) inventory).getHolder());
-                Chest leftChest = (Chest) doubleChest.getLeftSide();
-                Chest rightChest = (Chest) doubleChest.getRightSide();
-                leftChest.getPersistentDataContainer().set(key, PersistentDataType.STRING, chestMetadataCode);
-                leftChest.update();
-                rightChest.getPersistentDataContainer().set(key, PersistentDataType.STRING, chestMetadataCode);
-                rightChest.update();
-            }
-
+            updateChestData(chest, pdc -> pdc.set(key, PersistentDataType.STRING, chestMetadataCode));
             chest.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, chest.getBlock().getLocation().add(.5, 1, .5), 100);
         }
 
@@ -175,21 +182,7 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
         }
 
         private void clearChest(Chest chest) {
-            chest.getPersistentDataContainer().remove(key);
-            chest.update();
-
-            Inventory inventory = chest.getInventory();
-            if (inventory instanceof DoubleChestInventory) {
-                // There's definitely a cleaner way of making sure the other half of a double chest is processed...
-                DoubleChest doubleChest = (((DoubleChestInventory) inventory).getHolder());
-                Chest leftChest = (Chest) doubleChest.getLeftSide();
-                Chest rightChest = (Chest) doubleChest.getRightSide();
-                leftChest.getPersistentDataContainer().remove(key);
-                leftChest.update();
-                rightChest.getPersistentDataContainer().remove(key);
-                rightChest.update();
-            }
-
+            updateChestData(chest, pdc -> pdc.remove(key));
             chest.getWorld().spawnParticle(Particle.SMOKE_NORMAL, chest.getBlock().getLocation().add(.5, 1, .5), 100);
         }
     }
