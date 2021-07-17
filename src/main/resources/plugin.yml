@@ -16,7 +16,7 @@ permissions:
   acuteloot:
     default: op
   acuteloot.help:
-    default: op
+    default: true
   acuteloot.enchant:
     description: To be able to create AcuteLoot items in enchanting table
     default: true
