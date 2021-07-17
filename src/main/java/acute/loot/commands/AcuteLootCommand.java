@@ -23,11 +23,16 @@ public abstract class AcuteLootCommand<T extends CommandSender> implements Comma
 
     @Override
     public void handle(T sender, String[] args) {
-        if (plugin.hasPermission(sender, permission)) {
+        if (permissibleFor(sender)) {
             doHandle(sender, args);
         } else {
             sender.sendMessage(AcuteLoot.PERM_DENIED_MSG);
         }
+    }
+
+    @Override
+    public boolean permissibleFor(T sender) {
+        return plugin.hasPermission(sender, permission);
     }
 
     protected abstract void doHandle(T sender, String[] args);

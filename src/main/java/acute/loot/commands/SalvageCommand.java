@@ -50,4 +50,9 @@ public class SalvageCommand implements CommandHandler<CommandSender> {
             sender.sendMessage("Must specify player when running as console");
         }
     }
+
+    @Override
+    public boolean permissibleFor(CommandSender sender) {
+        return sender.hasPermission("acuteloot.salvage"); // TODO is this right??
+    }
 }

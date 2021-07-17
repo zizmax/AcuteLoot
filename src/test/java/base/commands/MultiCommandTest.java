@@ -18,14 +18,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MultiCommandTest {
 
+    interface Handler<T extends CommandSender> extends CommandHandler<T> {
+        @Override
+        default boolean permissibleFor(T sender) { return true; }
+    }
+
     @Test
     @DisplayName("MultiCommand register correct")
     public void multiCommandRegisterCorrect() {
         final MultiCommand multiCommand = new MultiCommand();
 
-        final CommandHandler<Player> playerCommandHandler = (sender, args) -> {};
-        final CommandHandler<ConsoleCommandSender> consoleCommandHandler = (sender, args) -> {};
-        final CommandHandler<CommandSender> genericCommandHandler = (sender, args) -> {};
+
+        final Handler<Player> playerCommandHandler = (sender, args) -> {};
+        final Handler<ConsoleCommandSender> consoleCommandHandler = (sender, args) -> {};
+        final Handler<CommandSender> genericCommandHandler = (sender, args) -> {};
 
         for (String s : Arrays.asList("", null, "   ")) {
             final Class<? extends Throwable> expectedException = s == null ? NullPointerException.class : IllegalArgumentException.class;
@@ -147,9 +153,9 @@ public class MultiCommandTest {
     public void tabCompletedMultiCommandCorrect() {
         final TabCompletedMultiCommand multiCommand = new TabCompletedMultiCommand();
 
-        final CommandHandler<Player> playerCommandHandler = (sender, args) -> {};
-        final CommandHandler<ConsoleCommandSender> consoleCommandHandler = (sender, args) -> {};
-        final CommandHandler<CommandSender> genericCommandHandler = (sender, args) -> {};
+        final Handler<Player> playerCommandHandler = (sender, args) -> {};
+        final Handler<ConsoleCommandSender> consoleCommandHandler = (sender, args) -> {};
+        final Handler<CommandSender> genericCommandHandler = (sender, args) -> {};
 
         multiCommand.registerPlayerSubcommand("player", playerCommandHandler);
         multiCommand.registerPlayerSubcommand("player2", playerCommandHandler);
@@ -192,7 +198,7 @@ public class MultiCommandTest {
         return completer.onTabComplete(commandSender, null, null, args);
     }
 
-    private static class RecordingCommandHandler<T extends CommandSender> implements CommandHandler<T> {
+    private static class RecordingCommandHandler<T extends CommandSender> implements Handler<T> {
 
         private int hits = 0;
         private final List<String> lastArgs = new ArrayList<>();

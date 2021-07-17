@@ -18,4 +18,12 @@ public interface CommandHandler<T extends CommandSender> {
      */
     void handle(T sender, String[] args);
 
+    /**
+     * Return if the sender has permission to use this handler.
+     *
+     * @param sender the sender of the command
+     * @return if the sender has permission to use this handler
+     */
+    boolean permissibleFor(T sender);
+
 }
