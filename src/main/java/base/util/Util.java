@@ -5,6 +5,8 @@ import org.bukkit.Material;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Various utilities.
@@ -88,5 +90,24 @@ public final class Util {
         } catch (IllegalArgumentException | NullPointerException e) {
             return null;
         }
+    }
+
+    /**
+     * Return the keys of a map that match a predicate on their value.
+     *
+     * @param map the map to filter, must be non-null
+     * @param predicate the predicate, must be non-null
+     * @param <K> the key type
+     * @param <V> the value type
+     * @return the keys of the map whose value passes the predicate
+     */
+    public static <K, V> List<K> matchingKeys(final Map<K, V> map, Predicate<V> predicate) {
+        Objects.requireNonNull(map);
+        Objects.requireNonNull(predicate);
+        return map.entrySet()
+                  .stream()
+                  .filter(e -> predicate.test(e.getValue()))
+                  .map(Map.Entry::getKey)
+                  .collect(Collectors.toList());
     }
 }

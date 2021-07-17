@@ -1,6 +1,7 @@
 package base.commands;
 
 import base.util.Checks;
+import base.util.Util;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -181,11 +182,11 @@ public class MultiCommand implements CommandExecutor {
      */
     public List<String> getSubcommandsForSender(final CommandSender sender) {
         Objects.requireNonNull(sender);
-        final List<String> subcommands = new ArrayList<>(genericSubcommands.keySet());
+        final List<String> subcommands = Util.matchingKeys(genericSubcommands, h -> h.permissibleFor(sender));
         if (sender instanceof Player) {
-            subcommands.addAll(playerSubcommands.keySet());
+            subcommands.addAll(Util.matchingKeys(playerSubcommands, h -> h.permissibleFor((Player) sender)));
         } else if (sender instanceof ConsoleCommandSender) {
-            subcommands.addAll(consoleSubcommands.keySet());
+            subcommands.addAll(Util.matchingKeys(consoleSubcommands, h -> h.permissibleFor((ConsoleCommandSender) sender)));
         }
         return subcommands;
     }
