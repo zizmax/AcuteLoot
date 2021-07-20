@@ -86,8 +86,8 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
             if (!range.isPresent() || range.get() < 1) {
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Range must be a positive integer");
                 return;
-            } else if (range.get() > 16) {
-                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Range must not exceed 16 (this is to prevent server crashes)");
+            } else if (range.get() > 8) {
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Range must not exceed 8 (this is to prevent server lag / crashes)");
                 return;
             }
 
@@ -173,8 +173,8 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
             if (!range.isPresent() || range.get() < 1) {
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Range must be a positive integer");
                 return;
-            } else if (range.get() > 16) {
-                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Range must not exceed 16 (this is to prevent server crashes)");
+            } else if (range.get() > 8) {
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Range must not exceed 8 (this is to prevent server lag / crashes)");
                 return;
             }
 
