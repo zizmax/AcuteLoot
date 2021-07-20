@@ -111,6 +111,9 @@ public final class Util {
                   .filter(e -> predicate.test(e.getValue()))
                   .map(Map.Entry::getKey)
                   .collect(Collectors.toList());
+    }
+
+    @SafeVarargs
     public static <T> T[] concat(IntFunction<T[]> generator, T[]...items) {
         return Stream.of(items).flatMap(Stream::of).toArray(generator);
     }
