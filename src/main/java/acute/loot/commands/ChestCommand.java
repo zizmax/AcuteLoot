@@ -181,7 +181,11 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
             sender.sendMessage(String.format("%s%s============== %sChest Remover%s ==============",
                                              AcuteLoot.CHAT_PREFIX, ChatColor.YELLOW, ChatColor.GRAY, ChatColor.YELLOW));
 
-            final List<Chest> chests = selectChests(sender, range.get()).reduce(Collections::singletonList, x -> x);
+            final List<Chest> chests = selectChests(sender, range.get()).reduce(Collections::singletonList, x -> x)
+                                                                        .stream()
+                                                                        .filter(c -> c.getPersistentDataContainer()
+                                                                                      .has(key, PersistentDataType.STRING))
+                                                                        .collect(Collectors.toList());
             if (chests.isEmpty()) {
                 sender.sendMessage(String.format("%s%s0%s AcuteLoot chests found!",
                                                  AcuteLoot.CHAT_PREFIX, ChatColor.AQUA, ChatColor.GRAY));
