@@ -42,3 +42,5 @@ permissions:
     default: op
   acuteloot.reroll:
     default: true
+  acuteloot.rmchest:
+    default: op
