@@ -133,4 +133,51 @@ public final class Util {
         return input.charAt(0) == '§' ? stripLegacyFormattingCodes(input.substring(2))
                                       : input.substring(0, 1) + stripLegacyFormattingCodes(input.substring(1));
     }
+
+    /**
+     * Replace any key in the variable map that occurs in the pattern with
+     * its corresponding value. The return value of the method is a LinkedHashMap
+     * whose items are the tokens in the pattern, where the pattern is tokenized
+     * around any variables. E.g., if the variable map contains [foo] = bar, then
+     * the pattern "[foo] bar baz hello, [foo] 123456789" would tokenize as
+     * "bar", " bar baz hello, "bar" " 123456789". The entries of the returned map
+     * are keyed by their variable name in the case of substituted variable tokens
+     * and their 0-indexed position otherwise. Note for this reason variable names may
+     * NOT be non-negative integers.
+     *
+     * @param pattern the pattern to substitute using the variable map, must be non-null
+     * @param variableMap the variable map, must be non-null
+     * @return the substituted pattern
+     */
+    public static LinkedHashMap<String, String> substituteVariables(final String pattern,
+                                                                    final Map<String, String> variableMap) {
+        Objects.requireNonNull(pattern);
+        Objects.requireNonNull(variableMap);
+
+        final LinkedHashMap<String, String> result = new LinkedHashMap<>();
+        int cursor = 0;
+        int cut = 0;
+        outer: while (cursor < pattern.length()) {
+            for (Map.Entry<String, String> var : variableMap.entrySet()) {
+                if (pattern.substring(cursor).startsWith(var.getKey())) {
+                    if (cursor - cut != 0) {
+                        final String word = pattern.substring(cut, cursor);
+                        result.put(String.valueOf(result.size()), word);
+                    }
+
+                    result.put(var.getKey(), var.getValue());
+                    cursor += var.getKey().length();
+                    cut = cursor;
+                    continue outer;
+                }
+            }
+            cursor++;
+        }
+
+        if (cut != cursor || cursor == 0) {
+            result.put(String.valueOf(result.size()), pattern.substring(cut));
+        }
+
+        return result;
+    }
 }
