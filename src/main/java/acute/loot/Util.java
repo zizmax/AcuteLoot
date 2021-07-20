@@ -8,7 +8,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * AcuteLoot utilities.
@@ -52,6 +55,29 @@ public final class Util {
 
     public static BaseComponent[] colorLootName(final String name, final LootRarity rarity) {
         return TextComponent.fromLegacyText(rarity.getRarityColor() + name);
+    }
+
+    /**
+     * This method abstracts over a common pattern where we substitute the pattern
+     * with respect to the variable map, then convert resulting tokens into BaseComponent[]'s
+     * using some rule (for example, passing through unless the token is for an AcuteLoot item,
+     * in which case a component with hover text is used).
+     *
+     * @param pattern the pattern, will be passed to base.util.Util.substituteVariables()
+     * @param variableMap the variable map, will be passed to base.util.Util.substituteVariables(),
+     * @param mapper mapper for the resulting tokens, must be non-null
+     * @return the substituted pattern, passed through the mapper and aggregated
+     */
+    public static BaseComponent[] substituteAndBuildMessage(final String pattern,
+                                                            final Map<String, String> variableMap,
+                                                            final Function<Map.Entry<String, String>, BaseComponent[]> mapper) {
+        Objects.requireNonNull(mapper);
+        return base.util.Util.substituteVariables(pattern, variableMap)
+                             .entrySet()
+                             .stream()
+                             .map(mapper)
+                             .flatMap(Stream::of)
+                             .toArray(BaseComponent[]::new);
     }
 
 }

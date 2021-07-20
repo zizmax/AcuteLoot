@@ -11,9 +11,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * Event listeners for UI stuff such as chat.
@@ -69,15 +67,15 @@ public class UiEventListener implements Listener {
                         put("[killer]", e.getEntity().getKiller().getDisplayName());
                         put("[item]", name);
                     }};
-                final LinkedHashMap<String, String> substituted = base.util.Util.substituteVariables(pattern, variableMap);
 
                 final BaseComponent[] hover = new ComponentBuilder().append(Util.colorLootName(name, loot.rarity()))
                                               .event(Util.getLootHover(name, loot))
                                               .create();
-                final BaseComponent[] message = substituted.entrySet().stream()
-                        .map(i -> i.getKey().equals("[item]") ? hover : new TextComponent[] {new TextComponent(i.getValue())})
-                        .flatMap(Stream::of)
-                        .toArray(BaseComponent[]::new);
+                final BaseComponent[] message = Util.substituteAndBuildMessage(
+                        pattern,
+                        variableMap,
+                        i -> i.getKey().equals("[item]") ? hover : new TextComponent[] {new TextComponent(i.getValue())}
+                );
                 Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(message));
                 e.setDeathMessage(null);
             }
