@@ -595,10 +595,41 @@ public class AcuteLoot extends JavaPlugin {
         final TabCompleter nameCompletion = (s, c, l, args) -> args.length == 2 ? StringUtil.copyPartialMatches(args[1], nameGeneratorNames
                 .keySet(), new ArrayList<>()) : null;
 
+        final TabCompleter chestCompletion = (s, c, l, args) -> {
+            switch (args.length) {
+                case 2:
+                    return StringUtil.copyPartialMatches(args[1],
+                            Arrays.asList("-1", "1", "5", "10", "60", "240", "480", "720", "1440"),
+                            new ArrayList<>());
+                case 3:
+                    return StringUtil.copyPartialMatches(args[2],
+                            Arrays.asList("1", "2", "4", "8"),
+                            new ArrayList<>());
+                case 4:
+                    return StringUtil.copyPartialMatches(args[3],
+                            Collections.singletonList("true"),
+                            new ArrayList<>());
+                default:
+                    return null;
+            }
+        };
+
+        final TabCompleter rmChestCompletion = (s, c, l, args) -> {
+            if (args.length == 2) {
+                return StringUtil.copyPartialMatches(args[1],
+                        Arrays.asList("1", "2", "4", "8"),
+                        new ArrayList<>());
+            } else {
+                return null;
+            }
+        };
+
         alCommand.registerSubcompletion("add", addAndNewCompletion);
         alCommand.registerSubcompletion("new", addAndNewCompletion);
         alCommand.registerSubcompletion("give", giveCompletion);
         alCommand.registerSubcompletion("name", nameCompletion);
+        alCommand.registerSubcompletion("chest", chestCompletion);
+        alCommand.registerSubcompletion("rmchest", rmChestCompletion);
     }
 
     /**
