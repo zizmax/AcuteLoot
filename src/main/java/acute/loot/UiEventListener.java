@@ -69,7 +69,7 @@ public class UiEventListener implements Listener {
                     }};
 
                 final BaseComponent[] hover = new ComponentBuilder().append(Util.colorLootName(name, loot.rarity()))
-                                              .event(Util.getLootHover(name, loot, acuteLoot))
+                                              .event(Util.getLootHover(item.getItemMeta().getDisplayName(), loot, acuteLoot))
                                               .create();
                 final BaseComponent[] message = Util.substituteAndBuildMessage(
                         pattern,
