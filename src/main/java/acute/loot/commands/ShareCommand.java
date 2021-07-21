@@ -24,20 +24,30 @@ public class ShareCommand extends AcuteLootCommand<Player>  {
 
     @Override
     protected void doHandle(Player sender, String[] args) {
+        if (sender.getInventory().getItemInMainHand().getType().isAir()) {
+            sender.sendMessage(AcuteLoot.CHAT_PREFIX + plugin().getConfig().getString("msg.generic.empty-hand"));
+            return;
+        }
+
         final String lootCode = plugin().getLootCode(sender.getInventory().getItemInMainHand());
         if (lootCode != null && sender.getInventory().getItemInMainHand().getItemMeta() != null) {
             final String name = sender.getInventory().getItemInMainHand().getItemMeta().getDisplayName();
             final LootItem loot = new LootItem(lootCode);
-            final BaseComponent[] message = new ComponentBuilder()
-                    .append(AcuteLoot.CHAT_PREFIX)
-                    .append(sender.getDisplayName())
-                    .append(" shared [")
-                    .append(Util.colorLootName(name, loot.rarity()))
-                    .event(Util.getLootHover(name, loot))
-                    .append("]")
-                    .color(ChatColor.WHITE)
-                    .create();
+            final BaseComponent[] hover = new ComponentBuilder().append(Util.colorLootName(name, loot.rarity()))
+                                                                .event(Util.getLootHover(name, loot, plugin()))
+                                                                .create();
+            final Map<String, String> variableMap = new HashMap<String, String>() {{
+                    put("[name]", sender.getDisplayName());
+                    put("[item]", name);
+                }};
+            final BaseComponent[] message = Util.substituteAndBuildMessage(
+                    AcuteLoot.CHAT_PREFIX + plugin().getConfig().getString("msg.share.shared"),
+                    variableMap,
+                    i -> i.getKey().right().equals("[item]") ? hover : Util.liftString(i.getValue())
+            );
             Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(message));
+        } else {
+            sender.sendMessage(AcuteLoot.CHAT_PREFIX + plugin().getConfig().getString("msg.generic.not-acuteloot"));
         }
     }
 }

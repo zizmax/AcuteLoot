@@ -27,32 +27,55 @@ public final class Util {
      *
      * @param name the name of the loot, must be non-empty
      * @param loot the loot's LootItem, must be non-null
+     * @param plugin the AcuteLoot instance, used for config
      * @return a HoverEvent that will display information about the given piece of loot
      */
-    public static HoverEvent getLootHover(final String name, final LootItem loot) {
+    public static HoverEvent getLootHover(final String name, final LootItem loot, final AcuteLoot plugin) {
         Checks.requireNonEmpty(name);
         Objects.requireNonNull(loot);
-        final BaseComponent[] styledName = TextComponent.fromLegacyText(loot.rarity().getRarityColor() + name);
-        final ComponentBuilder stats = new ComponentBuilder()
-                .append(styledName)
-                .append("\n\n")
-                .color(ChatColor.WHITE)
-                .append("Rarity: ")
-                .append(TextComponent.fromLegacyText(loot.rarity().getRarityColor() + loot.rarity().getName()))
-                .append("\n")
-                .color(ChatColor.WHITE);
-        if (!loot.getEffects().isEmpty()) {
-            stats.append("Effects:\n");
-            for (LootSpecialEffect effect : loot.getEffects()) {
-                stats.append(" - ");
-                stats.append(effect.getDisplayName() + "\n");
-            }
-        }
-        stats.append("Loot code: ")
-             .append(loot.lootCode())
-             .color(net.md_5.bungee.api.ChatColor.AQUA);
 
-        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(stats.create()));
+        final BaseComponent[] effects;
+        if (loot.getEffects().isEmpty()) {
+            effects = liftString(plugin.getConfig().getString("msg.hover-no-effects"));
+        } else {
+            final BaseComponent[] effectsList = loot.getEffects().stream().map(e -> {
+                final Map<String, String> varMap = new HashMap<String, String>() {{
+                        put("[effect_name]", plugin.getConfig().getString("loot-effect-color") + e.getDisplayName());
+                    }};
+                return substituteAndBuildMessage(
+                        plugin.getConfig().getString("msg.hover-effects-item"),
+                        varMap,
+                        x -> liftString(x.getValue())
+                );
+            }).flatMap(Stream::of).toArray(BaseComponent[]::new);
+
+            final Map<String, String> varMap = new HashMap<String, String>() {{
+                    put("[effects]", "[effects]");
+                }};
+            effects = substituteAndBuildMessage(
+                    base.util.Util.trimTrailingNewlines(plugin.getConfig().getString("msg.hover-effects")),
+                    varMap,
+                    x -> x.getKey().right().equals("[effects]") ? effectsList : liftString(x.getValue())
+            );
+        }
+
+        final Map<String, String> variableMap = new HashMap<String, String>() {{
+                put("[rarity]", loot.rarity().getRarityColor() + loot.rarity().getName());
+                put("[name]", name);
+                put("[loot_code]", ChatColor.AQUA + loot.lootCode());
+                put("[effects]", "[effects]");
+            }};
+
+        final BaseComponent[] message = substituteAndBuildMessage(
+                base.util.Util.trimTrailingNewlines(plugin.getConfig().getString("msg.hover")),
+                variableMap,
+                i -> i.getKey().right().equals("[effects]") ? effects : liftString(i.getValue())
+        );
+        return new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(message));
+    }
+
+    public static BaseComponent[] liftString(final String s) {
+        return new TextComponent[] {new TextComponent(s)};
     }
 
     public static BaseComponent[] colorLootName(final String name, final LootRarity rarity) {

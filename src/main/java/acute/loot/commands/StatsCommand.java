@@ -74,29 +74,30 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
                 name = item.getType().name();
             }
 
-            final HoverEvent hover = Util.getLootHover(name, new LootItem(lootCode));
-            final BaseComponent[] prefix = TextComponent.fromLegacyText(AcuteLoot.CHAT_PREFIX);
-            final BaseComponent[] first = new ComponentBuilder().append(prefix)
-                                                                .append("[")
-                                                                .color(ChatColor.WHITE)
-                                                                .event(hover)
-                                                                .append(Util.colorLootName(name, loot.rarity()))
-                                                                .append("]")
-                                                                .color(ChatColor.WHITE)
+            final BaseComponent[] hover = new ComponentBuilder().append(Util.colorLootName(name, loot.rarity()))
+                                                                .event(Util.getLootHover(name, loot, plugin()))
                                                                 .create();
-            final BaseComponent[] second = new ComponentBuilder().append(" (hover me!)").color(ChatColor.WHITE).create();
-            sender.spigot().sendMessage(base.util.Util.concat(BaseComponent[]::new, first, second));
+            String finalName = name;
+            final Map<String, String> variableMap = new HashMap<String, String>() {{
+                    put("[item]", finalName);
+                }};
+            final BaseComponent[] message = Util.substituteAndBuildMessage(
+                    AcuteLoot.CHAT_PREFIX + plugin().getConfig().getString("msg.stats.loot-stats"),
+                    variableMap,
+                    i -> i.getKey().right().equals("[item]") ? hover : Util.liftString(i.getValue())
+            );
+            sender.spigot().sendMessage(message);
 
             if (sender.hasPermission("acuteloot.share")) {
                 final ClickEvent click = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/al share");
-                sender.spigot().sendMessage(new ComponentBuilder("Click here to share this loot!")
+                sender.spigot().sendMessage(new ComponentBuilder(plugin().getConfig().getString("msg.stats.click-to-share"))
                         .color(ChatColor.AQUA)
                         .event(click)
                         .create());
             }
 
         } else {
-            sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is not AcuteLoot");
+            sender.sendMessage(AcuteLoot.CHAT_PREFIX + plugin().getConfig().getString("msg.generic.not-acuteloot"));
         }
     }
 
