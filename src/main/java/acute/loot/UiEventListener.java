@@ -74,7 +74,7 @@ public class UiEventListener implements Listener {
                 final BaseComponent[] message = Util.substituteAndBuildMessage(
                         pattern,
                         variableMap,
-                        i -> i.getKey().equals("[item]") ? hover : new TextComponent[] {new TextComponent(i.getValue())}
+                        i -> i.getKey().right().equals("[item]") ? hover : Util.liftString(i.getValue())
                 );
                 Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(message));
                 e.setDeathMessage(null);

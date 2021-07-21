@@ -37,33 +37,33 @@ public class UtilTest {
         assertThrows(NullPointerException.class, () -> substituteVariables("", null));
         assertThrows(NullPointerException.class, () -> substituteVariables(null, new HashMap<>()));
 
-        final LinkedHashMap<String, String> empty = new LinkedHashMap<String, String>(){{
-            put("0", "");
+        final LinkedHashMap<Pair<Integer, String>, String> empty = new LinkedHashMap<Pair<Integer, String>, String>(){{
+            put(new Pair<>(0, ""), "");
         }};
         assertThat(substituteVariables("", new HashMap<>()), is(empty));
 
-        final LinkedHashMap<String, String> noVars = new LinkedHashMap<String, String>(){{
-            put("0", "Hello, world! How are you today?");
+        final LinkedHashMap<Pair<Integer,String>, String> noVars = new LinkedHashMap<Pair<Integer,String>, String>(){{
+            put(new Pair<>(0, "Hello, world! How are you today?"), "Hello, world! How are you today?");
         }};
         assertThat(substituteVariables("Hello, world! How are you today?", new HashMap<>()), is(noVars));
 
-        final LinkedHashMap<String, String> oneVar = new LinkedHashMap<String, String>(){{
-            put("0", "Hello, ");
-            put("[target]", "world");
-            put("2", "! How are you today?");
+        final LinkedHashMap<Pair<Integer,String>, String> oneVar = new LinkedHashMap<Pair<Integer,String>, String>(){{
+            put(new Pair<>(0, "Hello, "), "Hello, ");
+            put(new Pair<>(1, "[target]"), "world");
+            put(new Pair<>(2, "! How are you today?"), "! How are you today?");
         }};
         final HashMap<String, String> oneVarMap = new HashMap<String, String>() {{
             put("[target]", "world");
         }};
         assertThat(substituteVariables("Hello, [target]! How are you today?", oneVarMap), is(oneVar));
 
-        final LinkedHashMap<String, String> manyVars = new LinkedHashMap<String, String>(){{
-            put("[title]", "[MOD]");
-            put("[killed]", "zizmax");
-            put("2", " was slain by ");
-            put("[killer]", "dizigma");
-            put("4", " using ");
-            put("[item]", "Sorcerous Blade of Desires");
+        final LinkedHashMap<Pair<Integer,String>, String> manyVars = new LinkedHashMap<Pair<Integer,String>, String>(){{
+            put(new Pair<>(0, "[title]"), "[MOD]");
+            put(new Pair<>(1, "[killed]"), "zizmax");
+            put(new Pair<>(2, " was slain by "), " was slain by ");
+            put(new Pair<>(3, "[killer]"), "dizigma");
+            put(new Pair<>(4, " using "), " using ");
+            put(new Pair<>(5, "[item]"), "Sorcerous Blade of Desires");
         }};
         final HashMap<String, String> manyVarsMap = new HashMap<String, String>() {{
             put("[title]", "[MOD]");

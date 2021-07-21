@@ -1,16 +1,18 @@
 package acute.loot;
 
 import base.util.Checks;
-import net.md_5.bungee.api.ChatColor;
+import base.util.Pair;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.ChatColor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -72,7 +74,8 @@ public final class Util {
      */
     public static BaseComponent[] substituteAndBuildMessage(final String pattern,
                                                             final Map<String, String> variableMap,
-                                                            final Function<Map.Entry<String, String>, BaseComponent[]> mapper) {
+                                                            final Function<Map.Entry<Pair<Integer, String>, String>,
+                                                                           BaseComponent[]> mapper) {
         final Map<String, String> correctedVarMap = variableMap.entrySet()
                                                                .stream()
                                                                .collect(Collectors.toMap(Map.Entry::getKey,

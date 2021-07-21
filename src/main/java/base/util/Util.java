@@ -141,20 +141,18 @@ public final class Util {
      * around any variables. E.g., if the variable map contains [foo] = bar, then
      * the pattern "[foo] bar baz hello, [foo] 123456789" would tokenize as
      * "bar", " bar baz hello, "bar" " 123456789". The entries of the returned map
-     * are keyed by their variable name in the case of substituted variable tokens
-     * and their 0-indexed position otherwise. Note for this reason variable names may
-     * NOT be non-negative integers.
+     * are keyed by pairs of (Index, Value | Variable Name).
      *
      * @param pattern the pattern to substitute using the variable map, must be non-null
      * @param variableMap the variable map, must be non-null
      * @return the substituted pattern
      */
-    public static LinkedHashMap<String, String> substituteVariables(final String pattern,
+    public static LinkedHashMap<Pair<Integer, String>, String> substituteVariables(final String pattern,
                                                                     final Map<String, String> variableMap) {
         Objects.requireNonNull(pattern);
         Objects.requireNonNull(variableMap);
 
-        final LinkedHashMap<String, String> result = new LinkedHashMap<>();
+        final LinkedHashMap<Pair<Integer, String>, String> result = new LinkedHashMap<>();
         int cursor = 0;
         int cut = 0;
         outer: while (cursor < pattern.length()) {
@@ -162,10 +160,10 @@ public final class Util {
                 if (pattern.substring(cursor).startsWith(var.getKey())) {
                     if (cursor - cut != 0) {
                         final String word = pattern.substring(cut, cursor);
-                        result.put(String.valueOf(result.size()), word);
+                        result.put(new Pair<>(result.size(), word), word);
                     }
 
-                    result.put(var.getKey(), var.getValue());
+                    result.put(new Pair<>(result.size(), var.getKey()), var.getValue());
                     cursor += var.getKey().length();
                     cut = cursor;
                     continue outer;
@@ -175,9 +173,23 @@ public final class Util {
         }
 
         if (cut != cursor || cursor == 0) {
-            result.put(String.valueOf(result.size()), pattern.substring(cut));
+            result.put(new Pair<>(result.size(), pattern.substring(cut)), pattern.substring(cut));
         }
 
         return result;
+    }
+
+    /**
+     * Remove trailing newlines from the given string. If the string is
+     * null null is returned.
+     *
+     * @param s the string to trim
+     * @return the string with trailing newlines removed
+     */
+    public static String trimTrailingNewlines(String s) {
+        if (s != null && s.endsWith("\n")) {
+            return trimTrailingNewlines(s.substring(0, s.length() - 1));
+        }
+        return s;
     }
 }
