@@ -61,7 +61,9 @@ public final class Util {
      * This method abstracts over a common pattern where we substitute the pattern
      * with respect to the variable map, then convert resulting tokens into BaseComponent[]'s
      * using some rule (for example, passing through unless the token is for an AcuteLoot item,
-     * in which case a component with hover text is used).
+     * in which case a component with hover text is used). The pattern and variable values will
+     * also be passed through ChatColor.translateAlternativeColorCodes(), enabling support fot
+     * '&amp;' colors as is used in the config.
      *
      * @param pattern the pattern, will be passed to base.util.Util.substituteVariables()
      * @param variableMap the variable map, will be passed to base.util.Util.substituteVariables(),
@@ -71,8 +73,12 @@ public final class Util {
     public static BaseComponent[] substituteAndBuildMessage(final String pattern,
                                                             final Map<String, String> variableMap,
                                                             final Function<Map.Entry<String, String>, BaseComponent[]> mapper) {
+        final Map<String, String> correctedVarMap = variableMap.entrySet()
+                                                               .stream()
+                                                               .collect(Collectors.toMap(Map.Entry::getKey,
+                                                                        e -> ChatColor.translateAlternateColorCodes('&', e.getValue())));
         Objects.requireNonNull(mapper);
-        return base.util.Util.substituteVariables(pattern, variableMap)
+        return base.util.Util.substituteVariables(ChatColor.translateAlternateColorCodes('&', pattern), correctedVarMap)
                              .entrySet()
                              .stream()
                              .map(mapper)
