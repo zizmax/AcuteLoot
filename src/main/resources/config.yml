@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 5 # Don't change this!
+config-version: 6 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -444,8 +444,61 @@ msg:
   chests:
     cooldown-remaining: "Remaining cooldown:"
 
+  # Supported variables:
+  # - [item] the item info, presented as hover text
+  stats:
+    loot-stats: "&7[[item]&7] (hover me!)"
+    click-to-share: "Click here to share this loot!"
+
+  # Supported variables:
+  # - [name] the player name
+  # - [item] the item info, presented as hover text
+  share:
+    shared: "&7[name] shared [[item]&7]"
+
+  # NOTE: You cannot have a blank line separator after a multi-line string without
+  # it getting interpreted as part of the string.
+  # NOTE: Variables cannot, at the moment, have colors
+  # Supported variables:
+  # - [name] the item nmae, colored by rarity
+  # - [rarity] the item rarity w/ color
+  # - [effects] will be the value of hover-no-effects if the item as no effects,
+  #             otherwise will be built by the hover-effects pattern
+  # - [loot_code] them item loot code, colored aqua
+  hover: |
+    [name]
+
+    Rarity: [rarity]
+    [effects]
+    Loot code: [loot_code]
+  # This will be used for [effects] in hover when the item has effects.
+  # The [effects] block here will be built as a list where each entry is formed by
+  # the hover-effects-item pattern.
+  hover-effects: |
+    Effects:
+      [effects]
+  hover-no-effects: "Mundane (no effects)"
+
+  hover-effects-item: "- [effect_name]"
+
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
+    empty-hand: "You must be holding an item!"
+
+# AcuteLoot can display information about loot when it appears in a death message.
+# At the moment this only works for player deaths caused by other players.
+#
+# item-death-message-pattern and bow-death-message-pattern are the patterns used for
+# death messages caused by normal items and arrows respectively. They support the variables
+# [killed] (the player who died), [killer] (the player who killed the other player), and [item]
+# (the AcuteLoot used to kill the player, will be displayed with hover text).
+#
+# Note: if you have other plugins that edit the death messages you may want to disable this,
+# as it may be incompatible.
+death-messages:
+    enabled: true
+    item-death-message-pattern: "[killed] was slain by [killer] using [[item]&r]"
+    bow-death-message-pattern: "[killed] was shot by [killer] using [[item]&r]"
 
 
 # +----------------------------------------------------------------------------------------------+ #

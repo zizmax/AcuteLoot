@@ -22,9 +22,10 @@ public class HelpCommand extends AcuteLootCommand<CommandSender> {
             new HelpEntry("name", "acuteloot.name", "/al name [generator]" + ChatColor.GRAY + " Name item using generator"),
             new HelpEntry("stats", "acuteloot.stats", "/al stats" + ChatColor.GRAY + " Stats about an item or general stats"),
             new HelpEntry("chest", "acuteloot.chest", "/al chest [time] [area] [force?]" +
-                                                      ChatColor.GRAY + " Set AL chests"),
+                ChatColor.GRAY + " Set AL chests"),
             new HelpEntry("rmchest", "acuteloot.rmchest", "/al rmchest [area]" + ChatColor.GRAY + " Unset AL chests"),
-            new HelpEntry("salvage", "acuteloot.salvage", "/al salvage [player]" + ChatColor.GRAY + " Open the salvaging GUI")
+            new HelpEntry("salvage", "acuteloot.salvage", "/al salvage [player]" + ChatColor.GRAY + " Open the salvaging GUI"),
+            new HelpEntry("share", "acuteloot.share", "/al share" + ChatColor.GRAY + " Share a piece of AcuteLoot with the server")
     );
 
     public HelpCommand(String permission, AcuteLoot plugin) {

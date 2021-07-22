@@ -72,7 +72,7 @@ public class AcuteLoot extends JavaPlugin {
     private AlConfig globalConfig;
     private final Map<String, AlConfig> worldConfigs = new HashMap<>();
 
-    public static final int configVersion = 5;
+    public static final int configVersion = 6;
 
     @Override
     public void onEnable() {
@@ -87,6 +87,7 @@ public class AcuteLoot extends JavaPlugin {
         // Register events
         getServer().getPluginManager().registerEvents(new EffectEventListener(this), this);
         getServer().getPluginManager().registerEvents(new LootCreationEventListener(this), this);
+        getServer().getPluginManager().registerEvents(new UiEventListener(this), this);
 
         // Save/read config.yml
         saveDefaultConfig();
@@ -574,6 +575,7 @@ public class AcuteLoot extends JavaPlugin {
         alCommand.registerConsoleSubcommand("stats", new StatsCommand.ConsoleStatsCommand("acuteloot.stats", this));
 
         alCommand.registerPlayerSubcommand("rmchest", new ChestCommand.RemoveChestCommand("acuteloot.rmchest", this));
+        alCommand.registerPlayerSubcommand("share", new ShareCommand("acuteloot.share", this));
 
         final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
             switch (args.length) {

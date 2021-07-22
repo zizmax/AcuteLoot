@@ -44,3 +44,5 @@ permissions:
     default: true
   acuteloot.rmchest:
     default: op
+  acuteloot.share:
+    default: op
