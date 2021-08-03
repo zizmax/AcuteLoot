@@ -131,7 +131,7 @@ public final class Util {
                          .stream()
                          .filter(p -> p.getWorld().equals(((Player) sender).getWorld()))
                          .filter(p -> !p.equals(sender))
-                         .max(Comparator.comparingDouble(a -> a.getLocation().distanceSquared(((Player) sender).getLocation())))
+                         .min(Comparator.comparingDouble(a -> a.getLocation().distanceSquared(((Player) sender).getLocation())))
                          .map(Collections::singletonList)
                          .orElse(Collections.emptyList());
         } else if (selector.equals("@r")) {
