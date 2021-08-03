@@ -4,6 +4,7 @@ import acute.loot.AcuteLoot;
 import acute.loot.EffectId;
 import acute.loot.LootItem;
 import acute.loot.LootRarity;
+import base.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,8 +25,8 @@ public class GiveCommand extends AcuteLootCommand<CommandSender> {
     @Override
     protected void doHandle(CommandSender sender, String[] args) {
         if (args.length >= 2) {
-            if (sender.getServer().getPlayerExact(args[1]) != null) {
-                Player target = sender.getServer().getPlayerExact(args[1]);
+            final List<? extends Player> target = Util.handlePlayerSelector(args[1], sender);
+            if (!target.isEmpty()) {
                 ItemStack item = plugin().lootGenerator.getNewRandomLootItemStack();
                 LootItem lootItem = null;
                 if (args.length == 2) {
@@ -53,19 +54,22 @@ public class GiveCommand extends AcuteLootCommand<CommandSender> {
                         return;
                     }
                 }
-                if (target.getInventory().firstEmpty() != -1) {
-                    target.getInventory().addItem(item);
-                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Gave " + ChatColor.GOLD + item.getType() +
-                                       ChatColor.GRAY + " to " + ChatColor.GOLD + target.getDisplayName());
-                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Name: " + item.getItemMeta().getDisplayName());
-                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + item.getItemMeta().getLore().get(0));
-                    AcuteLoot.sendIncompatibleEffectsWarning(sender, lootItem, item);
-                } else {
-                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + target.getDisplayName() + "'s inventory is full!");
+
+                for (Player pTarget : target) {
+                    if (pTarget.getInventory().firstEmpty() != -1) {
+                        pTarget.getInventory().addItem(item);
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Gave " + ChatColor.GOLD + item.getType() +
+                                ChatColor.GRAY + " to " + ChatColor.GOLD + pTarget.getDisplayName());
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Name: " + item.getItemMeta().getDisplayName());
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + item.getItemMeta().getLore().get(0));
+                        AcuteLoot.sendIncompatibleEffectsWarning(sender, lootItem, item);
+                    } else {
+                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + pTarget.getDisplayName() + "'s inventory is full!");
+                    }
                 }
 
             } else {
-                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Player " + args[1] + " is not online!");
+                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Player " + args[1] + " is not online (or selector returned empty)!");
             }
         } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Must specify a player!");
