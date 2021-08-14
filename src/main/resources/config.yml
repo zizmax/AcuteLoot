@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 7 # Don't change this!
+config-version: 8 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -211,6 +211,10 @@ effects:
     chance: 50 # This is the second effect for boots, after gardener.
     enabled: true
     durability-modifier: 1
+  light-walker:
+    name: "Light Walker"
+    chance: 20
+    enabled: true
 
   # Bows
   enderbow: # Applicable only to bows and crossbows

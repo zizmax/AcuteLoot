@@ -72,7 +72,7 @@ public class AcuteLoot extends JavaPlugin {
     private AlConfig globalConfig;
     private final Map<String, AlConfig> worldConfigs = new HashMap<>();
 
-    public static final int configVersion = 7;
+    public static final int configVersion = 8;
 
     @Override
     public void onEnable() {
@@ -401,6 +401,12 @@ public class AcuteLoot extends JavaPlugin {
         //Medusa (Gorgon)
         registerEffect(new MedusaEffect("medusa", 19, Collections.singletonList(LootMaterial.BOW), this));
 
+        if (serverVersion >= 17) {
+            //Light Walker
+            registerEffect(new BlockTrailEffect("light-walker", 20, Collections.singletonList(LootMaterial.BOOTS), this));
+        }
+
+
         // Rebuild the effect chance pool
         effectChancePool.clear();
         effectNames.clear();
@@ -433,7 +439,6 @@ public class AcuteLoot extends JavaPlugin {
             registerEffect(new ToolParticleEffect("weapons_vibration", 26, axeSwordMat, Particle.VIBRATION, false, this));
             registerEffect(new ToolParticleEffect("weapons_waxon", 27, axeSwordMat, Particle.WAX_OFF, false, this));
             registerEffect(new ToolParticleEffect("weapons_waxoff", 28, axeSwordMat, Particle.WAX_ON, false, this));
-            registerEffect(new BlockTrailEffect("light-walker", 29, Collections.singletonList(LootMaterial.BOOTS), this));
 
         }
 
