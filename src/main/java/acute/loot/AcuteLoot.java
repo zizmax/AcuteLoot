@@ -72,7 +72,7 @@ public class AcuteLoot extends JavaPlugin {
     private AlConfig globalConfig;
     private final Map<String, AlConfig> worldConfigs = new HashMap<>();
 
-    public static final int configVersion = 6;
+    public static final int configVersion = 7;
 
     @Override
     public void onEnable() {

@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 6 # Don't change this!
+config-version: 7 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -203,11 +203,9 @@ effects:
     name: "Gardener"
     chance: 90
     enabled: true
-  light-walker:
-    enabled: true
-    name: "Natty Light"
   timewalker: #Applicable only to boots
     affect-world-time: true
+    affect-villagers: true
     time-shift: 150 # Measured in ticks. E.g. 150 / 20 = 7.5 seconds (20 ticks/second under normal conditions)
     name: "Time Walker"
     chance: 50 # This is the second effect for boots, after gardener.

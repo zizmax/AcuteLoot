@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -67,6 +68,11 @@ public class TimewalkEffect extends AcuteLootSpecialEffect {
                         double chance = 20 / 100.0;
                         if (roll < chance) {
                             if (ageable.getAge() < 0 || (ageable.getAge() >= 0 && timeWarp < 0)) {
+                                if (ageable instanceof Villager &&
+                                        !plugin.getConfig().getBoolean("effects.timewalker.affect-villagers")) {
+                                    // Don't age villagers if config disallows
+                                    continue;
+                                }
                                 playGrowthParticles(forward, entity.getLocation());
                                 ageable.setAge(ageable.getAge() + timeWarp);
                             }
