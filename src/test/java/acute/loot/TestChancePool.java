@@ -1,6 +1,6 @@
 package acute.loot;
 
-import base.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 
 import java.util.Random;
 

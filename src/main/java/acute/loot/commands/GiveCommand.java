@@ -4,7 +4,7 @@ import acute.loot.AcuteLoot;
 import acute.loot.EffectId;
 import acute.loot.LootItem;
 import acute.loot.LootRarity;
-import base.util.Util;
+import com.github.phillip.h.acutelib.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

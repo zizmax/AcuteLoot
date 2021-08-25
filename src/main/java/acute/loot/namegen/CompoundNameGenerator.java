@@ -2,7 +2,7 @@ package acute.loot.namegen;
 
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
-import base.util.Checks;
+import com.github.phillip.h.acutelib.util.Checks;
 
 import java.util.Arrays;
 import java.util.List;

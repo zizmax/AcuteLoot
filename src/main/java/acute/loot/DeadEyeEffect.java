@@ -1,6 +1,6 @@
 package acute.loot;
 
-import base.util.Util;
+import com.github.phillip.h.acutelib.util.Util;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;

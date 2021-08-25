@@ -2,7 +2,6 @@ package acute.loot;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,7 +41,7 @@ public class UiEventListener implements Listener {
         if (e.getEntity().getKiller() != null && e.getDeathMessage() != null) {
             final ItemStack item = e.getEntity().getKiller().getInventory().getItemInMainHand();
             if (acuteLoot.getLootCode(item) != null && item.getItemMeta() != null) {
-                final String name = base.util.Util.stripLegacyFormattingCodes(item.getItemMeta().getDisplayName());
+                final String name = com.github.phillip.h.acutelib.util.Util.stripLegacyFormattingCodes(item.getItemMeta().getDisplayName());
                 final LootItem loot = new LootItem(acuteLoot.getLootCode(item));
                 if (!e.getDeathMessage().contains(name)) {
                     return;

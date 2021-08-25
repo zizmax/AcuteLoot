@@ -1,6 +1,6 @@
 package acute.loot;
 
-import base.util.Checks;
+import com.github.phillip.h.acutelib.util.Checks;
 
 import java.util.ArrayList;
 import java.util.List;

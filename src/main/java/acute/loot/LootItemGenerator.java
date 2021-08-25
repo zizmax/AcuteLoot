@@ -1,9 +1,9 @@
 package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
-import base.collections.IntegerChancePool;
-import base.util.Checks;
-import base.util.Util;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.util.Checks;
+import com.github.phillip.h.acutelib.util.Util;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;

@@ -1,7 +1,7 @@
 package acute.loot;
 
-import base.util.Checks;
-import base.util.Pair;
+import com.github.phillip.h.acutelib.util.Checks;
+import com.github.phillip.h.acutelib.util.Pair;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -53,7 +53,7 @@ public final class Util {
                     put("[effects]", "[effects]");
                 }};
             effects = substituteAndBuildMessage(
-                    base.util.Util.trimTrailingNewlines(plugin.getConfig().getString("msg.hover-effects")),
+                    com.github.phillip.h.acutelib.util.Util.trimTrailingNewlines(plugin.getConfig().getString("msg.hover-effects")),
                     varMap,
                     x -> x.getKey().right().equals("[effects]") ? effectsList : liftString(x.getValue())
             );
@@ -67,7 +67,7 @@ public final class Util {
             }};
 
         final BaseComponent[] message = substituteAndBuildMessage(
-                base.util.Util.trimTrailingNewlines(plugin.getConfig().getString("msg.hover")),
+                com.github.phillip.h.acutelib.util.Util.trimTrailingNewlines(plugin.getConfig().getString("msg.hover")),
                 variableMap,
                 i -> i.getKey().right().equals("[effects]") ? effects : liftString(i.getValue())
         );
@@ -104,12 +104,14 @@ public final class Util {
                                                                .collect(Collectors.toMap(Map.Entry::getKey,
                                                                         e -> ChatColor.translateAlternateColorCodes('&', e.getValue())));
         Objects.requireNonNull(mapper);
-        return base.util.Util.substituteVariables(ChatColor.translateAlternateColorCodes('&', pattern), correctedVarMap)
-                             .entrySet()
-                             .stream()
-                             .map(mapper)
-                             .flatMap(Stream::of)
-                             .toArray(BaseComponent[]::new);
+        return com.github.phillip.h.acutelib.util.Util.substituteVariables(
+                ChatColor.translateAlternateColorCodes('&', pattern), correctedVarMap
+        )
+                                                      .entrySet()
+                                                      .stream()
+                                                      .map(mapper)
+                                                      .flatMap(Stream::of)
+                                                      .toArray(BaseComponent[]::new);
     }
 
 }

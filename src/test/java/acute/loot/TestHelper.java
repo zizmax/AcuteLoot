@@ -1,7 +1,7 @@
 package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
-import base.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Event;
 

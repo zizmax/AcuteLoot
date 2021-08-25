@@ -2,7 +2,7 @@ package acute.loot.commands;
 
 import acute.loot.AcuteLoot;
 import acute.loot.SalvagerGui;
-import base.commands.CommandHandler;
+import com.github.phillip.h.acutelib.commands.CommandHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

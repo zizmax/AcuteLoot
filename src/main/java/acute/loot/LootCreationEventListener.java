@@ -1,6 +1,6 @@
 package acute.loot;
 
-import base.util.UnorderedPair;
+import com.github.phillip.h.acutelib.util.UnorderedPair;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

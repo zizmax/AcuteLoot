@@ -1,8 +1,8 @@
 package acute.loot.commands;
 
 import acute.loot.AcuteLoot;
-import base.util.Either;
-import base.util.Util;
+import com.github.phillip.h.acutelib.util.Either;
+import com.github.phillip.h.acutelib.util.Util;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;

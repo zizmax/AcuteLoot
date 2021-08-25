@@ -4,9 +4,9 @@ import static acute.loot.LootSpecialEffect.registerEffect;
 
 import acute.loot.commands.*;
 import acute.loot.namegen.*;
-import base.collections.IntegerChancePool;
-import base.commands.TabCompletedMultiCommand;
-import base.util.Util;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
+import com.github.phillip.h.acutelib.util.Util;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;

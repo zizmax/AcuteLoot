@@ -1,7 +1,7 @@
 package acute.loot;
 
 import acute.loot.namegen.*;
-import base.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

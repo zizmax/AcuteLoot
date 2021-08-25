@@ -4,7 +4,7 @@ import static acute.loot.namegen.NameGenerator.readNames;
 
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
-import base.util.Util;
+import com.github.phillip.h.acutelib.util.Util;
 
 import java.util.List;
 import java.util.Objects;

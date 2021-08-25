@@ -1,5 +1,6 @@
 package acute.loot;
 
+import com.github.phillip.h.acutelib.util.Util;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -169,8 +170,8 @@ public class SalvagerGui implements Listener {
                                                           .info("Material String: " + plugin.getConfig()
                                                                                             .getString(dropIdNode + "material"));
                                                 }
-                                                Material material = base.util.Util.validateMaterial(plugin.getConfig()
-                                                                                                          .getString(dropIdNode +
+                                                Material material = Util.validateMaterial(plugin.getConfig()
+                                                                                                .getString(dropIdNode +
                                                                                                           "material"));
                                                 if (material != null) {
                                                     int slot = inv.first(Material.LIGHT_GRAY_STAINED_GLASS_PANE);

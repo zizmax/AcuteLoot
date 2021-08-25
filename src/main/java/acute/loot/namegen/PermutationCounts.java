@@ -1,6 +1,6 @@
 package acute.loot.namegen;
 
-import base.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 
 /**
  * Utility class for computing permutation statistics.

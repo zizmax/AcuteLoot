@@ -1,12 +1,11 @@
 package acute.loot;
 
 import acute.loot.namegen.NameGenerator;
-import base.collections.IntegerChancePool;
-import base.util.Util;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.util.Util;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

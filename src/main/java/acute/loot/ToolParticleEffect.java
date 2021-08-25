@@ -1,10 +1,9 @@
 package acute.loot;
 
-import base.util.Util;
+import com.github.phillip.h.acutelib.util.Util;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Vibration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

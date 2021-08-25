@@ -1,6 +1,6 @@
 package acute.loot;
 
-import base.util.Checks;
+import com.github.phillip.h.acutelib.util.Checks;
 import org.bukkit.event.Event;
 
 import java.util.HashMap;
