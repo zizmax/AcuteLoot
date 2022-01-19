@@ -1,9 +1,14 @@
-package acute.loot;
+package acute.loot.generator;
 
+import acute.loot.*;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.util.Checks;
 import com.github.phillip.h.acutelib.util.Util;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -19,32 +24,16 @@ import java.util.Random;
 /**
  * Class for generating new pieces of loot.
  */
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class LootItemGenerator {
 
     private static final Random random = AcuteLoot.random;
 
-    private final IntegerChancePool<LootRarity> rarityPool;
-    private final IntegerChancePool<LootSpecialEffect> effectPool;
-    private final IntegerChancePool<NameGenerator> namePool;
-    private final AcuteLoot plugin;
-
-    /**
-     * Construct a new LootItemGenerator.
-     *
-     * @param rarityPool the rarity pool for loot
-     * @param effectPool the effect pool for loot
-     * @param namePool the name pool for loot
-     * @param plugin the AcuteLoot instance
-     */
-    public LootItemGenerator(IntegerChancePool<LootRarity> rarityPool,
-                             IntegerChancePool<LootSpecialEffect> effectPool,
-                             IntegerChancePool<NameGenerator> namePool,
-                             AcuteLoot plugin) {
-        this.rarityPool = rarityPool;
-        this.effectPool = effectPool;
-        this.namePool = namePool;
-        this.plugin = plugin;
-    }
+    private final @NonNull IntegerChancePool<LootRarity> rarityPool;
+    private final @NonNull IntegerChancePool<LootSpecialEffect> effectPool;
+    private final @NonNull Namer namer;
+    private final @NonNull AcuteLoot plugin;
 
     /**
      * Generate a loot item using the given rarity and material.
@@ -139,7 +128,7 @@ public class LootItemGenerator {
             return item;
         }
 
-        String name = rollName(lootMaterial, loot.rarity());
+        namer.nameLoot(item, loot.rarity());
 
         // Add loot info to lore and display name
         ItemMeta meta = item.getItemMeta();
@@ -174,36 +163,9 @@ public class LootItemGenerator {
         }
         meta.setLore(lore);
 
-        // Set display name
-        if (plugin.getConfig().getBoolean("global-loot-name-color")) {
-            meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', plugin.getConfig()
-                                                                                  .getString("loot-name-color")) + name);
-        } else {
-            meta.setDisplayName(loot.rarity().getRarityColor() + name);
-        }
         item.setItemMeta(meta);
 
         return item;
-    }
-
-    protected String rollName(LootMaterial lootMaterial, LootRarity rarity) {
-        String name = null;
-        int attempts = 100;
-        NameGenerator nameGenerator = null;
-        do {
-            try {
-                nameGenerator = namePool.draw();
-                name = nameGenerator.generate(lootMaterial, rarity);
-            } catch (NoSuchElementException e) {
-                // Couldn't draw a name for some reason, try again
-                attempts--;
-            }
-        } while (name == null && attempts > 0);
-        if (attempts == 0) {
-            plugin.getLogger().severe("Could not generate a name in 100 attempts! Are name files empty or corrupted?");
-            plugin.getLogger().severe("Name Generator: " + nameGenerator.toString());
-        }
-        return name;
     }
 
     /**
@@ -223,6 +185,37 @@ public class LootItemGenerator {
             item.setItemMeta((ItemMeta) dmgItemMeta);
         }
         return item;
+    }
+
+    public static LootItemGeneratorBuilder builder(final @NonNull AcuteLoot plugin) {
+        return new LootItemGeneratorBuilder().plugin(plugin);
+    }
+
+    /**
+     * Builder for a LootItemGenerator.
+     */
+    public static class LootItemGeneratorBuilder {
+
+        private LootItemGeneratorBuilder() {}
+
+        /**
+         * Set the name generator source for this builder. Note this will overwrite
+         * any previously set Namer instance.
+         *
+         * @param namePool the name pool
+         * @param overwriteCustom if true existing custom names will be overwritten by loot generation
+         * @return the builder instance
+         */
+        public LootItemGeneratorBuilder namePool(final IntegerChancePool<NameGenerator> namePool,
+                                                 final boolean overwriteCustom) {
+            namer = new NamePoolNamer(namePool, plugin);
+            if (!overwriteCustom) {
+                namer = new PreserveCustomNameNamer(namer);
+            }
+
+            return this;
+        }
+
     }
 
 }

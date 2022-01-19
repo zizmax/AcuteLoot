@@ -144,8 +144,7 @@ public class API {
      * @throws AcuteLootException if a name could not be created
      */
     public String rollName(final ItemStack itemStack, final LootRarity rarity) throws AcuteLootException {
-        final LootMaterial material = itemStack == null ? null : LootMaterial.lootMaterialForMaterial(itemStack.getType());
-        final String name = acuteLoot.lootGenerator().rollName(material, rarity);
+        final String name = Util.rollName(itemStack, rarity, acuteLoot.namePool(), s -> acuteLoot.getLogger().severe(s));
         if (name == null) {
             throw new AcuteLootException("Could not roll name");
         }
