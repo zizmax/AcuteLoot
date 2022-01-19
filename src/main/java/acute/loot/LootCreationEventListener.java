@@ -62,10 +62,19 @@ public class LootCreationEventListener implements Listener {
                     if (plugin.getLootCode(item) == null) {
                         double seed = random.nextDouble();
                         chance = (seed + (enchantRarity / 300.0)) / 2.0;
-                        item = plugin.lootGenerator.createLootItem(item, chance);
+                        if (plugin.getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name") ||
+                                !(item.hasItemMeta() && item.getItemMeta().hasDisplayName())) {
+                            item = plugin.lootGenerator.createLootItem(item, chance);
+                        } else {
+                            String existingName = item.getItemMeta().getDisplayName();
+                            item = plugin.lootGenerator.createLootItem(item, chance);
+                            ItemMeta meta = item.getItemMeta();
+                            meta.setDisplayName(existingName);
+                            item.setItemMeta(meta);
+                        }
                         if (plugin.debug) {
                             player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType()
-                                                                                                          .toString());
+                                    .toString());
                             player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
                             player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
                             player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA +
@@ -74,14 +83,15 @@ public class LootCreationEventListener implements Listener {
                             player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA +
                                     String.format("%.2f%%", chance * 100.0));
                             player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta()
-                                                                                                  .getLore()
-                                                                                                  .get(0));
+                                    .getLore()
+                                    .get(0));
                         }
                     }
                 }
             }
         }
     }
+
 
     private int getEnchantRarity(Map<Enchantment, Integer> enchantments) {
         double totalLevels = 0;

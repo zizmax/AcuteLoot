@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 8 # Don't change this!
+config-version: 9 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -59,6 +59,7 @@ loot-sources:
   enchanting:
     enabled: true
     chance: 100 #Percentage
+    overwrite-existing-name: true
   fishing:
     enabled: true
     chance: 10 #Percentage
