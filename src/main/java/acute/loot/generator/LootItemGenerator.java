@@ -101,7 +101,7 @@ public class LootItemGenerator {
             return item;
         }
 
-        namer.nameLoot(item, loot.rarity());
+        namer.nameLoot(item, loot);
 
         // Add loot info to lore and display name
         ItemMeta meta = item.getItemMeta();

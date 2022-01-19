@@ -1,10 +1,10 @@
 package acute.loot.generator;
 
-import acute.loot.LootRarity;
+import acute.loot.LootItem;
 import org.bukkit.inventory.ItemStack;
 
 interface Namer {
 
-    void nameLoot(ItemStack lootItem, LootRarity rarity);
+    void nameLoot(ItemStack itemStack, LootItem lootItem);
 
 }

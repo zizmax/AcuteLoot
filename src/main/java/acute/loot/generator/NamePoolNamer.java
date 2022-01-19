@@ -1,7 +1,7 @@
 package acute.loot.generator;
 
 import acute.loot.AcuteLoot;
-import acute.loot.LootRarity;
+import acute.loot.LootItem;
 import acute.loot.Util;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
@@ -17,18 +17,16 @@ class NamePoolNamer implements Namer {
     private final @NonNull AcuteLoot plugin;
 
     @Override
-    public void nameLoot(ItemStack lootItem, LootRarity rarity) {
-        final String name = Util.rollName(lootItem, rarity, namePool, s -> plugin.getLogger().severe(s));
+    public void nameLoot(ItemStack itemStack, LootItem lootItem) {
+        final String name = Util.rollName(itemStack, lootItem.rarity(), namePool, s -> plugin.getLogger().severe(s));
 
         final String nameColor;
         if (plugin.getConfig().getBoolean("global-loot-name-color")) {
             nameColor = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color"));
         } else {
-            nameColor = rarity.getRarityColor();
+            nameColor = lootItem.rarity().getRarityColor();
         }
 
-        lootItem.getItemMeta().setDisplayName(nameColor + name);
+        itemStack.getItemMeta().setDisplayName(nameColor + name);
     }
-
-
 }
