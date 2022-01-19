@@ -5,6 +5,8 @@ import static acute.loot.namegen.NameGenerator.readNames;
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 import com.github.phillip.h.acutelib.util.Util;
+import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Objects;
@@ -160,6 +162,8 @@ public class MaterialNameGenerator implements NameGenerator {
      *
      * <p>new FileBuilder().defaultNameFiles().prefix("your prefix/").build()
      */
+    @Accessors(fluent = true)
+    @Setter
     public static class FileBuilder {
         private String swordFile;
         private String pickFile;
@@ -180,96 +184,8 @@ public class MaterialNameGenerator implements NameGenerator {
 
         private String prefix = "";
 
-        public FileBuilder() {
-        }
-
         public MaterialNameGenerator build() {
             return new MaterialNameGenerator(this);
-        }
-
-        public FileBuilder swordFile(String swordFile) {
-            this.swordFile = swordFile;
-            return this;
-        }
-
-        public FileBuilder pickFile(String pickFile) {
-            this.pickFile = pickFile;
-            return this;
-        }
-
-        public FileBuilder bowFile(String bowFile) {
-            this.bowFile = bowFile;
-            return this;
-        }
-
-        public FileBuilder helmetFile(String helmetFile) {
-            this.helmetFile = helmetFile;
-            return this;
-        }
-
-        public FileBuilder bootsFile(String bootsFile) {
-            this.bootsFile = bootsFile;
-            return this;
-        }
-
-        public FileBuilder crossbowFile(String crossbowFile) {
-            this.crossbowFile = crossbowFile;
-            return this;
-        }
-
-        public FileBuilder shovelFile(String shovelFile) {
-            this.shovelFile = shovelFile;
-            return this;
-        }
-
-        public FileBuilder hoeFile(String hoeFile) {
-            this.hoeFile = hoeFile;
-            return this;
-        }
-
-        public FileBuilder axeFile(String axeFile) {
-            this.axeFile = axeFile;
-            return this;
-        }
-
-        public FileBuilder pantsFile(String pantsFile) {
-            this.pantsFile = pantsFile;
-            return this;
-        }
-
-        public FileBuilder chestPlateFile(String chestPlateFile) {
-            this.chestPlateFile = chestPlateFile;
-            return this;
-        }
-
-        public FileBuilder fishingRodFile(String fishingRodFile) {
-            this.fishingRodFile = fishingRodFile;
-            return this;
-        }
-
-        public FileBuilder tridentFile(String tridentFile) {
-            this.tridentFile = tridentFile;
-            return this;
-        }
-
-        public FileBuilder genericFile(String genericFile) {
-            this.genericFile = genericFile;
-            return this;
-        }
-
-        public FileBuilder shieldFile(String shieldFile) {
-            this.shieldFile = shieldFile;
-            return this;
-        }
-
-        public FileBuilder elytraFile(String elytraFile) {
-            this.elytraFile = elytraFile;
-            return this;
-        }
-
-        public FileBuilder prefix(String prefix) {
-            this.prefix = prefix;
-            return this;
         }
 
         /**
