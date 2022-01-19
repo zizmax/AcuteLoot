@@ -64,10 +64,10 @@ public class LootCreationEventListener implements Listener {
                         chance = (seed + (enchantRarity / 300.0)) / 2.0;
                         if (plugin.getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name") ||
                                 !(item.hasItemMeta() && item.getItemMeta().hasDisplayName())) {
-                            item = plugin.lootGenerator.createLootItem(item, chance);
+                            item = plugin.lootGenerator.createLoot(item, chance);
                         } else {
                             String existingName = item.getItemMeta().getDisplayName();
-                            item = plugin.lootGenerator.createLootItem(item, chance);
+                            item = plugin.lootGenerator.createLoot(item, chance);
                             ItemMeta meta = item.getItemMeta();
                             meta.setDisplayName(existingName);
                             item.setItemMeta(meta);
@@ -191,7 +191,7 @@ public class LootCreationEventListener implements Listener {
                                     }
                                     int origEmptySlotsSize = emptySlots.size();
                                     if (emptySlots.size() > 0) {
-                                        ItemStack newLoot = plugin.lootGenerator.createLootItem();
+                                        ItemStack newLoot = plugin.lootGenerator.createLoot();
                                         slotIndex = random.nextInt(emptySlots.size());
                                         int slotToFill = emptySlots.get(slotIndex);
                                         chest.getInventory().setItem(slotToFill, newLoot);
@@ -203,7 +203,7 @@ public class LootCreationEventListener implements Listener {
                                                 player.sendMessage("Roll: " + roll);
                                             }
                                             if (roll <= chance) {
-                                                newLoot = plugin.lootGenerator.createLootItem();
+                                                newLoot = plugin.lootGenerator.createLoot();
                                                 slotIndex = random.nextInt(emptySlots.size());
                                                 slotToFill = emptySlots.get(slotIndex);
                                                 chest.getInventory().setItem(slotToFill, newLoot);
@@ -253,7 +253,7 @@ public class LootCreationEventListener implements Listener {
                 if (roll <= chance) {
                     random.nextInt();
                     Item itemEntity = (Item) caught;
-                    ItemStack item = plugin.lootGenerator.createLootItem();
+                    ItemStack item = plugin.lootGenerator.createLoot();
                     // Turns out that unlike all the other trees, BAMBOO_SAPLING is NOT the material type
                     // BAMBOO_SAPLING appears to be the block material ONLY, so will error when applied to an ItemStack
                     // The original material lists include BAMBOO_SAPLING instead of the correct BAMBOO
@@ -298,7 +298,7 @@ public class LootCreationEventListener implements Listener {
 
                     if (!anvilHistoryPairKey.containsKey(pair.hashCode())) {
                         double chance = AcuteLoot.random.nextDouble();
-                        result = plugin.lootGenerator.createLootItem(result, chance);
+                        result = plugin.lootGenerator.createLoot(result, chance);
                         anvilHistoryPairKey.put(pair.hashCode(), result);
                         anvilHistoryItemKey.put(result, pair.hashCode());
                         event.setResult(result);

@@ -11,10 +11,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -153,6 +150,12 @@ public final class Util {
                                                       .map(mapper)
                                                       .flatMap(Stream::of)
                                                       .toArray(BaseComponent[]::new);
+    }
+
+    // Can be replaced with builtin in java 9+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public static <T> Stream<T> stream(Optional<T> optional) {
+        return optional.map(Stream::of).orElse(Stream.empty());
     }
 
 }

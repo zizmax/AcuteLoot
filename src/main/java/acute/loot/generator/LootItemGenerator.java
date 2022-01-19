@@ -1,5 +1,7 @@
 package acute.loot.generator;
 
+import static acute.loot.Util.stream;
+
 import acute.loot.*;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
@@ -16,10 +18,8 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class for generating new pieces of loot.
@@ -37,15 +37,10 @@ public class LootItemGenerator {
 
     /**
      * Generate a loot item using the given rarity and material.
-     *
-     * @param rarity   the rarity of the item generated, higher is rarer, must be in [0, 1]
-     * @param material the material of the item generated
-     * @return A randomly generated LootItem
+     * Rarity must be in [0, 1]
      */
     public LootItem generate(double rarity, LootMaterial material) {
-        Checks.requireInUnitInterval(rarity);
-        final LootRarity lootRarity = rarityPool.draw(rarity);
-        return generateWithRarity(lootRarity, material);
+        return generate(rarityPool.draw(Checks.requireInUnitInterval(rarity)), material);
     }
 
     /**
@@ -55,21 +50,15 @@ public class LootItemGenerator {
      * @param material   Material of the item generated
      * @return A randomly generated LootItem with the provided rarity
      */
-    public LootItem generateWithRarity(LootRarity lootRarity, LootMaterial material) {
-        int itemRarity = lootRarity.getId();
-
-        List<EffectId> effects = new ArrayList<>();
-        try {
-            if (random.nextDouble() <= lootRarity.getEffectChance()) {
-                final LootSpecialEffect effect = effectPool.drawWithPredicate(l -> l.getValidMaterials()
-                                                                                    .contains(material));
-                effects.add(effect.effectId());
-            }
-        } catch (NoSuchElementException e) {
-            // No effects for this material, ignore.
+    public LootItem generate(@NonNull LootRarity lootRarity, LootMaterial material) {
+        final Optional<LootSpecialEffect> effect;
+        if (random.nextDouble() <= lootRarity.getEffectChance()) {
+            effect = effectPool.tryDrawWithPredicate(l -> l.getValidMaterials().contains(material));
+        } else {
+            effect = Optional.empty();
         }
 
-        return new LootItem(itemRarity, effects);
+        return new LootItem(lootRarity, stream(effect).collect(Collectors.toList()));
     }
 
     /**
@@ -77,40 +66,24 @@ public class LootItemGenerator {
      *
      * @return a loot item with a random material.
      */
-    public ItemStack createLootItem() {
-        return createLootItem(getNewRandomLootItemStack(), random.nextDouble());
+    public ItemStack createLoot() {
+        return createLoot(getNewRandomLootItemStack(), random.nextDouble());
     }
 
     /**
      * Create a loot item from the given item stack with the given rarity.
-     *
-     * @param item   the item stack to turn into a loot item
-     * @param rarity the rarity of the item, in [0.0, 1.0]
-     * @return a loot item made from the given item stack
+     * Rarity must be in [0.0, 1.0]
      */
-    public ItemStack createLootItem(ItemStack item, double rarity) {
-        // Generate loot: name, rarity and effects
-        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
-            return item;
-        }
-        return createLootItem(item, generate(rarity, lootMaterial));
+    public ItemStack createLoot(ItemStack item, double rarity) {
+        return createLoot(item, generate(rarity, LootMaterial.lootMaterialForMaterial(item.getType())));
     }
 
     /**
      * Create a loot item from the given item stack and LootRarity.
-     *
-     * @param item   the item stack to turn into a loot item
-     * @param rarity the rarity of the item
-     * @return a loot item made from the given item stack
      */
     @SuppressWarnings("UnusedReturnValue")
-    public ItemStack createLootItem(ItemStack item, LootRarity rarity) {
-        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
-            return item;
-        }
-        return createLootItem(item, generateWithRarity(rarity, lootMaterial));
+    public ItemStack createLoot(ItemStack item, LootRarity rarity) {
+        return createLoot(item, generate(rarity, LootMaterial.lootMaterialForMaterial(item.getType())));
     }
 
     /**
@@ -122,7 +95,7 @@ public class LootItemGenerator {
      * @param loot the LootItem loot data for the item
      * @return the item with the LootItem data added along with a generated name
      */
-    public ItemStack createLootItem(ItemStack item, final LootItem loot) {
+    public ItemStack createLoot(ItemStack item, final LootItem loot) {
         final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
         if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
             return item;
@@ -171,7 +144,7 @@ public class LootItemGenerator {
     /**
      * Return a new random item stack from the loot materials list
      * in the AcuteLoot instance. If it is damageable, the item will
-     * be given a random damage.
+     * be given random damage.
      *
      * @return a random new item stack
      */
@@ -180,9 +153,7 @@ public class LootItemGenerator {
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
-            Damageable dmgItemMeta = (Damageable) item.getItemMeta();
-            dmgItemMeta.setDamage(random.nextInt(item.getType().getMaxDurability()));
-            item.setItemMeta((ItemMeta) dmgItemMeta);
+            ((Damageable) item.getItemMeta()).setDamage(random.nextInt(item.getType().getMaxDurability()));
         }
         return item;
     }
