@@ -11,14 +11,11 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
-import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +30,7 @@ public class LootItemGenerator {
     private final @NonNull IntegerChancePool<LootRarity> rarityPool;
     private final @NonNull IntegerChancePool<LootSpecialEffect> effectPool;
     private final @NonNull Namer namer;
+    private final @NonNull Lorer lorer;
     private final @NonNull AcuteLoot plugin;
 
     /**
@@ -96,47 +94,10 @@ public class LootItemGenerator {
      * @return the item with the LootItem data added along with a generated name
      */
     public ItemStack createLoot(ItemStack item, final LootItem loot) {
-        final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
-        if (lootMaterial.equals(LootMaterial.UNKNOWN)) {
-            return item;
+        if (!LootMaterial.lootMaterialForMaterial(item.getType()).equals(LootMaterial.UNKNOWN)) {
+            namer.nameLoot(item, loot);
+            lorer.loreLoot(item, loot);
         }
-
-        namer.nameLoot(item, loot);
-
-        // Add loot info to lore and display name
-        ItemMeta meta = item.getItemMeta();
-        List<String> lore = new ArrayList<>();
-
-        // Store lootCode in metadata using PersistentDataHolder API
-        NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, loot.lootCode());
-
-        // Add loot info to lore
-        if (!Boolean.FALSE.equals(plugin.getConfig().getBoolean(("display-rarities")))) {
-            lore.add(loot.rarity().getRarityColor() + loot.rarity().getName());
-        }
-        for (LootSpecialEffect effect : loot.getEffects()) {
-            //String effectName = plugin.getConfig().getString("effects." + effect.getName().replace("_", ".") + ".name");
-            String effectName = effect.getDisplayName();
-            lore.add(ChatColor.translateAlternateColorCodes('&', plugin.getConfig()
-                                                                       .getString("loot-effect-color")) + effectName);
-        }
-
-        // Add category lore
-        if (plugin.getConfig().getBoolean("loot-category-lore.enabled")) {
-            String category = lootMaterial.name().toLowerCase();
-            if (plugin.getConfig().contains("loot-category-lore." + category)) {
-                List<String> loreLines = plugin.getConfig().getStringList("loot-category-lore." + category);
-                for (String line : loreLines) {
-                    lore.add(ChatColor.translateAlternateColorCodes('&', line));
-                }
-            } else {
-                plugin.getLogger().warning("ERROR: Failed to add lore from config: loot-category-lore." + lootMaterial.name());
-            }
-        }
-        meta.setLore(lore);
-
-        item.setItemMeta(meta);
 
         return item;
     }
@@ -159,7 +120,7 @@ public class LootItemGenerator {
     }
 
     public static LootItemGeneratorBuilder builder(final @NonNull AcuteLoot plugin) {
-        return new LootItemGeneratorBuilder().plugin(plugin);
+        return new LootItemGeneratorBuilder().plugin(plugin).lorer(new DefaultLorer(plugin));
     }
 
     /**
