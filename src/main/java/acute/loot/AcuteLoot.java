@@ -3,7 +3,6 @@ package acute.loot;
 import static acute.loot.LootSpecialEffect.registerEffect;
 
 import acute.loot.commands.*;
-import acute.loot.generator.LootItemGenerator;
 import acute.loot.namegen.*;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
@@ -464,12 +463,7 @@ public class AcuteLoot extends JavaPlugin {
 
         }
 
-        final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
-        lootGenerator = LootItemGenerator.builder(this)
-                                         .rarityPool(rarityChancePool)
-                                         .effectPool(effectChancePool)
-                                         .namePool(nameGenChancePool, overwriteNames)
-                                         .build();
+        lootGenerator = new LootItemGenerator(rarityChancePool, effectChancePool, nameGenChancePool, this);
     }
 
     /**
@@ -677,10 +671,6 @@ public class AcuteLoot extends JavaPlugin {
 
     public LootItemGenerator lootGenerator() {
         return lootGenerator;
-    }
-
-    public IntegerChancePool<NameGenerator> namePool() {
-        return nameGenChancePool;
     }
 
     public boolean effectsEnabled(final World world) {

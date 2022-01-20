@@ -1,8 +1,8 @@
 package acute.loot.commands;
 
 import acute.loot.AcuteLoot;
+import acute.loot.LootItemGenerator;
 import acute.loot.LootMaterial;
-import acute.loot.generator.LootItemGenerator;
 import acute.loot.namegen.NameGenerator;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

@@ -30,19 +30,19 @@ public class GiveCommand extends AcuteLootCommand<CommandSender> {
                 ItemStack item = plugin().lootGenerator.getNewRandomLootItemStack();
                 LootItem lootItem = null;
                 if (args.length == 2) {
-                    plugin().lootGenerator.createLoot(item, AcuteLoot.random.nextDouble());
+                    plugin().lootGenerator.createLootItem(item, AcuteLoot.random.nextDouble());
                 } else {
                     if (plugin().rarityNames.containsKey(args[2])) {
                         final int rarityId = plugin().rarityNames.get(args[2]);
                         if (args.length == 3) {
-                            plugin().lootGenerator.createLoot(item, LootRarity.get(rarityId));
+                            plugin().lootGenerator.createLootItem(item, LootRarity.get(rarityId));
                         }
                         final List<EffectId> effects = new ArrayList<>();
                         if (args.length > 3) {
                             if (plugin().effectNames.containsKey(args[3])) {
                                 effects.add(new EffectId(plugin().effectNames.get(args[3])));
                                 lootItem = new LootItem(rarityId, effects);
-                                plugin().lootGenerator.createLoot(item, lootItem);
+                                plugin().lootGenerator.createLootItem(item, lootItem);
                             } else {
                                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[3] + " doesn't exist");
                                 return; // Do not apply the rarity if the effect is invalid
