@@ -20,7 +20,7 @@ public class MetaEditor {
     }
 
     /**
-     * Set the item's display name
+     * Set the item's display name.
      *
      * @param displayName the item's display name
      * @return this MetaEditor
