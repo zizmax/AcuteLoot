@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
@@ -140,9 +141,20 @@ public class LootItemGenerator {
          */
         public LootItemGeneratorBuilder namePool(final IntegerChancePool<NameGenerator> namePool,
                                                  final boolean overwriteCustom) {
+            // Namer base
             namer = new NamePoolNamer(namePool, plugin);
+
+            // Disable overwrites if configured
             if (!overwriteCustom) {
                 namer = new PreserveCustomNameNamer(namer);
+            }
+
+            // ...And color the result!
+            if (plugin.getConfig().getBoolean("global-loot-name-color")) {
+                final String nameColor = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color"));
+                namer = PrefixNamer.fixed(nameColor, namer);
+            } else {
+                namer = PrefixNamer.rarityColor(namer);
             }
 
             return this;

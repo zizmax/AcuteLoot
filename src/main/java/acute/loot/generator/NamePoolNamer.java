@@ -8,7 +8,6 @@ import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 @AllArgsConstructor
@@ -20,15 +19,7 @@ class NamePoolNamer implements Namer {
     @Override
     public void nameLoot(ItemStack itemStack, LootItem lootItem) {
         final String name = Util.rollName(itemStack, lootItem.rarity(), namePool, s -> plugin.getLogger().severe(s));
-
-        final String nameColor;
-        if (plugin.getConfig().getBoolean("global-loot-name-color")) {
-            nameColor = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color"));
-        } else {
-            nameColor = lootItem.rarity().getRarityColor();
-        }
-
-        MetaEditor.on(itemStack).setDisplayName(nameColor + name);
+        MetaEditor.on(itemStack).setDisplayName(name);
     }
 
 }
