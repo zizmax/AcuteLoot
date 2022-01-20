@@ -3,6 +3,7 @@ package acute.loot.generator;
 import acute.loot.LootItem;
 import acute.loot.MetaEditor;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.BiFunction;
@@ -10,8 +11,8 @@ import java.util.function.BiFunction;
 @AllArgsConstructor
 class PrefixNamer implements Namer {
 
-    private final Namer delegate;
-    private final BiFunction<ItemStack, LootItem, String> prefixGenerator;
+    private final @NonNull Namer delegate;
+    private final @NonNull BiFunction<ItemStack, LootItem, String> prefixGenerator;
 
     @Override
     public void nameLoot(ItemStack itemStack, LootItem lootItem) {
