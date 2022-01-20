@@ -158,4 +158,7 @@ public final class Util {
         return optional.map(Stream::of).orElse(Stream.empty());
     }
 
+    public static <K, V, W> Map<K, W> mapMap(final Map<K, V> map, Function<V, W> mapper) {
+        return map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> mapper.apply(e.getValue())));
+    }
 }

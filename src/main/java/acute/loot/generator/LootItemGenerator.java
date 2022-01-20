@@ -120,8 +120,19 @@ public class LootItemGenerator {
         return item;
     }
 
+    /**
+     * Construct a new LootItemGeneratorBuilder with default values.
+     * This will pre-populate the plugin field and set the rarity and
+     * effect pool fields to those contained in the plugin object.
+     *
+     * @param plugin the AcuteLoot instance
+     * @return a new LootItemGeneratorBuilder with pre-populated values
+     */
     public static LootItemGeneratorBuilder builder(final @NonNull AcuteLoot plugin) {
-        return new LootItemGeneratorBuilder().plugin(plugin).lorer(new DefaultLorer(plugin));
+        return new LootItemGeneratorBuilder().plugin(plugin)
+                                             .rarityPool(plugin.rarityChancePool)
+                                             .effectPool(plugin.effectChancePool)
+                                             .lorer(new DefaultLorer(plugin));
     }
 
     /**

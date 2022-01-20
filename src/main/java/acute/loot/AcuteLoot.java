@@ -4,15 +4,18 @@ import static acute.loot.LootSpecialEffect.registerEffect;
 
 import acute.loot.commands.*;
 import acute.loot.generator.LootItemGenerator;
+import acute.loot.listener.EnchantingLootListener;
 import acute.loot.namegen.*;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
 import com.github.phillip.h.acutelib.util.Util;
+import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -26,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -73,6 +77,8 @@ public class AcuteLoot extends JavaPlugin {
     private AlConfig globalConfig;
     private final Map<String, AlConfig> worldConfigs = new HashMap<>();
 
+    private @Getter LootSource enchantingLootSource;
+
     public static final int configVersion = 9;
 
     @Override
@@ -86,9 +92,11 @@ public class AcuteLoot extends JavaPlugin {
         getLogger().info("+----------------------------------------------------------------+");
 
         // Register events
-        getServer().getPluginManager().registerEvents(new EffectEventListener(this), this);
-        getServer().getPluginManager().registerEvents(new LootCreationEventListener(this), this);
-        getServer().getPluginManager().registerEvents(new UiEventListener(this), this);
+        addListener(EffectEventListener::new);
+        addListener(LootCreationEventListener::new);
+        addListener(UiEventListener::new);
+
+        addListener(EnchantingLootListener::new);
 
         // Save/read config.yml
         saveDefaultConfig();
@@ -464,12 +472,19 @@ public class AcuteLoot extends JavaPlugin {
 
         }
 
-        final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
         lootGenerator = LootItemGenerator.builder(this)
-                                         .rarityPool(rarityChancePool)
-                                         .effectPool(effectChancePool)
-                                         .namePool(nameGenChancePool, overwriteNames)
+                                         .namePool(nameGenChancePool, true)
                                          .build();
+
+        final boolean usePermissions = getConfig().getBoolean("use-permissions");
+        final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
+        final LootItemGenerator enchantingGenerator = LootItemGenerator.builder(this)
+                                                                       .namePool(nameGenChancePool, overwriteNames)
+                                                                       .build();
+        final Map<String, Boolean> enchantingConfigs = acute.loot.Util.mapMap(worldConfigs, AlConfig::isEnchantingEnabled);
+        enchantingLootSource = new LootSource(globalConfig.isEnchantingEnabled(), enchantingConfigs,
+                                              usePermissions, "acuteloot.enchant",
+                                              enchantingGenerator);
     }
 
     /**
@@ -687,10 +702,6 @@ public class AcuteLoot extends JavaPlugin {
         return worldConfigs.getOrDefault(world.getName(), globalConfig).isEffectsEnabled();
     }
 
-    public boolean enchantingLootEnabled(final World world) {
-        return worldConfigs.getOrDefault(world.getName(), globalConfig).isEnchantingEnabled();
-    }
-
     public boolean chestLootEnabled(final World world) {
         return worldConfigs.getOrDefault(world.getName(), globalConfig).isChestsEnabled();
     }
@@ -702,4 +713,9 @@ public class AcuteLoot extends JavaPlugin {
     public boolean anvilLootEnabled(final World world) {
         return worldConfigs.getOrDefault(world.getName(), globalConfig).isAnvilsEnabled();
     }
+
+    private void addListener(Function<AcuteLoot, Listener> constructor) {
+        getServer().getPluginManager().registerEvents(constructor.apply(this), this);
+    }
+
 }
