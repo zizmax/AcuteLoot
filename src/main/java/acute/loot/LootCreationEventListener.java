@@ -62,16 +62,7 @@ public class LootCreationEventListener implements Listener {
                     if (plugin.getLootCode(item) == null) {
                         double seed = random.nextDouble();
                         chance = (seed + (enchantRarity / 300.0)) / 2.0;
-                        if (plugin.getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name") ||
-                                !(item.hasItemMeta() && item.getItemMeta().hasDisplayName())) {
-                            item = plugin.lootGenerator.createLoot(item, chance);
-                        } else {
-                            String existingName = item.getItemMeta().getDisplayName();
-                            item = plugin.lootGenerator.createLoot(item, chance);
-                            ItemMeta meta = item.getItemMeta();
-                            meta.setDisplayName(existingName);
-                            item.setItemMeta(meta);
-                        }
+                        item = plugin.lootGenerator.createLoot(item, chance);
                         if (plugin.debug) {
                             player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType()
                                     .toString());
