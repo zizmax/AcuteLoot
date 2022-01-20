@@ -2,6 +2,7 @@ package acute.loot.generator;
 
 import acute.loot.AcuteLoot;
 import acute.loot.LootItem;
+import acute.loot.MetaEditor;
 import acute.loot.Util;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
@@ -27,6 +28,7 @@ class NamePoolNamer implements Namer {
             nameColor = lootItem.rarity().getRarityColor();
         }
 
-        itemStack.getItemMeta().setDisplayName(nameColor + name);
+        MetaEditor.on(itemStack).setDisplayName(nameColor + name);
     }
+
 }
