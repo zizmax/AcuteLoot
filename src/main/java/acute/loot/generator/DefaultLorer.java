@@ -1,6 +1,7 @@
 package acute.loot.generator;
 
 import acute.loot.*;
+import com.github.phillip.h.acutelib.decorators.MetaEditor;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.ChatColor;

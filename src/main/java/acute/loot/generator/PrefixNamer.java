@@ -1,7 +1,7 @@
 package acute.loot.generator;
 
 import acute.loot.LootItem;
-import acute.loot.MetaEditor;
+import com.github.phillip.h.acutelib.decorators.MetaEditor;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.inventory.ItemStack;

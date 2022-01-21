@@ -1,12 +1,11 @@
 package acute.loot.generator;
 
-import static acute.loot.Util.stream;
+import static com.github.phillip.h.acutelib.util.Util.*;
 
 import acute.loot.*;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.util.Checks;
-import com.github.phillip.h.acutelib.util.Util;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -111,7 +110,7 @@ public class LootItemGenerator {
      * @return a random new item stack
      */
     public ItemStack getNewRandomLootItemStack() {
-        ItemStack item = new ItemStack(Util.drawRandom(plugin.lootMaterials), 1);
+        ItemStack item = new ItemStack(drawRandom(plugin.lootMaterials), 1);
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {

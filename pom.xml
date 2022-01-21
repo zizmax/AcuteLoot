@@ -179,7 +179,7 @@
         <dependency>
             <groupId>com.github.phillip-h</groupId>
             <artifactId>AcuteLib</artifactId>
-            <version>1207ae7</version>
+            <version>723c2bf</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

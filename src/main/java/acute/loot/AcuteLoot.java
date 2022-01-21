@@ -481,7 +481,7 @@ public class AcuteLoot extends JavaPlugin {
         final LootItemGenerator enchantingGenerator = LootItemGenerator.builder(this)
                                                                        .namePool(nameGenChancePool, overwriteNames)
                                                                        .build();
-        final Map<String, Boolean> enchantingConfigs = acute.loot.Util.mapMap(worldConfigs, AlConfig::isEnchantingEnabled);
+        final Map<String, Boolean> enchantingConfigs = Util.mapMap(worldConfigs, AlConfig::isEnchantingEnabled);
         enchantingLootSource = new LootSource(globalConfig.isEnchantingEnabled(), enchantingConfigs,
                                               usePermissions, "acuteloot.enchant",
                                               enchantingGenerator);
