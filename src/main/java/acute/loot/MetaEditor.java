@@ -3,8 +3,11 @@ package acute.loot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
+
 /**
- * Helper class to provide a convenient way of adjusting item metadata.
+ * Decorator for an ItemMeta. Exposes a fluent interface that
+ * immediately propagates all changes to the underlying ItemStack.
  */
 public class MetaEditor {
     private final ItemStack item;
@@ -27,6 +30,18 @@ public class MetaEditor {
      */
     public MetaEditor setDisplayName(final String displayName) {
         metaInternal.setDisplayName(displayName);
+        item.setItemMeta(metaInternal);
+        return this;
+    }
+
+    /**
+     * Set the item's lore.
+     *
+     * @param lore the item's lore
+     * @return this MetaEditor
+     */
+    public MetaEditor setLore(final List<String> lore) {
+        metaInternal.setLore(lore);
         item.setItemMeta(metaInternal);
         return this;
     }

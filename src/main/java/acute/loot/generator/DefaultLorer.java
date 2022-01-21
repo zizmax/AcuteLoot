@@ -1,9 +1,6 @@
 package acute.loot.generator;
 
-import acute.loot.AcuteLoot;
-import acute.loot.LootItem;
-import acute.loot.LootMaterial;
-import acute.loot.LootSpecialEffect;
+import acute.loot.*;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
@@ -26,10 +23,10 @@ class DefaultLorer implements Lorer {
 
         // Add loot info to lore and display name
         ItemMeta meta = itemStack.getItemMeta();
-        List<String> lore = new ArrayList<>();
+        final List<String> lore = new ArrayList<>();
 
         // Store lootCode in metadata using PersistentDataHolder API
-        NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
+        final NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
         meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, lootItem.lootCode());
 
         // Add loot info to lore
@@ -55,8 +52,6 @@ class DefaultLorer implements Lorer {
                 plugin.getLogger().warning("ERROR: Failed to add lore from config: loot-category-lore." + lootMaterial.name());
             }
         }
-        meta.setLore(lore);
-
-        itemStack.setItemMeta(meta);
+        MetaEditor.on(itemStack).setLore(lore);
     }
 }
