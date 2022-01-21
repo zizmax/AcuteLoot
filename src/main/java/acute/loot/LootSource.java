@@ -8,6 +8,9 @@ import org.bukkit.entity.Player;
 
 import java.util.Map;
 
+/**
+ * A source of AcuteLoot.
+ */
 @AllArgsConstructor
 public class LootSource {
 
@@ -17,7 +20,13 @@ public class LootSource {
     private final @NonNull String permission;
     private final @NonNull @Getter LootItemGenerator generator;
 
-    public boolean enabledFor(final Player player) {
+    /**
+     * Return if this LootSource is enabled for the given player.
+     *
+     * @param player the player
+     * @return if this LootSource is enabled for the given player
+     */
+    public boolean enabledFor(final @NonNull Player player) {
         return (!usePermissions || player.hasPermission(permission)) &&
                enabledPerWorld.getOrDefault(player.getWorld().getName(), enabledGlobal);
     }
