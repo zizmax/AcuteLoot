@@ -28,12 +28,12 @@ public interface NameGenerator {
     String generate(LootMaterial lootMaterial, LootRarity rarity);
 
     /**
-     * Return the number of different names the NameGenerator can produce. This may be
-     * an estimate, or can return 0 to signal that returning a count is not supported.
+     * Return the number of different names the NameGenerator can produce if possible.
+     * Otherwise, return empty to signal that returning a count is not supported.
      *
-     * @return the number of different names the NameGenerator can produce
+     * @return the number of different names the NameGenerator can produce, or empty
      */
-    long countNumberOfNames();
+    Optional<Long> countNumberOfNames();
 
     /**
      * Utility method for reading a names file. Returns an empty list on

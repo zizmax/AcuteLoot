@@ -1,6 +1,7 @@
 package acute.loot.namegen;
 
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.util.Util;
 
 /**
  * Utility class for computing permutation statistics.
@@ -10,8 +11,20 @@ public final class PermutationCounts {
     private PermutationCounts() {
     }
 
+    /**
+     * Count the total number of names the name pool can create. Note this is an estimate,
+     * importantly it does not attempt to remove duplicates.
+     *
+     * @param namePool the name pool
+     * @return an estimate of the total number of names the pool can produce
+     */
     public static long totalPermutations(final IntegerChancePool<NameGenerator> namePool) {
-        return namePool.values().stream().mapToLong(NameGenerator::countNumberOfNames).sum();
+        return namePool.values()
+                       .stream()
+                       .map(NameGenerator::countNumberOfNames)
+                       .flatMap(Util::stream)
+                       .mapToLong(x -> x)
+                       .sum();
     }
 
     /**

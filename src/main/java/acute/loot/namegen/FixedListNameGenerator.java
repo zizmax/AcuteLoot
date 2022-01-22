@@ -8,6 +8,7 @@ import com.github.phillip.h.acutelib.util.Util;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * NameGenerator that draws from a fixed list of names regardless
@@ -41,8 +42,8 @@ public class FixedListNameGenerator implements NameGenerator {
     }
 
     @Override
-    public long countNumberOfNames() {
-        return names.size();
+    public Optional<Long> countNumberOfNames() {
+        return Optional.of((long) names.size());
     }
 
     /**

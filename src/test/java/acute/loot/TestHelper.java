@@ -5,10 +5,7 @@ import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import org.bukkit.ChatColor;
 import org.bukkit.event.Event;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Random;
+import java.util.*;
 
 /**
  * This class will set up a "standard" set of test effects and rarities.
@@ -77,8 +74,8 @@ public class TestHelper {
             }
 
             @Override
-            public long countNumberOfNames() {
-                return 26;
+            public Optional<Long> countNumberOfNames() {
+                return Optional.of(26L);
             }
         };
         nameGeneratorChancePool.add(capitalGenerator, 1);
@@ -90,8 +87,8 @@ public class TestHelper {
             }
 
             @Override
-            public long countNumberOfNames() {
-                return 10;
+            public Optional<Long> countNumberOfNames() {
+                return Optional.of(10L);
             }
         };
         nameGeneratorChancePool.add(numberGenerator, 2);
@@ -106,8 +103,8 @@ public class TestHelper {
             }
 
             @Override
-            public long countNumberOfNames() {
-                return 0;
+            public Optional<Long> countNumberOfNames() {
+                return Optional.of(0L);
             }
         };
         nameGeneratorChancePool.add(matEchoGenerator, 1);
@@ -122,8 +119,8 @@ public class TestHelper {
             }
 
             @Override
-            public long countNumberOfNames() {
-                return 0;
+            public Optional<Long> countNumberOfNames() {
+                return Optional.of(0L);
             }
         };
         nameGeneratorChancePool.add(rarityEchoGenerator, 2);

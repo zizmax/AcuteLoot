@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * NameGenerator the selects names from a fixed list based on the
@@ -112,14 +113,14 @@ public class MaterialNameGenerator implements NameGenerator {
     }
 
     @Override
-    public long countNumberOfNames() {
+    public Optional<Long> countNumberOfNames() {
         long sum = 0;
         for (LootMaterial material : LootMaterial.values()) {
             try {
                 sum += getNamesForMaterial(material).size();
             } catch (IllegalArgumentException ignored) { /* Material not supported, ignore */ }
         }
-        return sum;
+        return Optional.of(sum);
     }
 
     @Override

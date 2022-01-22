@@ -3,10 +3,12 @@ package acute.loot.namegen;
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 import com.github.phillip.h.acutelib.util.Checks;
+import com.github.phillip.h.acutelib.util.Util;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -58,8 +60,13 @@ public class CompoundNameGenerator implements NameGenerator {
     }
 
     @Override
-    public long countNumberOfNames() {
-        return parts.stream().mapToLong(NameGenerator::countNumberOfNames).reduce(1, (a, b) -> a * b);
+    public Optional<Long> countNumberOfNames() {
+        final long product = parts.stream()
+                                  .map(NameGenerator::countNumberOfNames)
+                                  .flatMap(Util::stream)
+                                  .mapToLong(x -> x)
+                                  .reduce(1, (a, b) -> a * b);
+        return Optional.of(product);
     }
 
     @Override

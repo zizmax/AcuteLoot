@@ -5,6 +5,7 @@ import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -47,10 +48,15 @@ public class RepeatedNameGenerator implements NameGenerator {
     }
 
     @Override
-    public long countNumberOfNames() {
-        return IntStream.rangeClosed(minRepetitions, maxRepetitions)
-                        .mapToLong(i -> (long) Math.pow(baseGenerator.countNumberOfNames(), i))
-                        .sum();
+    public Optional<Long> countNumberOfNames() {
+        final Optional<Long> baseNames = baseGenerator.countNumberOfNames();
+        if (!baseNames.isPresent()) {
+            return Optional.empty();
+        }
+        final long sum = IntStream.rangeClosed(minRepetitions, maxRepetitions)
+                                  .mapToLong(i -> (long) Math.pow(baseNames.get(), i))
+                                  .sum();
+        return Optional.of(sum);
     }
 
     @Override

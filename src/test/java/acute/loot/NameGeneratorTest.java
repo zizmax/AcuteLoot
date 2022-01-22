@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -178,11 +179,11 @@ public class NameGeneratorTest {
         final TransformationNameGenerator uppercaser = TransformationNameGenerator.uppercaser(new FixedListNameGenerator("hello", "world"));
         final TransformationNameGenerator compoundUppercaser = TransformationNameGenerator.uppercaser(compoundGenerator);
 
-        assertThat(constantGenerator.countNumberOfNames(), is(1L));
-        assertThat(listGenerator.countNumberOfNames(), is(2L));
-        assertThat(repeatedGenerator.countNumberOfNames(), is(2 + 4 + 8L));
-        assertThat(compoundGenerator.countNumberOfNames(), is(28L));
-        assertThat(uppercaser.countNumberOfNames(), is(2L));
+        assertThat(constantGenerator.countNumberOfNames(), is(Optional.of(1L)));
+        assertThat(listGenerator.countNumberOfNames(), is(Optional.of(2L)));
+        assertThat(repeatedGenerator.countNumberOfNames(), is(Optional.of(2 + 4 + 8L)));
+        assertThat(compoundGenerator.countNumberOfNames(), is(Optional.of(28L)));
+        assertThat(uppercaser.countNumberOfNames(), is(Optional.of(2L)));
         assertThat(compoundUppercaser.countNumberOfNames(), is(compoundGenerator.countNumberOfNames()));
 
         final IntegerChancePool<NameGenerator> namePool = new IntegerChancePool<>();

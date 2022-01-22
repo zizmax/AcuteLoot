@@ -4,6 +4,7 @@ import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * NameGenerator that wraps another NameGenerator and applies a "transformation"
@@ -37,7 +38,7 @@ public abstract class TransformationNameGenerator implements NameGenerator {
     }
 
     @Override
-    public long countNumberOfNames() {
+    public Optional<Long> countNumberOfNames() {
         return baseGenerator.countNumberOfNames();
     }
 
