@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * NameGenerator that wraps another NameGenerator and applies a "transformation"
@@ -13,21 +14,14 @@ import java.util.Optional;
  * a small change such as adjusting capitalization.
  */
 @AllArgsConstructor
-public abstract class TransformationNameGenerator implements NameGenerator {
+public class TransformationNameGenerator implements NameGenerator {
 
     private final @NonNull NameGenerator baseGenerator;
-
-    /**
-     * The transform, called with the result of the base NameGenerator.
-     *
-     * @param input the string to transform, likely the result of invoking the base NameGenerator
-     * @return the transformed string
-     */
-    protected abstract String transform(final String input);
+    private final @NonNull Function<String, String> transform;
 
     @Override
     public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        return transform(baseGenerator.generate(lootMaterial, rarity));
+        return transform.apply(baseGenerator.generate(lootMaterial, rarity));
     }
 
     @Override
@@ -43,11 +37,7 @@ public abstract class TransformationNameGenerator implements NameGenerator {
      * @return a TransformationNameGenerator that ensures the first character of the name is uppercase
      */
     public static TransformationNameGenerator uppercaser(final NameGenerator baseGenerator) {
-        return new TransformationNameGenerator(baseGenerator) {
-            @Override
-            public String transform(String input) {
-                return input.substring(0, 1).toUpperCase() + input.substring(1);
-            }
-        };
+        return new TransformationNameGenerator(baseGenerator,
+                                               s -> s.substring(0, 1).toUpperCase() + s.substring(1));
     }
 }
