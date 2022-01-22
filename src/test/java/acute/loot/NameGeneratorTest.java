@@ -75,7 +75,7 @@ public class NameGeneratorTest {
     @DisplayName("Name generator compile correct")
     public void compileCorrect() {
 
-        final MaterialNameGenerator.FileBuilder materialBuilder = new MaterialNameGenerator.FileBuilder().defaultNameFiles();
+        final MaterialNameGenBuilder materialBuilder = new MaterialNameGenBuilder().defaultNameFiles();
 
         final Map<String, NameGenerator> variableMap = new HashMap<>();
         final FixedListNameGenerator prefixPool = FixedListNameGenerator.fromNamesFile("src/main/resources/names/prefixes.txt");

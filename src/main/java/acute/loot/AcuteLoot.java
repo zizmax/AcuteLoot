@@ -301,9 +301,9 @@ public class AcuteLoot extends JavaPlugin {
             if (type.equals("common")) {
                 namePools.put(name, FixedListNameGenerator.fromNamesFile((String) namePool.get("file")));
             } else if (type.equals("material")) {
-                namePools.put(name, new MaterialNameGenerator.FileBuilder().defaultNameFiles()
-                                                                           .prefix((String) namePool.get("folder"))
-                                                                           .build());
+                namePools.put(name, new MaterialNameGenBuilder().defaultNameFiles()
+                                                                .prefix((String) namePool.get("folder"))
+                                                                .build());
             } else {
                 getLogger().warning(String.format("Unknown name pool type '%s'. Skipping.", type));
             }
