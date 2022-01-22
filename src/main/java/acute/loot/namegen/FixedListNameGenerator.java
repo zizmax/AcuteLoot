@@ -1,7 +1,5 @@
 package acute.loot.namegen;
 
-import acute.loot.LootMaterial;
-import acute.loot.LootRarity;
 import com.github.phillip.h.acutelib.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -9,6 +7,7 @@ import lombok.NonNull;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -31,7 +30,7 @@ public class FixedListNameGenerator implements NameGenerator {
     }
 
     @Override
-    public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+    public String generate(final Map<String, String> parameters) {
         return Util.drawRandom(names);
     }
 

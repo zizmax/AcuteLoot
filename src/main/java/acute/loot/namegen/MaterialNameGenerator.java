@@ -9,6 +9,7 @@ import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -108,8 +109,8 @@ public class MaterialNameGenerator implements NameGenerator {
     }
 
     @Override
-    public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        return Util.drawRandom(getNamesForMaterial(lootMaterial));
+    public String generate(final Map<String, String> parameters) {
+        return Util.drawRandom(getNamesForMaterial(LootMaterial.valueOf(parameters.get("lootMaterial"))));
     }
 
     @Override

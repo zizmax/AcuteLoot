@@ -69,7 +69,7 @@ public class TestHelper {
         final Random random = new Random();
         capitalGenerator = new NameGenerator() {
             @Override
-            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+            public String generate(final Map<String, String> parameters) {
                 return "" + ((char) ('A' + random.nextInt(26)));
             }
 
@@ -82,7 +82,7 @@ public class TestHelper {
 
         numberGenerator = new NameGenerator() {
             @Override
-            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+            public String generate(final Map<String, String> parameters) {
                 return String.valueOf(random.nextInt(10));
             }
 
@@ -95,11 +95,12 @@ public class TestHelper {
 
         matEchoGenerator = new NameGenerator() {
             @Override
-            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+            public String generate(final Map<String, String> parameters) {
+                final String lootMaterial = parameters.get("lootMaterial");
                 if (lootMaterial == null) {
                     throw new NoSuchElementException();
                 }
-                return lootMaterial.name();
+                return lootMaterial;
             }
 
             @Override
@@ -111,11 +112,12 @@ public class TestHelper {
 
         rarityEchoGenerator = new NameGenerator() {
             @Override
-            public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+            public String generate(final Map<String, String> parameters) {
+                final String rarity = parameters.get("lootRarity");
                 if (rarity == null) {
                     throw new NoSuchElementException();
                 }
-                return rarity.getName();
+                return rarity;
             }
 
             @Override

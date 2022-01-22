@@ -1,8 +1,5 @@
 package acute.loot.namegen;
 
-import acute.loot.LootMaterial;
-import acute.loot.LootRarity;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,15 +14,14 @@ import java.util.stream.Stream;
 public interface NameGenerator {
 
     /**
-     * Generate a name for an item with the given material and rarity. Implementations
-     * need not use the material and rarity, and may optionally permit null values for
-     * one or both parameters.
+     * Generate a name for an item with the given parameter map. Implementations
+     * may place restrictions on the contents of the parameter map. The parameter
+     * map must not be null.
      *
-     * @param lootMaterial the LootMaterial of the item to generate a name for
-     * @param rarity the LootRarity of the item to generate a name for
+     * @param parameters the parameter map, must not be null
      * @return a name for the item
      */
-    String generate(LootMaterial lootMaterial, LootRarity rarity);
+    String generate(Map<String, String> parameters);
 
     /**
      * Return the number of different names the NameGenerator can produce if possible.

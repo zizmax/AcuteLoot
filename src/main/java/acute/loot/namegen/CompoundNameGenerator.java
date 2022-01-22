@@ -1,15 +1,10 @@
 package acute.loot.namegen;
 
-import acute.loot.LootMaterial;
-import acute.loot.LootRarity;
 import com.github.phillip.h.acutelib.util.Checks;
 import com.github.phillip.h.acutelib.util.Util;
 import lombok.EqualsAndHashCode;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -55,9 +50,9 @@ public class CompoundNameGenerator implements NameGenerator {
     }
 
     @Override
-    public String generate(LootMaterial lootMaterial, LootRarity rarity) {
+    public String generate(final Map<String, String> parameters) {
         return parts.stream()
-                    .map(part -> part.generate(lootMaterial, rarity))
+                    .map(part -> part.generate(parameters))
                     .collect(Collectors.joining(joiningString));
     }
 

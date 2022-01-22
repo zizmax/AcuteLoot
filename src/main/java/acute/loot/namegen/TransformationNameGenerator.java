@@ -1,10 +1,9 @@
 package acute.loot.namegen;
 
-import acute.loot.LootMaterial;
-import acute.loot.LootRarity;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -20,8 +19,8 @@ public class TransformationNameGenerator implements NameGenerator {
     private final @NonNull Function<String, String> transform;
 
     @Override
-    public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        return transform.apply(baseGenerator.generate(lootMaterial, rarity));
+    public String generate(final Map<String, String> parameters) {
+        return transform.apply(baseGenerator.generate(parameters));
     }
 
     @Override

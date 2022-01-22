@@ -40,35 +40,35 @@ public class NameGeneratorTest {
         final FixedListNameGenerator constantGenerator = new FixedListNameGenerator("Test");
         final FixedListNameGenerator listGenerator = new FixedListNameGenerator("Foo", "Bar");
 
-        assertThat(constantGenerator.generate(LootMaterial.AXE, testHelper.uncommon), is("Test"));
-        assertThat(constantGenerator.generate(LootMaterial.PICK, null), is("Test"));
-        assertThat(constantGenerator.generate(null, testHelper.rare), is("Test"));
-        assertThat(constantGenerator.generate(null, null), is("Test"));
+        assertThat(constantGenerator.generate(params(LootMaterial.AXE, testHelper.uncommon)), is("Test"));
+        assertThat(constantGenerator.generate(params(LootMaterial.PICK, null)), is("Test"));
+        assertThat(constantGenerator.generate(params(null, testHelper.rare)), is("Test"));
+        assertThat(constantGenerator.generate(params(null, null)), is("Test"));
 
-        assertThat(listGenerator.generate(LootMaterial.AXE, testHelper.uncommon), oneOf("Foo", "Bar"));
-        assertThat(listGenerator.generate(LootMaterial.PICK, null), oneOf("Foo", "Bar"));
-        assertThat(listGenerator.generate(null, testHelper.rare), oneOf("Foo", "Bar"));
-        assertThat(listGenerator.generate(null, null), oneOf("Foo", "Bar"));
+        assertThat(listGenerator.generate(params(LootMaterial.AXE, testHelper.uncommon)), oneOf("Foo", "Bar"));
+        assertThat(listGenerator.generate(params(LootMaterial.PICK, null)), oneOf("Foo", "Bar"));
+        assertThat(listGenerator.generate(params(null, testHelper.rare)), oneOf("Foo", "Bar"));
+        assertThat(listGenerator.generate(params(null, null)), oneOf("Foo", "Bar"));
 
         final RepeatedNameGenerator repeatedGenerator = new RepeatedNameGenerator(constantGenerator, 1, 3);
-        assertThat(repeatedGenerator.generate(LootMaterial.AXE, testHelper.uncommon), oneOf("Test", "TestTest", "TestTestTest"));
-        assertThat(repeatedGenerator.generate(LootMaterial.PICK, null), oneOf("Test", "TestTest", "TestTestTest"));
-        assertThat(repeatedGenerator.generate(null, testHelper.rare), oneOf("Test", "TestTest", "TestTestTest"));
-        assertThat(repeatedGenerator.generate(null, null), oneOf("Test", "TestTest", "TestTestTest"));
+        assertThat(repeatedGenerator.generate(params(LootMaterial.AXE, testHelper.uncommon)), oneOf("Test", "TestTest", "TestTestTest"));
+        assertThat(repeatedGenerator.generate(params(LootMaterial.PICK, null)), oneOf("Test", "TestTest", "TestTestTest"));
+        assertThat(repeatedGenerator.generate(params(null, testHelper.rare)), oneOf("Test", "TestTest", "TestTestTest"));
+        assertThat(repeatedGenerator.generate(params(null, null)), oneOf("Test", "TestTest", "TestTestTest"));
 
         final CompoundNameGenerator compoundGenerator = new CompoundNameGenerator(listGenerator, repeatedGenerator);
         final String[] possibleNames = { "Foo Test", "Foo TestTest", "Foo TestTestTest",
                                          "Bar Test", "Bar TestTest", "Bar TestTestTest" };
-        assertThat(compoundGenerator.generate(LootMaterial.AXE, testHelper.uncommon), oneOf(possibleNames));
-        assertThat(compoundGenerator.generate(LootMaterial.PICK, null), oneOf(possibleNames));
-        assertThat(compoundGenerator.generate(null, testHelper.rare), oneOf(possibleNames));
-        assertThat(compoundGenerator.generate(null, null), oneOf(possibleNames));
+        assertThat(compoundGenerator.generate(params(LootMaterial.AXE, testHelper.uncommon)), oneOf(possibleNames));
+        assertThat(compoundGenerator.generate(params(LootMaterial.PICK, null)), oneOf(possibleNames));
+        assertThat(compoundGenerator.generate(params(null, testHelper.rare)), oneOf(possibleNames));
+        assertThat(compoundGenerator.generate(params(null, null)), oneOf(possibleNames));
 
         final TransformationNameGenerator uppercaser = TransformationNameGenerator.uppercaser(new FixedListNameGenerator("hello", "world"));
-        assertThat(uppercaser.generate(LootMaterial.AXE, testHelper.uncommon), oneOf("Hello", "World"));
-        assertThat(uppercaser.generate(LootMaterial.PICK, null), oneOf("Hello", "World"));
-        assertThat(uppercaser.generate(null, testHelper.rare), oneOf("Hello", "World"));
-        assertThat(uppercaser.generate(null, null), oneOf("Hello", "World"));
+        assertThat(uppercaser.generate(params(LootMaterial.AXE, testHelper.uncommon)), oneOf("Hello", "World"));
+        assertThat(uppercaser.generate(params(LootMaterial.PICK, null)), oneOf("Hello", "World"));
+        assertThat(uppercaser.generate(params(null, testHelper.rare)), oneOf("Hello", "World"));
+        assertThat(uppercaser.generate(params(null, null)), oneOf("Hello", "World"));
     }
 
     @Test
@@ -192,6 +192,13 @@ public class NameGeneratorTest {
         namePool.add(repeatedGenerator, 1);
         namePool.add(compoundGenerator, 1);
         assertThat(PermutationCounts.totalPermutations(namePool), is(1 + 2 + 14 + 28L));
+    }
+
+    private static Map<String, String> params(final LootMaterial lootMaterial, final LootRarity lootRarity) {
+        final Map<String, String> mapping = new HashMap<>();
+        mapping.put("lootMaterial", lootMaterial == null ? null : lootMaterial.name());
+        mapping.put("lootRarity", lootRarity == null ? null : lootRarity.getName());
+        return mapping;
     }
 
 }

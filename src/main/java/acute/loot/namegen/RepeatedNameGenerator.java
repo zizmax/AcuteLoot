@@ -1,12 +1,11 @@
 package acute.loot.namegen;
 
-import acute.loot.AcuteLoot;
-import acute.loot.LootMaterial;
-import acute.loot.LootRarity;
 import lombok.EqualsAndHashCode;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -21,6 +20,8 @@ public class RepeatedNameGenerator implements NameGenerator {
     private final NameGenerator baseGenerator;
     private final int minRepetitions;
     private final int maxRepetitions;
+
+    private final @EqualsAndHashCode.Exclude Random random = new Random();
 
     /**
      * Construct a new RepeatedNameGenerator with the given base NameGenerator and repetition range.
@@ -42,10 +43,10 @@ public class RepeatedNameGenerator implements NameGenerator {
     }
 
     @Override
-    public String generate(LootMaterial lootMaterial, LootRarity rarity) {
-        final int length = minRepetitions + AcuteLoot.random.nextInt((maxRepetitions + 1) - minRepetitions);
+    public String generate(final Map<String, String> parameters) {
+        final int length = minRepetitions + random.nextInt((maxRepetitions + 1) - minRepetitions);
         return IntStream.range(0, length)
-                        .mapToObj(i -> baseGenerator.generate(lootMaterial, rarity))
+                        .mapToObj(i -> baseGenerator.generate(parameters))
                         .collect(Collectors.joining());
     }
 
