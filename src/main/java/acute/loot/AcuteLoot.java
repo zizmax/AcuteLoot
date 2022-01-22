@@ -142,9 +142,9 @@ public class AcuteLoot extends JavaPlugin {
             getLogger().info(effectChancePool.toString());
         }
 
-        //birthdayProblem();
-        final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(nameGenChancePool), 0.5, 0.0001);
-        getLogger().info(String.format("Total number of possible names: ~%,d", PermutationCounts.totalPermutations(nameGenChancePool)));
+        final long totalNames = PermutationCounts.totalPermutations(nameGenChancePool.values());
+        final long birthdayCount = PermutationCounts.birthdayProblem(totalNames, 0.5, 0.0001);
+        getLogger().info(String.format("Total number of possible names: ~%,d", totalNames));
         getLogger().info(String.format("Approximately %,d names before ~50%% chance of a duplicate", birthdayCount));
 
         getLogger().info(String.format("v%s Enabled!", getDescription().getVersion()));

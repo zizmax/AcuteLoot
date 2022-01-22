@@ -1,6 +1,5 @@
 package acute.loot.namegen;
 
-import com.github.phillip.h.acutelib.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -27,9 +26,7 @@ public class MappedNameGenerator implements NameGenerator {
     public Optional<Long> countNumberOfNames() {
         final long sum = mapping.values()
                                 .stream()
-                                .map(NameGenerator::countNumberOfNames)
-                                .flatMap(Util::stream)
-                                .mapToLong(x -> x)
+                                .flatMapToLong(acute.loot.namegen.Util::nameCount)
                                 .sum();
         return Optional.of(sum);
     }

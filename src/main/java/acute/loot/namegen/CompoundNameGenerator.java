@@ -1,7 +1,5 @@
 package acute.loot.namegen;
 
-import com.github.phillip.h.acutelib.util.Checks;
-import com.github.phillip.h.acutelib.util.Util;
 import lombok.EqualsAndHashCode;
 
 import java.util.*;
@@ -45,7 +43,10 @@ public class CompoundNameGenerator implements NameGenerator {
      * @param joiningString the joining string, must be non-null
      */
     public CompoundNameGenerator(List<NameGenerator> parts, String joiningString) {
-        this.parts = Checks.requireNonEmpty(parts);
+        if (parts.isEmpty()) {
+            throw new IllegalArgumentException("At least one name generator required");
+        }
+        this.parts = parts;
         this.joiningString = Objects.requireNonNull(joiningString);
     }
 
@@ -59,9 +60,7 @@ public class CompoundNameGenerator implements NameGenerator {
     @Override
     public Optional<Long> countNumberOfNames() {
         final long product = parts.stream()
-                                  .map(NameGenerator::countNumberOfNames)
-                                  .flatMap(Util::stream)
-                                  .mapToLong(x -> x)
+                                  .flatMapToLong(acute.loot.namegen.Util::nameCount)
                                   .reduce(1, (a, b) -> a * b);
         return Optional.of(product);
     }

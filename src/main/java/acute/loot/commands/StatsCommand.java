@@ -29,13 +29,13 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
 
     protected void printGeneralStats(final CommandSender sender, boolean isPlayer) {
         final long birthdayCount = PermutationCounts.birthdayProblem(PermutationCounts.totalPermutations(plugin()
-                .nameGenChancePool), 0.5, 0.0001);
+                .nameGenChancePool.values()), 0.5, 0.0001);
 
         final BaseComponent[] prefix = TextComponent.fromLegacyText(AcuteLoot.CHAT_PREFIX);
         if (isPlayer) {
             final BaseComponent[] stats = new ComponentBuilder()
                     .append(String.format("Total number of possible names: ~%,d\n",
-                            PermutationCounts.totalPermutations(plugin().nameGenChancePool)))
+                            PermutationCounts.totalPermutations(plugin().nameGenChancePool.values())))
                     .append(String.format("Names for 50%% chance of duplicate: ~%,d\n", birthdayCount))
                     .append("Number of rarities: " + plugin().rarityChancePool.values().size() + "\n")
                     .append("Number of effects: " + plugin().effectChancePool.values().size() + "\n")
@@ -54,7 +54,7 @@ public abstract class StatsCommand<T extends CommandSender> extends AcuteLootCom
         } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "General stats:");
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Total number of possible names: ~%,d",
-                    PermutationCounts.totalPermutations(plugin().nameGenChancePool)));
+                    PermutationCounts.totalPermutations(plugin().nameGenChancePool.values())));
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + String.format("Names for 50%% chance of duplicate: ~%,d", birthdayCount));
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of rarities: " + plugin().rarityChancePool.values().size());
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Number of effects: " + plugin().effectChancePool.values().size());

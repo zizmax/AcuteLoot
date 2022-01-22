@@ -191,7 +191,7 @@ public class NameGeneratorTest {
         namePool.add(listGenerator, 1);
         namePool.add(repeatedGenerator, 1);
         namePool.add(compoundGenerator, 1);
-        assertThat(PermutationCounts.totalPermutations(namePool), is(1 + 2 + 14 + 28L));
+        assertThat(PermutationCounts.totalPermutations(namePool.values()), is(1 + 2 + 14 + 28L));
     }
 
     private static Map<String, String> params(final LootMaterial lootMaterial, final LootRarity lootRarity) {

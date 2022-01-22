@@ -1,14 +1,10 @@
 package acute.loot.namegen;
 
-import com.github.phillip.h.acutelib.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * NameGenerator that draws from a fixed list of names regardless
@@ -19,6 +15,8 @@ import java.util.Optional;
 public class FixedListNameGenerator implements NameGenerator {
 
     private final @NonNull List<String> names;
+
+    private final @EqualsAndHashCode.Exclude Random random = new Random();
 
     /**
      * Construct a new FixedListNameGenerator with the given names.
@@ -31,7 +29,7 @@ public class FixedListNameGenerator implements NameGenerator {
 
     @Override
     public String generate(final Map<String, String> parameters) {
-        return Util.drawRandom(names);
+        return names.size() == 1 ? names.get(0) : names.get(random.nextInt(names.size()));
     }
 
     @Override
