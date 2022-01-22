@@ -4,6 +4,7 @@ import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
 import com.github.phillip.h.acutelib.util.Checks;
 import com.github.phillip.h.acutelib.util.Util;
+import lombok.EqualsAndHashCode;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
  * NameGenerator that invokes one or more other NameGenerators,
  * joining the results with a possibly-empty joining string.
  */
+@EqualsAndHashCode
 public class CompoundNameGenerator implements NameGenerator {
 
     private final List<NameGenerator> parts;
@@ -67,23 +69,5 @@ public class CompoundNameGenerator implements NameGenerator {
                                   .mapToLong(x -> x)
                                   .reduce(1, (a, b) -> a * b);
         return Optional.of(product);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        CompoundNameGenerator that = (CompoundNameGenerator) o;
-        return Objects.equals(parts, that.parts) &&
-                Objects.equals(joiningString, that.joiningString);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(parts, joiningString);
     }
 }

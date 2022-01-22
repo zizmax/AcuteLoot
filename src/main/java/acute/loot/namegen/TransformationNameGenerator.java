@@ -2,8 +2,9 @@ package acute.loot.namegen;
 
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -11,18 +12,10 @@ import java.util.Optional;
  * to its output. A transformation can be any function String {@literal ->} String, typically
  * a small change such as adjusting capitalization.
  */
+@AllArgsConstructor
 public abstract class TransformationNameGenerator implements NameGenerator {
 
-    private final NameGenerator baseGenerator;
-
-    /**
-     * Construct a new TransformationNameGenerator with the given base NameGenerator.
-     *
-     * @param baseGenerator the base NameGenerator, must not be null.
-     */
-    public TransformationNameGenerator(NameGenerator baseGenerator) {
-        this.baseGenerator = Objects.requireNonNull(baseGenerator);
-    }
+    private final @NonNull NameGenerator baseGenerator;
 
     /**
      * The transform, called with the result of the base NameGenerator.
@@ -40,23 +33,6 @@ public abstract class TransformationNameGenerator implements NameGenerator {
     @Override
     public Optional<Long> countNumberOfNames() {
         return baseGenerator.countNumberOfNames();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TransformationNameGenerator that = (TransformationNameGenerator) o;
-        return Objects.equals(baseGenerator, that.baseGenerator);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(baseGenerator);
     }
 
     /**

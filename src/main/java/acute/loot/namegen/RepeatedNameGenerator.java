@@ -3,6 +3,7 @@ package acute.loot.namegen;
 import acute.loot.AcuteLoot;
 import acute.loot.LootMaterial;
 import acute.loot.LootRarity;
+import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.stream.IntStream;
  * the specified minimum and maximum. The results are concatenated together and returned
  * as the generated name.
  */
+@EqualsAndHashCode
 public class RepeatedNameGenerator implements NameGenerator {
 
     private final NameGenerator baseGenerator;
@@ -57,24 +59,5 @@ public class RepeatedNameGenerator implements NameGenerator {
                                   .mapToLong(i -> (long) Math.pow(baseNames.get(), i))
                                   .sum();
         return Optional.of(sum);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        RepeatedNameGenerator that = (RepeatedNameGenerator) o;
-        return minRepetitions == that.minRepetitions &&
-                maxRepetitions == that.maxRepetitions &&
-                Objects.equals(baseGenerator, that.baseGenerator);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(baseGenerator, minRepetitions, maxRepetitions);
     }
 }
