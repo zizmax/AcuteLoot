@@ -1,16 +1,16 @@
 package acute.loot.generator;
 
-import static acute.loot.Util.stream;
+import static com.github.phillip.h.acutelib.util.Util.*;
 
 import acute.loot.*;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.util.Checks;
-import com.github.phillip.h.acutelib.util.Util;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 
@@ -110,7 +110,7 @@ public class LootItemGenerator {
      * @return a random new item stack
      */
     public ItemStack getNewRandomLootItemStack() {
-        ItemStack item = new ItemStack(Util.drawRandom(plugin.lootMaterials), 1);
+        ItemStack item = new ItemStack(drawRandom(plugin.lootMaterials), 1);
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
@@ -119,8 +119,19 @@ public class LootItemGenerator {
         return item;
     }
 
+    /**
+     * Construct a new LootItemGeneratorBuilder with default values.
+     * This will pre-populate the plugin field and set the rarity and
+     * effect pool fields to those contained in the plugin object.
+     *
+     * @param plugin the AcuteLoot instance
+     * @return a new LootItemGeneratorBuilder with pre-populated values
+     */
     public static LootItemGeneratorBuilder builder(final @NonNull AcuteLoot plugin) {
-        return new LootItemGeneratorBuilder().plugin(plugin).lorer(new DefaultLorer(plugin));
+        return new LootItemGeneratorBuilder().plugin(plugin)
+                                             .rarityPool(plugin.rarityChancePool)
+                                             .effectPool(plugin.effectChancePool)
+                                             .lorer(new DefaultLorer(plugin));
     }
 
     /**
@@ -140,9 +151,20 @@ public class LootItemGenerator {
          */
         public LootItemGeneratorBuilder namePool(final IntegerChancePool<NameGenerator> namePool,
                                                  final boolean overwriteCustom) {
+            // Namer base
             namer = new NamePoolNamer(namePool, plugin);
+
+            // Disable overwrites if configured
             if (!overwriteCustom) {
                 namer = new PreserveCustomNameNamer(namer);
+            }
+
+            // ...And color the result!
+            if (plugin.getConfig().getBoolean("global-loot-name-color")) {
+                final String nameColor = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color"));
+                namer = PrefixNamer.fixed(nameColor, namer);
+            } else {
+                namer = PrefixNamer.rarityColor(namer);
             }
 
             return this;

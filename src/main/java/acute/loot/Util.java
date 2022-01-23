@@ -151,11 +151,4 @@ public final class Util {
                                                       .flatMap(Stream::of)
                                                       .toArray(BaseComponent[]::new);
     }
-
-    // Can be replaced with builtin in java 9+
-    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    public static <T> Stream<T> stream(Optional<T> optional) {
-        return optional.map(Stream::of).orElse(Stream.empty());
-    }
-
 }

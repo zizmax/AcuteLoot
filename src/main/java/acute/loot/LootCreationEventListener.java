@@ -1,7 +1,6 @@
 package acute.loot;
 
 import com.github.phillip.h.acutelib.util.UnorderedPair;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -14,7 +13,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.enchantment.EnchantItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -40,65 +38,6 @@ public class LootCreationEventListener implements Listener {
 
     public LootCreationEventListener(AcuteLoot plugin) {
         this.plugin = plugin;
-    }
-
-    @EventHandler
-    public void onEnchant(EnchantItemEvent event) {
-        Player player = event.getEnchanter();
-        if (plugin.enchantingLootEnabled(player.getWorld())) {
-            double roll = random.nextDouble();
-            double chance = plugin.getConfig().getDouble("loot-sources.enchanting.chance") / 100.0;
-            if (plugin.debug) {
-                player.sendMessage("Roll: " + roll);
-                player.sendMessage("Raw chance: " + chance);
-            }
-            if (!plugin.getConfig().getBoolean("use-permissions") || (plugin.getConfig()
-                    .getBoolean("use-permissions") &&
-                    player.hasPermission("acuteloot.enchant"))) {
-                if (roll <= chance) {
-                    Map<Enchantment, Integer> enchantments = event.getEnchantsToAdd();
-                    int enchantRarity = getEnchantRarity(enchantments);
-                    ItemStack item = event.getItem();
-                    if (plugin.getLootCode(item) == null) {
-                        double seed = random.nextDouble();
-                        chance = (seed + (enchantRarity / 300.0)) / 2.0;
-                        if (plugin.getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name") ||
-                                !(item.hasItemMeta() && item.getItemMeta().hasDisplayName())) {
-                            item = plugin.lootGenerator.createLoot(item, chance);
-                        } else {
-                            String existingName = item.getItemMeta().getDisplayName();
-                            item = plugin.lootGenerator.createLoot(item, chance);
-                            ItemMeta meta = item.getItemMeta();
-                            meta.setDisplayName(existingName);
-                            item.setItemMeta(meta);
-                        }
-                        if (plugin.debug) {
-                            player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType()
-                                    .toString());
-                            player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
-                            player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
-                            player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA +
-                                    String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
-                            player.sendMessage(ChatColor.GOLD + "Seed: " + ChatColor.AQUA + String.format("%.2f%%", seed * 100.0));
-                            player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA +
-                                    String.format("%.2f%%", chance * 100.0));
-                            player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta()
-                                    .getLore()
-                                    .get(0));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    private int getEnchantRarity(Map<Enchantment, Integer> enchantments) {
-        double totalLevels = 0;
-        for (Map.Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
-            totalLevels = totalLevels + (float) entry.getValue() / entry.getKey().getMaxLevel() * 100.0;
-        }
-        return Math.min((int) totalLevels, 300);
     }
 
     @EventHandler
