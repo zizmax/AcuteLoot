@@ -27,7 +27,7 @@ public class AddCommand extends AcuteLootCommand<Player> {
                     return;
                 }
                 if (args.length == 1) {
-                    plugin().lootGenerator.createLootItem(item, AcuteLoot.random.nextDouble());
+                    plugin().lootGenerator.createLoot(item, AcuteLoot.random.nextDouble());
                     sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with random rarity");
                 } else {
                     if (plugin().rarityNames.containsKey(args[1])) {
@@ -36,14 +36,14 @@ public class AddCommand extends AcuteLootCommand<Player> {
                             if (plugin().effectNames.containsKey(args[2])) {
                                 final EffectId effectId = new EffectId(plugin().effectNames.get(args[2]));
                                 final LootItem lootItem = new LootItem(rarity, Collections.singletonList(effectId));
-                                plugin().lootGenerator.createLootItem(item, lootItem);
+                                plugin().lootGenerator.createLoot(item, lootItem);
                                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1] + " and " + args[2]);
                                 AcuteLoot.sendIncompatibleEffectsWarning(sender, lootItem, item);
                             } else {
                                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
                             }
                         } else {
-                            plugin().lootGenerator.createLootItem(item, LootRarity.get(rarity));
+                            plugin().lootGenerator.createLoot(item, LootRarity.get(rarity));
                             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "AcuteLoot added with " + args[1]);
                         }
 

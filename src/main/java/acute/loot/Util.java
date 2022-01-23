@@ -1,5 +1,7 @@
 package acute.loot;
 
+import acute.loot.namegen.NameGenerator;
+import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.util.Checks;
 import com.github.phillip.h.acutelib.util.Pair;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -7,10 +9,10 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,6 +23,42 @@ import java.util.stream.Stream;
 public final class Util {
 
     private Util() {}
+
+    /**
+     * Generate a random name for an item.
+     * If a name cannot be generated after 100 attempts an error
+     * will be emitted to the errorLogger and null returned.
+     *
+     * @param item the item to generate a name for
+     * @param rarity the rarity to generate a name for
+     * @param namePool the name pool to use for name generation
+     * @param errorLogger the consumer for errors
+     * @return a name for the item
+     */
+    public static String rollName(final ItemStack item,
+                                  final LootRarity rarity,
+                                  final IntegerChancePool<NameGenerator> namePool,
+                                  final Consumer<String> errorLogger) {
+        final LootMaterial lootMaterial = item == null ? null : LootMaterial.lootMaterialForMaterial(item.getType());
+
+        String name = null;
+        int attempts = 100;
+        NameGenerator nameGenerator = null;
+        do {
+            try {
+                nameGenerator = namePool.draw();
+                name = nameGenerator.generate(lootMaterial, rarity);
+            } catch (NoSuchElementException e) {
+                // Couldn't draw a name for some reason, try again
+                attempts--;
+            }
+        } while (name == null && attempts > 0);
+        if (attempts == 0) {
+            errorLogger.accept("Could not generate a name in 100 attempts! Are name files empty or corrupted?");
+            errorLogger.accept("Name Generator: " + nameGenerator.toString());
+        }
+        return name;
+    }
 
     /**
      * Return a HoverEvent that will display information about the given piece of loot.
@@ -112,6 +150,12 @@ public final class Util {
                                                       .map(mapper)
                                                       .flatMap(Stream::of)
                                                       .toArray(BaseComponent[]::new);
+    }
+
+    // Can be replaced with builtin in java 9+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+    public static <T> Stream<T> stream(Optional<T> optional) {
+        return optional.map(Stream::of).orElse(Stream.empty());
     }
 
 }

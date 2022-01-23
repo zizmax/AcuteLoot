@@ -34,7 +34,7 @@ public class RerollCommand extends AcuteLootCommand<Player> {
                     }
                     int cost = plugin().getConfig().getInt("reroll.cost");
                     if (sender.getLevel() >= cost) {
-                        plugin().lootGenerator.createLootItem(item, AcuteLoot.random.nextDouble());
+                        plugin().lootGenerator.createLoot(item, AcuteLoot.random.nextDouble());
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Reroll successful!");
                         sender.giveExpLevels(-cost);
                         sender.playSound(sender.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
