@@ -150,7 +150,8 @@ public class LootItemGenerator {
          * @return the builder instance
          */
         public LootItemGeneratorBuilder namePool(final IntegerChancePool<NameGenerator> namePool,
-                                                 final boolean overwriteCustom) {
+                                                 final boolean overwriteCustom,
+                                                 final boolean overwriteColors) {
             // Namer base
             namer = new NamePoolNamer(namePool, plugin);
 
@@ -162,9 +163,9 @@ public class LootItemGenerator {
             // ...And color the result!
             if (plugin.getConfig().getBoolean("global-loot-name-color")) {
                 final String nameColor = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("loot-name-color"));
-                namer = PrefixNamer.fixed(nameColor, namer);
+                namer = ColorNamer.fixed(nameColor, namer, overwriteColors);
             } else {
-                namer = PrefixNamer.rarityColor(namer);
+                namer = ColorNamer.rarityColor(namer, overwriteColors);
             }
 
             return this;

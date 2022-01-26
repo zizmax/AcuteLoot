@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Enum for a the type of loot, e.g. SWORD or BOW.
+ * Enum for the type of loot, e.g. SWORD or BOW.
  */
 public enum LootMaterial {
 

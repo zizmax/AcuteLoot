@@ -472,15 +472,18 @@ public class AcuteLoot extends JavaPlugin {
 
         }
 
+
         lootGenerator = LootItemGenerator.builder(this)
-                                         .namePool(nameGenChancePool, true)
+                                         .namePool(nameGenChancePool, true, true)
                                          .build();
 
         final boolean usePermissions = getConfig().getBoolean("use-permissions");
         final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
+        final boolean overwriteColors = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-colors");
         final LootItemGenerator enchantingGenerator = LootItemGenerator.builder(this)
-                                                                       .namePool(nameGenChancePool, overwriteNames)
+                                                                       .namePool(nameGenChancePool, overwriteNames, overwriteColors)
                                                                        .build();
+
         final Map<String, Boolean> enchantingConfigs = Util.mapMap(worldConfigs, AlConfig::isEnchantingEnabled);
         enchantingLootSource = new LootSource(globalConfig.isEnchantingEnabled(), enchantingConfigs,
                                               usePermissions, "acuteloot.enchant",

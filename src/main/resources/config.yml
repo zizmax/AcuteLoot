@@ -60,6 +60,7 @@ loot-sources:
     enabled: true
     chance: 100 #Percentage
     overwrite-existing-name: true
+    overwrite-existing-colors: true # If overwrite-existing-name is true this option does nothing
   fishing:
     enabled: true
     chance: 10 #Percentage
