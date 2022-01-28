@@ -79,7 +79,7 @@ public class AcuteLoot extends JavaPlugin {
 
     private @Getter LootSource enchantingLootSource;
 
-    public static final int configVersion = 9;
+    public static final int configVersion = 10;
 
     @Override
     public void onEnable() {
