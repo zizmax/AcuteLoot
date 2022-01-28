@@ -21,7 +21,7 @@ public class FixedListNameGenerator implements NameGenerator {
     /**
      * Construct a new FixedListNameGenerator with the given names.
      *
-     * @param names the names, must be non-null and non-empty
+     * @param names the names, must be non-null
      */
     public FixedListNameGenerator(String... names) {
         this(Arrays.asList(names));
@@ -29,6 +29,9 @@ public class FixedListNameGenerator implements NameGenerator {
 
     @Override
     public String generate(final Map<String, String> parameters) {
+        if (names.isEmpty()) {
+            throw new NoSuchElementException();
+        }
         return names.size() == 1 ? names.get(0) : names.get(random.nextInt(names.size()));
     }
 
