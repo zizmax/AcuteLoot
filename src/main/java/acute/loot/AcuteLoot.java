@@ -79,6 +79,12 @@ public class AcuteLoot extends JavaPlugin {
 
     private @Getter LootSource enchantingLootSource;
 
+    private final @Getter ModuleManager moduleManager = new ModuleManager(getLogger());
+
+    public AcuteLoot() {
+        moduleManager.add("debugMode", new DebugModule(this), false);
+    }
+
     public static final int configVersion = 10;
 
     @Override
@@ -187,6 +193,8 @@ public class AcuteLoot extends JavaPlugin {
      * Separate class for reloading the config and registering names/effects to do so on startup and /al reload.
      */
     public void reloadConfiguration() {
+        moduleManager.stop();
+
         // Reload config
         saveDefaultConfig();
         reloadConfig();
@@ -488,6 +496,8 @@ public class AcuteLoot extends JavaPlugin {
         enchantingLootSource = new LootSource(globalConfig.isEnchantingEnabled(), enchantingConfigs,
                                               usePermissions, "acuteloot.enchant",
                                               enchantingGenerator);
+
+        moduleManager.start();
     }
 
     /**
@@ -606,6 +616,9 @@ public class AcuteLoot extends JavaPlugin {
         alCommand.registerPlayerSubcommand("rmchest", new ChestCommand.RemoveChestCommand("acuteloot.rmchest", this));
         alCommand.registerPlayerSubcommand("share", new ShareCommand("acuteloot.share", this));
 
+        alCommand.registerGenericSubcommand("enable", new EnableCommand("acuteloot.enable", this));
+        alCommand.registerGenericSubcommand("disable", new DisableCommand("acuteloot.disable", this));
+
         final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
             switch (args.length) {
                 case 2:
@@ -655,12 +668,21 @@ public class AcuteLoot extends JavaPlugin {
             }
         };
 
+        final TabCompleter enableDisableCompletion = (s, c, l, args) -> {
+            if (args.length == 2) {
+                return StringUtil.copyPartialMatches(args[1], moduleManager.modules(), new ArrayList<>());
+            }
+            return null;
+        };
+
         alCommand.registerSubcompletion("add", addAndNewCompletion);
         alCommand.registerSubcompletion("new", addAndNewCompletion);
         alCommand.registerSubcompletion("give", giveCompletion);
         alCommand.registerSubcompletion("name", nameCompletion);
         alCommand.registerSubcompletion("chest", chestCompletion);
         alCommand.registerSubcompletion("rmchest", rmChestCompletion);
+        alCommand.registerSubcompletion("enable", enableDisableCompletion);
+        alCommand.registerSubcompletion("disable", enableDisableCompletion);
     }
 
     /**

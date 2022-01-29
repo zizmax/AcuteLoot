@@ -46,3 +46,7 @@ permissions:
     default: op
   acuteloot.share:
     default: op
+  acuteloot.enable:
+    default: op
+  acuteloot.disable:
+    default: op
