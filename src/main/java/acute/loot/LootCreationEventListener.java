@@ -269,9 +269,7 @@ public class LootCreationEventListener implements Listener {
 
     @EventHandler
     public void lootWellListener(PlayerDropItemEvent event) {
-        if (plugin.debug) {
-            plugin.lootWell.onWish(event);
-        }
+        plugin.lootWell.onWish(event);
     }
 
 }

@@ -27,52 +27,50 @@ public class LootWell {
      */
     public void onWish(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if (plugin.debug) {
-            if (plugin.getConfig().getBoolean("loot-well.enabled") && player.hasPermission("acuteloot.use-well")) {
-                new BukkitRunnable() {
-                    int retryNum = 0;
+        if (plugin.getConfig().getBoolean("loot-well.enabled") && player.hasPermission("acuteloot.use-well")) {
+            new BukkitRunnable() {
+                int retryNum = 0;
 
-                    @Override
-                    public void run() {
-                        if (retryNum >= 6 || !event.getItemDrop().isValid() || event.getItemDrop() == null) {
-                            cancel();
-                            return;
-                        }
-                        Location well = new Location(plugin.getServer()
-                                .getWorld(plugin.getConfig()
-                                .getString("loot-well.world")), plugin.getConfig()
-                                .getDouble("loot-well.x"), plugin
-                                .getConfig()
-                                .getDouble("loot-well.y"), plugin.getConfig().getDouble("loot-well.z"));
-                        if (event.getItemDrop().getWorld().equals(well.getWorld())) {
+                //FIXME: Pull config stuff into something that runs on startup and throws warning if corrupted/wrong
+                @Override
+                public void run() {
+                    if (retryNum >= 6 || !event.getItemDrop().isValid() || event.getItemDrop() == null) {
+                        cancel();
+                        return;
+                    }
+                    Location well = new Location(plugin.getServer()
+                            .getWorld(plugin.getConfig()
+                            .getString("loot-well.world")), plugin.getConfig()
+                            .getDouble("loot-well.x"), plugin
+                            .getConfig()
+                            .getDouble("loot-well.y"), plugin.getConfig().getDouble("loot-well.z"));
+                    if (event.getItemDrop().getWorld().equals(well.getWorld())) {
+                        Material offering = Material.matchMaterial(plugin.getConfig().getString("loot-well.offering"));
+                        if (event.getItemDrop().getItemStack().getType().equals(offering)) {
                             if (event.getItemDrop().isOnGround() || event.getItemDrop().isInWater()) {
                                 if (event.getItemDrop().getLocation().distance(well) < plugin.getConfig()
-                                                                                             .getDouble("loot-well.max-distance")) {
+                                        .getDouble("loot-well.max-distance")) {
+                                    ItemStack reward = plugin.lootGenerator.getNewRandomLootItemStack();
+                                    plugin.lootGenerator.createLoot(reward, AcuteLoot.random.nextDouble());
                                     event.getItemDrop()
-                                         .setItemStack(new ItemStack(Material.DIAMOND, event.getItemDrop()
-                                                                                            .getItemStack()
-                                                                                            .getAmount()));
+                                            .setItemStack(reward);
                                     event.getItemDrop()
-                                         .setVelocity((player.getEyeLocation()
-                                                             .add(0, 10, 0)
-                                                             .toVector()
-                                                             .subtract(event.getItemDrop()
-                                                                            .getLocation()
-                                                                            .toVector())).normalize()
-                                                                                         .multiply(Double.parseDouble(player
-                                                                                                 .getInventory()
-                                                                                                 .getItemInMainHand()
-                                                                                                 .getItemMeta()
-                                                                                                 .getDisplayName())));
+                                            .setVelocity((player.getEyeLocation()
+                                                    .add(0, 10, 0)
+                                                    .toVector()
+                                                    .subtract(event.getItemDrop()
+                                                            .getLocation()
+                                                            .toVector())).normalize()
+                                                    .multiply(plugin.getConfig().getDouble("loot-well.launch-force")));
                                     player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, well.add(0, .25, 0), 100);
                                     player.getWorld().playSound(well, Sound.ENTITY_GENERIC_EXPLODE, 1f, 2.5f);
                                 }
                             }
                         }
-                        retryNum += 1;
                     }
-                }.runTaskTimer(plugin, 20, 10);
-            }
+                    retryNum += 1;
+                }
+            }.runTaskTimer(plugin, 20, 10);
         }
     }
 }

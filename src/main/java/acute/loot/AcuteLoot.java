@@ -199,9 +199,9 @@ public class AcuteLoot extends JavaPlugin {
         }
 
         // Create loot well(s)
-        if (debug) {
-            lootWell = new LootWell(this);
-        }
+
+        lootWell = new LootWell(this);
+
 
         // Writing names files to disk if they don't exist
         File namesFolder = new File("plugins/AcuteLoot/names");

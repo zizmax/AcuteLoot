@@ -73,6 +73,19 @@ loot-sources:
   anvils: # Currently only for shields and elytra
     enabled: true
 
+loot-well:
+  # WARNING: Loot well is currently in BETA. It's been mostly tested, but bugs and odd behavior should be expected!
+  # Drop an offering in a "loot well" and get a reward!
+  # For now, the reward will simply be a random piece of AcuteLoot, generated the same way as "/al new"
+  enabled: false
+  offering: "DIAMOND"
+  x: 1
+  y: 68
+  z: 1
+  world: world
+  max-distance: 2 # Max distance between loot well coordinates and offering for well to produce reward
+  launch-force: 0.75 # Velocity for launching reward out of the well. Typically between 0.5 and 2
+
 # This is the chance for the "next" vanilla enchantment for random loot (from fishing, chests and /al new command
 # All individual enchantments have an equal chance. i.e. Sharpness is just as common as Bane of Arthropods
 # Example: 1 enchantment = 65% chance, 2 enchantments = 0.65 * 0.65 = 42.25% chance and so on
