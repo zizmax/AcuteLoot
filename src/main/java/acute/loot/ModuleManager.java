@@ -10,6 +10,8 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -23,6 +25,7 @@ public class ModuleManager {
 
     private File configFile;
     private FileConfiguration configuration;
+    private FileConfiguration internalConfig;
 
     public void reload() {
         configFile = new File(plugin.getDataFolder(), "modules.yml");
@@ -38,8 +41,25 @@ public class ModuleManager {
             logger.severe(e.getMessage());
         }
 
-        // Do NOT use setter here, as the setter writes to the config...
-        modules.values().forEach(m -> m.enabled = configuration.getBoolean(m.configKey, false));
+        internalConfig = new YamlConfiguration();
+        try (InputStream resource = plugin.getResource("modules.yml");
+             InputStreamReader reader = new InputStreamReader(resource)) {
+            internalConfig.load(reader);
+        } catch (IOException | InvalidConfigurationException e) {
+            logger.severe(e.getMessage());
+        }
+
+        modules.values().forEach(m -> {
+            if (configuration.contains(m.configKey)) {
+                // Do NOT use setter here, as the setter writes to the config...
+                m.enabled = configuration.getBoolean(m.configKey);
+            } else if (internalConfig.contains(m.configKey)) {
+                // DO use the setter here, because we want to propagate changes to disk
+                m.setEnabled(internalConfig.getBoolean(m.configKey));
+            } else {
+                logger.severe("Could not find config key for " + m.name + " in either config!");
+            }
+        });
     }
 
     public ModuleManager add(final String name, final Module module, final String configKey) {
