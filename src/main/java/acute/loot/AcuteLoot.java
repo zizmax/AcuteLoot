@@ -192,6 +192,7 @@ public class AcuteLoot extends JavaPlugin {
      */
     public void reloadConfiguration() {
         moduleManager.stop();
+        moduleManager.reload();
         moduleManager.preStart();
 
         // Reload config

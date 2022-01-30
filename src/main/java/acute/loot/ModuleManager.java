@@ -2,25 +2,53 @@ package acute.loot;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ModuleManager {
 
     private final Plugin plugin;
     private final Map<String, ModuleInfo> modules = new HashMap<>();
     private final Logger logger;
 
+    private File configFile;
+    private FileConfiguration configuration;
+
+    public void reload() {
+        configFile = new File(plugin.getDataFolder(), "modules.yml");
+        if (!configFile.exists()) {
+            configFile.getParentFile().mkdirs();
+            plugin.saveResource("modules.yml", false);
+        }
+
+        configuration = new YamlConfiguration();
+        try {
+            configuration.load(configFile);
+        } catch (IOException | InvalidConfigurationException e) {
+            logger.severe(e.getMessage());
+        }
+
+        // Do NOT use setter here, as the setter writes to the config...
+        modules.values().forEach(m -> m.enabled = configuration.getBoolean(m.configKey, false));
+    }
+
     public ModuleManager add(final String name, final Module module, final String configKey) {
         if (modules.containsKey(name)) {
             throw new IllegalArgumentException("A module named " + name + " already exists");
         }
-        modules.put(name, new ModuleInfo(module, name, configKey, plugin.getConfig().getBoolean(configKey, false)));
+        // Modules start disabled, and will have their status loaded
+        // from the config on reload()
+        modules.put(name, new ModuleInfo(module, name, configKey, false));
 
         logger.info("Added module " + name);
         return this;
@@ -52,8 +80,6 @@ public class ModuleManager {
         final ModuleInfo module = modules.get(name);
         module.getModule().enable();
         module.setEnabled(true);
-        plugin.getConfig().set(module.getConfigKey(), true);
-        plugin.saveConfig();
 
         logger.info("Enabled module " + name);
         return true;
@@ -67,8 +93,6 @@ public class ModuleManager {
         final ModuleInfo module = modules.get(name);
         module.getModule().disable();
         module.setEnabled(false);
-        plugin.getConfig().set(module.getConfigKey(), false);
-        plugin.saveConfig();
 
         logger.info("Disabled module " + name);
         return true;
@@ -95,11 +119,21 @@ public class ModuleManager {
 
     @AllArgsConstructor
     @Getter
-    private static class ModuleInfo {
+    private class ModuleInfo {
         private final Module module;
         private final String name;
         private final String configKey;
-        private @Setter boolean enabled;
+        private boolean enabled;
+
+        private void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+            configuration.set(configKey, enabled);
+            try {
+                configuration.save(configFile);
+            } catch (IOException e) {
+                logger.severe("Failed to save modules config");
+            }
+        }
     }
 
 }

@@ -40,9 +40,6 @@ global-loot-name-color: false
 # Color of the effects of all AcuteLoot. See below for color options
 loot-effect-color: "&d"
 
-# Debug mode (set to false unless you are actually trying to debug something. It will change the behavior of the plugin)
-debug: false
-
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
 # |                                                                                              | #
