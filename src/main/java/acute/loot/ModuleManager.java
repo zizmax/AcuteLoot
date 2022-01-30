@@ -1,7 +1,9 @@
 package acute.loot;
 
-import com.github.phillip.h.acutelib.util.Pair;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.bukkit.plugin.Plugin;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -10,14 +12,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ModuleManager {
 
-    private final Map<String, Pair<Module, Boolean>> modules = new HashMap<>();
+    private final Plugin plugin;
+    private final Map<String, ModuleInfo> modules = new HashMap<>();
     private final Logger logger;
 
-    public ModuleManager add(final String name, final Module module, final boolean initialState) {
+    public ModuleManager add(final String name, final Module module, final String configKey) {
         if (modules.containsKey(name)) {
             throw new IllegalArgumentException("A module named " + name + " already exists");
         }
-        modules.put(name, new Pair<>(module, initialState));
+        modules.put(name, new ModuleInfo(module, name, configKey, plugin.getConfig().getBoolean(configKey, false)));
 
         logger.info("Added module " + name);
         return this;
@@ -27,10 +30,9 @@ public class ModuleManager {
         return modules.containsKey(name);
     }
 
-    public List<Pair<String, Module>> enabled() {
-        return modules.entrySet().stream()
-                      .filter(e -> e.getValue().right())
-                      .map(e -> new Pair<>(e.getKey(), e.getValue().left()))
+    public List<ModuleInfo> enabled() {
+        return modules.values().stream()
+                      .filter(ModuleInfo::isEnabled)
                       .collect(Collectors.toList());
     }
 
@@ -39,7 +41,7 @@ public class ModuleManager {
     }
 
     public boolean isEnabled(final String name) {
-        return Optional.ofNullable(modules.get(name)).map(Pair::right).orElse(false);
+        return Optional.ofNullable(modules.get(name)).map(ModuleInfo::isEnabled).orElse(false);
     }
 
     public boolean enable(final String name) {
@@ -47,9 +49,11 @@ public class ModuleManager {
             return false;
         }
 
-        final Module module = modules.get(name).left();
-        module.enable();
-        modules.put(name, new Pair<>(module, true));
+        final ModuleInfo module = modules.get(name);
+        module.getModule().enable();
+        module.setEnabled(true);
+        plugin.getConfig().set(module.getConfigKey(), true);
+        plugin.saveConfig();
 
         logger.info("Enabled module " + name);
         return true;
@@ -60,26 +64,42 @@ public class ModuleManager {
             return false;
         }
 
-        final Module module = modules.get(name).left();
-        module.disable();
-        modules.put(name, new Pair<>(module, false));
+        final ModuleInfo module = modules.get(name);
+        module.getModule().disable();
+        module.setEnabled(false);
+        plugin.getConfig().set(module.getConfigKey(), false);
+        plugin.saveConfig();
 
         logger.info("Disabled module " + name);
         return true;
     }
 
+    public void preStart() {
+        final List<ModuleInfo> enabled = enabled();
+        enabled.forEach(p -> p.getModule().preEnable());
+    }
+
     public void start() {
-        final List<Pair<String, Module>> enabled = enabled();
-        final String modulesMsg = enabled.isEmpty() ? "[NONE]" : enabled.stream().map(Pair::left).collect(Collectors.joining(" "));
+        final List<ModuleInfo> enabled = enabled();
+        final String modulesMsg = enabled.isEmpty() ? "[NONE]" : enabled.stream().map(ModuleInfo::getName).collect(Collectors.joining(" "));
         logger.info("Enabling modules " + modulesMsg);
-        enabled.forEach(p -> p.right().enable());
+        enabled.forEach(p -> p.getModule().enable());
     }
 
     public void stop() {
-        final List<Pair<String, Module>> enabled = enabled();
-        final String modulesMsg = enabled.isEmpty() ? "[NONE]" : enabled.stream().map(Pair::left).collect(Collectors.joining(" "));
+        final List<ModuleInfo> enabled = enabled();
+        final String modulesMsg = enabled.isEmpty() ? "[NONE]" : enabled.stream().map(ModuleInfo::getName).collect(Collectors.joining(" "));
         logger.info("Disabling modules " + modulesMsg);
-        enabled.forEach(p -> p.right().disable());
+        enabled.forEach(p -> p.getModule().disable());
+    }
+
+    @AllArgsConstructor
+    @Getter
+    private static class ModuleInfo {
+        private final Module module;
+        private final String name;
+        private final String configKey;
+        private @Setter boolean enabled;
     }
 
 }

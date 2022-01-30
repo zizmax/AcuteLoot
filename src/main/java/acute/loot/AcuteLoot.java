@@ -4,7 +4,6 @@ import static acute.loot.LootSpecialEffect.registerEffect;
 
 import acute.loot.commands.*;
 import acute.loot.generator.LootItemGenerator;
-import acute.loot.listener.EnchantingLootListener;
 import acute.loot.namegen.*;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
@@ -74,15 +73,16 @@ public class AcuteLoot extends JavaPlugin {
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
 
-    private AlConfig globalConfig;
-    private final Map<String, AlConfig> worldConfigs = new HashMap<>();
+    private @Getter AlConfig globalConfig;
+    private final @Getter Map<String, AlConfig> worldConfigs = new HashMap<>();
 
     private @Getter LootSource enchantingLootSource;
 
-    private final @Getter ModuleManager moduleManager = new ModuleManager(getLogger());
+    private final @Getter ModuleManager moduleManager;
 
     public AcuteLoot() {
-        moduleManager.add("debugMode", new DebugModule(this), false);
+        moduleManager = new ModuleManager(this, getLogger());
+        moduleManager.add("debugMode", new DebugModule(this), "debug");
     }
 
     public static final int configVersion = 10;
@@ -101,8 +101,6 @@ public class AcuteLoot extends JavaPlugin {
         addListener(EffectEventListener::new);
         addListener(LootCreationEventListener::new);
         addListener(UiEventListener::new);
-
-        addListener(EnchantingLootListener::new);
 
         // Save/read config.yml
         saveDefaultConfig();
@@ -194,6 +192,7 @@ public class AcuteLoot extends JavaPlugin {
      */
     public void reloadConfiguration() {
         moduleManager.stop();
+        moduleManager.preStart();
 
         // Reload config
         saveDefaultConfig();
@@ -201,7 +200,6 @@ public class AcuteLoot extends JavaPlugin {
         checkConfigVersion();
 
         // Set debug mode
-        debug = getConfig().getBoolean("debug");
         if (debug) {
             this.getLogger().warning("Debug mode enabled!");
         }
