@@ -2,10 +2,14 @@ package acute.loot.commands;
 
 import acute.loot.AcuteLoot;
 import acute.loot.LootMaterial;
+import acute.loot.economy.Cost;
+import acute.loot.economy.CostParser;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import static acute.loot.AcuteLoot.CHAT_PREFIX;
 
 
 /**
@@ -13,15 +17,17 @@ import org.bukkit.inventory.ItemStack;
  */
 public class RerollCommand extends AcuteLootCommand<Player> {
 
+    private final Cost cost;
+
     public RerollCommand(String permission, AcuteLoot plugin) {
         super(permission, plugin);
+        cost = new CostParser().parse(plugin.getConfig().getConfigurationSection("reroll"));
     }
     //TODO Add translateable messages
 
     @Override
     protected void doHandle(Player sender, String[] args) {
         if (plugin().getConfig().getBoolean("reroll.enabled")) {
-            String currency = "experience";
             //TODO Add config option for item and Vault mode
             ItemStack item = sender.getInventory().getItemInMainHand();
             if (item.getType() != Material.AIR) {
@@ -29,26 +35,24 @@ public class RerollCommand extends AcuteLootCommand<Player> {
                     //TODO Add ignoring this check as a config option?
                     final LootMaterial lootMaterial = LootMaterial.lootMaterialForMaterial(item.getType());
                     if (lootMaterial == LootMaterial.UNKNOWN) {
-                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
+                        sender.sendMessage(CHAT_PREFIX + item.getType() + " isn't valid AcuteLoot material");
                         return;
                     }
-                    int cost = plugin().getConfig().getInt("reroll.cost");
-                    if (sender.getLevel() >= cost) {
+                    if (cost.pay(sender)) {
                         plugin().lootGenerator.createLoot(item, AcuteLoot.random.nextDouble());
-                        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Reroll successful!");
-                        sender.giveExpLevels(-cost);
+                        sender.sendMessage(CHAT_PREFIX + "Reroll successful!");
                         sender.playSound(sender.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
                     } else {
-                        sender.sendMessage(String.format(AcuteLoot.CHAT_PREFIX + "You don't have enough %s!", currency));
+                        sender.sendMessage(CHAT_PREFIX + cost.notEnoughDescription());
                     }
                 } else {
-                    sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Item is not AcuteLoot");
+                    sender.sendMessage(CHAT_PREFIX + "Item is not AcuteLoot");
                 }
             } else {
-                sender.sendMessage(AcuteLoot.CHAT_PREFIX + "You must be holding something");
+                sender.sendMessage(CHAT_PREFIX + "You must be holding something");
             }
         } else {
-            sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rerolling is not enabled");
+            sender.sendMessage(CHAT_PREFIX + "Rerolling is not enabled");
         }
     }
 }
