@@ -4,6 +4,7 @@ import static acute.loot.LootSpecialEffect.registerEffect;
 
 import acute.loot.commands.*;
 import acute.loot.generator.LootItemGenerator;
+import acute.loot.listener.EnchantingLootListener;
 import acute.loot.namegen.*;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
@@ -101,6 +102,7 @@ public class AcuteLoot extends JavaPlugin {
         addListener(EffectEventListener::new);
         addListener(LootCreationEventListener::new);
         addListener(UiEventListener::new);
+        addListener(EnchantingLootListener::new);
 
         // Save/read config.yml
         saveDefaultConfig();
