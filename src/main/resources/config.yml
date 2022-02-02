@@ -49,8 +49,9 @@ loot-effect-color: "&d"
 # +----------------------------------------------------------------------------------------------+ #
 reroll:
   enabled: true
-  mode: xp # Currently only xp mode available
-  cost: 1
+  mode: xp # Valid modes are "xp" and "item"
+  cost: 1  # In xp mode this is the level code, in item mode it is the number of items
+  material: EMERALD # Item type for item mode
 
 loot-sources:
   enchanting:
