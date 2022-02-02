@@ -11,8 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Optional;
 import java.util.Random;
@@ -97,6 +100,12 @@ public class LootItemGenerator {
         if (!LootMaterial.lootMaterialForMaterial(item.getType()).equals(LootMaterial.UNKNOWN)) {
             namer.nameLoot(item, loot);
             lorer.loreLoot(item, loot);
+
+            // Store lootCode in metadata using PersistentDataHolder API
+            NamespacedKey key = new NamespacedKey(plugin, "lootCodeKey");
+            final ItemMeta meta = item.getItemMeta();
+            meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, loot.lootCode());
+            item.setItemMeta(meta);
         }
 
         return item;
