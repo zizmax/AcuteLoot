@@ -8,7 +8,7 @@ class LevelCost implements Cost {
     private final int amount;
 
     LevelCost(final int amount) {
-        this.amount = Checks.checkNot(amount, x -> x < 0, "Amount must be non-negative");
+        this.amount = Checks.requirePositive(amount);
     }
 
     @Override

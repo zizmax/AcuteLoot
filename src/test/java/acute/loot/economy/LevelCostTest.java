@@ -13,7 +13,7 @@ class LevelCostTest {
     @Test
     void constructor() {
         assertThrows(IllegalArgumentException.class, () -> new LevelCost(-1));
-        assertDoesNotThrow(() -> new LevelCost(0));
+        assertThrows(IllegalArgumentException.class, () -> new LevelCost(0));
         assertDoesNotThrow(() -> new LevelCost(1));
     }
 
