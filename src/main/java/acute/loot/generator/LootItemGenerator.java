@@ -5,6 +5,7 @@ import static com.github.phillip.h.acutelib.util.Util.*;
 import acute.loot.*;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.decorators.MetaEditor;
 import com.github.phillip.h.acutelib.util.Checks;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -123,7 +124,7 @@ public class LootItemGenerator {
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
-            ((Damageable) item.getItemMeta()).setDamage(random.nextInt(item.getType().getMaxDurability()));
+            MetaEditor.on(item).setDamage(random.nextInt(item.getType().getMaxDurability()));
         }
         return item;
     }
