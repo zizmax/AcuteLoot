@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -92,49 +94,48 @@ public class ModuleManager {
         return Optional.ofNullable(modules.get(name)).map(ModuleInfo::isEnabled).orElse(false);
     }
 
-    public boolean enable(final String name) {
-        if (!hasModule(name) || isEnabled(name)) {
+    private boolean enableDisable(final boolean enable, final String name) {
+        if (!hasModule(name) || isEnabled(name) == enable) {
             return false;
         }
 
         final ModuleInfo module = modules.get(name);
-        module.getModule().enable();
-        module.setEnabled(true);
+        if (enable) {
+            module.getModule().enable();
+        } else {
+            module.getModule().disable();
+        }
+        module.setEnabled(enable);
 
-        logger.info("Enabled module " + name);
+        logger.info((enable ? "Enabled" : "Disabled") + " module " + name);
         return true;
+    }
+
+    public boolean enable(final String name) {
+        return enableDisable(true, name);
     }
 
     public boolean disable(final String name) {
-        if (!hasModule(name) || !isEnabled(name)) {
-            return false;
-        }
+        return enableDisable(false, name);
+    }
 
-        final ModuleInfo module = modules.get(name);
-        module.getModule().disable();
-        module.setEnabled(false);
-
-        logger.info("Disabled module " + name);
-        return true;
+    private void changeState(final Consumer<ModuleInfo> action, final Function<String, String> msgBuilder) {
+        final List<ModuleInfo> enabled = enabled();
+        final String modulesMsg = enabled.isEmpty() ? "[NONE]" : enabled.stream().map(ModuleInfo::getName).collect(Collectors.joining(" "));
+        logger.info(msgBuilder.apply(modulesMsg));
+        enabled.forEach(action);
     }
 
     public void preStart() {
-        final List<ModuleInfo> enabled = enabled();
-        enabled.forEach(p -> p.getModule().preEnable());
+        changeState(p -> p.getModule().preEnable(), msg -> "Pre-Enabling modules " + msg);
     }
 
     public void start() {
-        final List<ModuleInfo> enabled = enabled();
-        final String modulesMsg = enabled.isEmpty() ? "[NONE]" : enabled.stream().map(ModuleInfo::getName).collect(Collectors.joining(" "));
-        logger.info("Enabling modules " + modulesMsg);
-        enabled.forEach(p -> p.getModule().enable());
+        changeState(p -> p.getModule().enable(), msg -> "Enabling modules " + msg);
     }
 
     public void stop() {
-        final List<ModuleInfo> enabled = enabled();
-        final String modulesMsg = enabled.isEmpty() ? "[NONE]" : enabled.stream().map(ModuleInfo::getName).collect(Collectors.joining(" "));
-        logger.info("Disabling modules " + modulesMsg);
-        enabled.forEach(p -> p.getModule().disable());
+        changeState(p -> p.getModule().disable(), msg -> "Disabling modules " + msg);
     }
 
     @AllArgsConstructor
