@@ -128,6 +128,10 @@ public class LootItemGenerator {
         return item;
     }
 
+    public LootItem repairItem(final ItemStack item) {
+        return lorer.inverseLore(item);
+    }
+
     /**
      * Construct a new LootItemGeneratorBuilder with default values.
      * This will pre-populate the plugin field and set the rarity and

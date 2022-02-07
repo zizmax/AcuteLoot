@@ -606,6 +606,8 @@ public class AcuteLoot extends JavaPlugin {
         alCommand.registerPlayerSubcommand("rmchest", new ChestCommand.RemoveChestCommand("acuteloot.rmchest", this));
         alCommand.registerPlayerSubcommand("share", new ShareCommand("acuteloot.share", this));
 
+        alCommand.registerPlayerSubcommand("repair", new RepairCommand("acuteloot.repair", this));
+
         final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
             switch (args.length) {
                 case 2:
