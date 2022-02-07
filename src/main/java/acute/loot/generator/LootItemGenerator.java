@@ -12,10 +12,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Collections;
@@ -132,6 +134,14 @@ public class LootItemGenerator {
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
             MetaEditor.on(item).setDamage(random.nextInt(item.getType().getMaxDurability()));
         }
+
+        // Set random color if Material is leather armor
+        if (item.getItemMeta() instanceof LeatherArmorMeta) {
+            final LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+            meta.setColor(Color.fromRGB(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
+            item.setItemMeta(meta);
+        }
+
         return item;
     }
 
