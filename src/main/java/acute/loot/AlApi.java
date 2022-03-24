@@ -6,10 +6,16 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 
+import java.util.logging.Logger;
+
 @AllArgsConstructor
 public class AlApi {
 
     private final AcuteLoot acuteLoot;
+
+    public Logger log() {
+        return acuteLoot.getLogger();
+    }
 
     public LootItemGenerator getBaseLootGenerator() {
         return LootItemGenerator.builder(acuteLoot)
