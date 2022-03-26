@@ -86,7 +86,7 @@ public class AcuteLoot extends JavaPlugin {
         moduleManager.add("debugMode", new DebugModule(this), "debug");
     }
 
-    public static final int configVersion = 10;
+    public static final int configVersion = 11;
 
     @Override
     public void onEnable() {
