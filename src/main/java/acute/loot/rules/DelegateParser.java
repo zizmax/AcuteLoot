@@ -24,11 +24,15 @@ class DelegateParser implements RuleParser, RuleParser.SubRuleParser {
 
     @Override
     public List<Pair<Condition, Spawner>> parseSub(ConfigurationSection config) {
-        final String condition = Objects.requireNonNull(config.getString("condition"), "Rule missing condition");
-        final ConfigurationSection section = Objects.requireNonNull(config.getConfigurationSection(condition), "Condition configuration missing");
-        return Optional.ofNullable(delegates.get(condition))
-                .map(r -> r.parseSub(section))
-                .orElseThrow(() -> new IllegalArgumentException("Unknown condition " + config.getString("condition")));
+        final List<String> candidates = config.getKeys(false).stream().filter(delegates::containsKey).collect(Collectors.toList());
+        if (candidates.isEmpty()) {
+            throw new IllegalArgumentException("Rule missing condition (or condition unknown)");
+        } else if (candidates.size() > 1) {
+            throw new IllegalArgumentException("Ambiguous condition, candidates are: " + String.join(", ", candidates));
+        }
+
+        final String condition = candidates.get(0);
+        return delegates.get(condition).parseSub(config.getConfigurationSection(condition));
     }
 
     private Generator parseGenerator(final ConfigurationSection config) {

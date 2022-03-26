@@ -125,28 +125,24 @@ loot-category-lore:
 loot-rules:
 
   monsters-hold-loot:
-    condition: "entity-spawn" # Give entities a chance to hold loot when they spawn
     entity-spawn:
       mob-class: ["MONSTER"]  # Restrict to Monsters
     generator:
       chance: 0.02 # 2% chance for an eligible mob to spawn with an item
 
   monsters-drop-loot:
-    condition: "entity-death" # Give entities a chance to drop loot when they die
     entity-death:
       mob-class: ["MONSTER"] # Restrict to monsters
     generator:
       chance: 0.02 # 2% chance for an eligible mob to drop an item
 
   #specific-entity-example-rule:
-  #  condition: "entity-death"
   #  entity-death:
   #    mob-type: ["CREEPER"]
   #  generator:
   #    chance: 0.5
 
   #multiple-entity-example-rule:
-  #  condition: "entity-spawn"
   #  entity-spawn:
   #    mob-type: ["WITHER_SKELETON", "SKELETON"]
   #  generator:
@@ -162,11 +158,9 @@ loot-rules:
   #  any-of:
   #    loot-rules:
   #      sub-rule-a:
-  #        condition: "entity-death"
   #        entity-death:
   #          mob-class: ["MONSTER"]
   #      sub-rule-b:
-  #        condition: "entity-spawn"
   #        entity-spawn:
   #          mob-class: ["MONSTER"]
   #  generator:
