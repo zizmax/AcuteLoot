@@ -20,5 +20,6 @@ public class NoArgsCommand extends AcuteLootCommand<CommandSender> {
                                                                                                       .getVersion());
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "LootCode version: " + LootItem.currentLootcodeVersion());
         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Use " + ChatColor.AQUA + "/al help" + ChatColor.GRAY + " to learn more.");
+        sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Join the AcuteLoot Discord at: https://discord.gg/BXhUUQEymg");
     }
 }
