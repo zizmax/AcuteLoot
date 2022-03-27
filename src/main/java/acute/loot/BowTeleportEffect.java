@@ -30,7 +30,7 @@ public class BowTeleportEffect extends AcuteLootSpecialEffect {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (arrow.isOnGround() || arrow.isDead()) {
+                    if ((arrow.isOnGround() || arrow.isDead()) && arrow.getPassengers().contains(player)) {
                         arrow.removePassenger(player);
                         player.playSound(player.getLocation(), Sound.BLOCK_HONEY_BLOCK_FALL, 1, 1);
                         cancel();
