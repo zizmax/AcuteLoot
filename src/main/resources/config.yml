@@ -113,32 +113,33 @@ loot-category-lore:
     - "&7Elytra"
 
 # Loot Rules define general scenarios that can produce loot.
-# This feature can be disabled entirely by disabling the lootRules module
+# This feature can be disabled entirely by disabling the lootRules module with "/al disable lootRules"
+# Currently there is only one generator available. More generators (and loot tables) coming in future updates.
 loot-rules:
 
   monsters-hold-loot:
     entity-spawn:
       mob-class: ["MONSTER"]  # Restrict to Monsters
     generator:
-      chance: 0.02 # 2% chance for an eligible mob to spawn with an item
+      chance: 2.0 # 2% chance for an eligible mob to spawn with an item
 
   monsters-drop-loot:
     entity-death:
       mob-class: ["MONSTER"] # Restrict to monsters
     generator:
-      chance: 0.02 # 2% chance for an eligible mob to drop an item
+      chance: 2.0 # 2% chance for an eligible mob to drop an item
 
   #specific-entity-example-rule:
   #  entity-death:
   #    mob-type: ["CREEPER"]
   #  generator:
-  #    chance: 0.5
+  #    chance: .0
 
   #multiple-entity-example-rule:
   #  entity-spawn:
   #    mob-type: ["WITHER_SKELETON", "SKELETON"]
   #  generator:
-  #    chance: 0.5
+  #    chance: 50.0
 
   # This is equivalent to the two AcuteLoot-default rules above
   # Note that there is only one generator for the whole rule,
@@ -156,7 +157,7 @@ loot-rules:
   #        entity-spawn:
   #          mob-class: ["MONSTER"]
   #  generator:
-  #    chance: 0.02
+  #    chance: 2.0
 
 
 # +----------------------------------------------------------------------------------------------+ #

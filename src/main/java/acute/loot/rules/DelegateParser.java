@@ -36,6 +36,6 @@ class DelegateParser implements RuleParser, RuleParser.SubRuleParser {
     }
 
     private Generator parseGenerator(final ConfigurationSection config) {
-        return Generator.withChance(config.getDouble("generator.chance"), lootItemGenerator);
+        return Generator.withChance(config.getDouble("generator.chance") / 100, lootItemGenerator);
     }
 }
