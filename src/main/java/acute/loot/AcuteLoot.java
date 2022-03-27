@@ -5,7 +5,7 @@ import static acute.loot.LootSpecialEffect.registerEffect;
 import acute.loot.commands.*;
 import acute.loot.generator.LootItemGenerator;
 import acute.loot.listener.EnchantingLootListener;
-import acute.loot.mobdrops.MobDropLootModule;
+import acute.loot.rules.LootRulesModule;
 import acute.loot.namegen.*;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
@@ -86,10 +86,10 @@ public class AcuteLoot extends JavaPlugin {
         final AlApi alApi = new AlApi(this);
         moduleManager = new ModuleManager(this, getLogger());
         moduleManager.add("debugMode", new DebugModule(this), "debug");
-        moduleManager.add("mobdropLoot", new MobDropLootModule(alApi), "mobdrops");
+        moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
     }
 
-    public static final int configVersion = 11;
+    public static final int configVersion = 12;
 
     @Override
     public void onEnable() {

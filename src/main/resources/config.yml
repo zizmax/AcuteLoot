@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 11 # Don't change this!
+config-version: 12 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -119,6 +119,52 @@ loot-category-lore:
     - "&7Shield"
   elytra:
     - "&7Elytra"
+
+# Loot Rules define general scenarios that can produce loot.
+# This feature can be disabled entirely by disabling the lootRules module
+loot-rules:
+
+  monsters-hold-loot:
+    entity-spawn:
+      mob-class: ["MONSTER"]  # Restrict to Monsters
+    generator:
+      chance: 0.02 # 2% chance for an eligible mob to spawn with an item
+
+  monsters-drop-loot:
+    entity-death:
+      mob-class: ["MONSTER"] # Restrict to monsters
+    generator:
+      chance: 0.02 # 2% chance for an eligible mob to drop an item
+
+  #specific-entity-example-rule:
+  #  entity-death:
+  #    mob-type: ["CREEPER"]
+  #  generator:
+  #    chance: 0.5
+
+  #multiple-entity-example-rule:
+  #  entity-spawn:
+  #    mob-type: ["WITHER_SKELETON", "SKELETON"]
+  #  generator:
+  #    chance: 0.5
+
+  # This is equivalent to the two AcuteLoot-default rules above
+  # Note that there is only one generator for the whole rule,
+  # if different generators for different subrules are needed
+  # the subrules must be broken out into individual rules.
+  #
+  #multi-subrule-example-rule:
+  #  condition: "any-of"
+  #  any-of:
+  #    loot-rules:
+  #      sub-rule-a:
+  #        entity-death:
+  #          mob-class: ["MONSTER"]
+  #      sub-rule-b:
+  #        entity-spawn:
+  #          mob-class: ["MONSTER"]
+  #  generator:
+  #    chance: 0.02
 
 
 # +----------------------------------------------------------------------------------------------+ #
