@@ -54,8 +54,10 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
                 new BukkitRunnable() {
                     @Override
                     public void run() {
-                        for (Player p : plugin.getServer().getOnlinePlayers()) {
-                            p.sendBlockChange(trailBlock, Material.AIR.createBlockData());
+                        if (trailBlock.getBlock().getType().isAir()) {
+                            for (Player p : plugin.getServer().getOnlinePlayers()) {
+                                p.sendBlockChange(trailBlock, Material.AIR.createBlockData());
+                            }
                         }
                     }
 
