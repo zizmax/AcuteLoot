@@ -46,7 +46,7 @@ public class AcuteLoot extends JavaPlugin {
     }
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
-    public static final String PERM_DENIED_MSG = CHAT_PREFIX + "You do not have permission to do this";
+    public static String PERM_DENIED_MSG = CHAT_PREFIX + "You do not have permission to do this";
     public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
     public static final String UPDATE_AVAILABLE = "Update available! Download v%s ";
     public static final String UP_TO_DATE = "AcuteLoot is up to date: (%s)";
@@ -89,7 +89,7 @@ public class AcuteLoot extends JavaPlugin {
         moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
     }
 
-    public static final int configVersion = 12;
+    public static final int configVersion = 13;
 
     @Override
     public void onEnable() {
@@ -204,6 +204,8 @@ public class AcuteLoot extends JavaPlugin {
         saveDefaultConfig();
         reloadConfig();
         checkConfigVersion();
+
+        PERM_DENIED_MSG = CHAT_PREFIX + getConfig().getString("msg.generic.no-permission");
 
         // Set debug mode
         if (debug) {

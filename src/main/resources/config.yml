@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 12 # Don't change this!
+config-version: 13 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -533,6 +533,7 @@ msg:
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
     empty-hand: "You must be holding an item!"
+    no-permission: "You do not have permission to do this"
 
 # AcuteLoot can display information about loot when it appears in a death message.
 # At the moment this only works for player deaths caused by other players.
