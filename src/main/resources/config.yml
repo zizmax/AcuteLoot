@@ -70,14 +70,6 @@ loot-sources:
     show-cooldown-msg: true
   anvils: # Currently only for shields and elytra
     enabled: true
-  mobs:
-    drops:
-      # These settings will apply to all mobs of the given type
-      global:
-        # Type of monster to drop loot for.
-        # Options are MONSTER (hostile mobs) and CREATURE (all "normal" mobs)
-        type: MONSTER
-        chance: 1 # Percent chance for an AcuteLoot drop
 
 # This is the chance for the "next" vanilla enchantment for random loot (from fishing, chests and /al new command
 # All individual enchantments have an equal chance. i.e. Sharpness is just as common as Bane of Arthropods
