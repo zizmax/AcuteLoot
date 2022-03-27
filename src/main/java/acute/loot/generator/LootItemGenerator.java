@@ -18,6 +18,8 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -61,6 +63,10 @@ public class LootItemGenerator {
         }
 
         return new LootItem(lootRarity, stream(effect).collect(Collectors.toList()));
+    }
+
+    public List<ItemStack> createLootWithChance(double chance) {
+        return random.nextDouble() < chance ? Collections.singletonList(createLoot()) : Collections.emptyList();
     }
 
     /**
