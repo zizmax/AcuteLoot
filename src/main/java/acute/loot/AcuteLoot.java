@@ -625,6 +625,8 @@ public class AcuteLoot extends JavaPlugin {
         alCommand.registerGenericSubcommand("enable", new EnableCommand("acuteloot.enable", this));
         alCommand.registerGenericSubcommand("disable", new DisableCommand("acuteloot.disable", this));
 
+        alCommand.registerPlayerSubcommand("repair", new RepairCommand("acuteloot.repair", this));
+
         final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
             switch (args.length) {
                 case 2:
