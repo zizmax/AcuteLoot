@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -19,7 +20,11 @@ public class MappedNameGenerator implements NameGenerator {
 
     @Override
     public String generate(final Map<String, String> parameters) {
-        return mapping.get(parameters.get(parameterKey)).generate(parameters);
+        final String key = parameters.get(parameterKey);
+        if (!mapping.containsKey(key)) {
+            throw new NoSuchElementException("No mapping for " + key);
+        }
+        return mapping.get(key).generate(parameters);
     }
 
     @Override

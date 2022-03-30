@@ -5,6 +5,7 @@ import static acute.loot.LootSpecialEffect.registerEffect;
 import acute.loot.commands.*;
 import acute.loot.generator.LootItemGenerator;
 import acute.loot.listener.EnchantingLootListener;
+import acute.loot.rules.LootRulesModule;
 import acute.loot.namegen.*;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
@@ -45,7 +46,7 @@ public class AcuteLoot extends JavaPlugin {
     }
 
     public static final String CHAT_PREFIX = ChatColor.GOLD + "[" + ChatColor.GRAY + "AcuteLoot" + ChatColor.GOLD + "] " + ChatColor.GRAY;
-    public static final String PERM_DENIED_MSG = CHAT_PREFIX + "You do not have permission to do this";
+    public static String PERM_DENIED_MSG = CHAT_PREFIX + "You do not have permission to do this";
     public static final String SPIGOT_URL = "https://www.spigotmc.org/resources/acuteloot.81899";
     public static final String UPDATE_AVAILABLE = "Update available! Download v%s ";
     public static final String UP_TO_DATE = "AcuteLoot is up to date: (%s)";
@@ -74,12 +75,21 @@ public class AcuteLoot extends JavaPlugin {
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
 
-    private AlConfig globalConfig;
-    private final Map<String, AlConfig> worldConfigs = new HashMap<>();
+    private @Getter AlConfig globalConfig;
+    private final @Getter Map<String, AlConfig> worldConfigs = new HashMap<>();
 
     private @Getter LootSource enchantingLootSource;
 
-    public static final int configVersion = 10;
+    private final @Getter ModuleManager moduleManager;
+
+    public AcuteLoot() {
+        final AlApi alApi = new AlApi(this);
+        moduleManager = new ModuleManager(this, getLogger());
+        moduleManager.add("debugMode", new DebugModule(this), "debug");
+        moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
+    }
+
+    public static final int configVersion = 13;
 
     @Override
     public void onEnable() {
@@ -95,7 +105,6 @@ public class AcuteLoot extends JavaPlugin {
         addListener(EffectEventListener::new);
         addListener(LootCreationEventListener::new);
         addListener(UiEventListener::new);
-
         addListener(EnchantingLootListener::new);
 
         // Save/read config.yml
@@ -187,13 +196,18 @@ public class AcuteLoot extends JavaPlugin {
      * Separate class for reloading the config and registering names/effects to do so on startup and /al reload.
      */
     public void reloadConfiguration() {
+        moduleManager.stop();
+        moduleManager.reload();
+        moduleManager.preStart();
+
         // Reload config
         saveDefaultConfig();
         reloadConfig();
         checkConfigVersion();
 
+        PERM_DENIED_MSG = CHAT_PREFIX + getConfig().getString("msg.generic.no-permission");
+
         // Set debug mode
-        debug = getConfig().getBoolean("debug");
         if (debug) {
             this.getLogger().warning("Debug mode enabled!");
         }
@@ -488,6 +502,8 @@ public class AcuteLoot extends JavaPlugin {
         enchantingLootSource = new LootSource(globalConfig.isEnchantingEnabled(), enchantingConfigs,
                                               usePermissions, "acuteloot.enchant",
                                               enchantingGenerator);
+
+        moduleManager.start();
     }
 
     /**
@@ -606,7 +622,8 @@ public class AcuteLoot extends JavaPlugin {
         alCommand.registerPlayerSubcommand("rmchest", new ChestCommand.RemoveChestCommand("acuteloot.rmchest", this));
         alCommand.registerPlayerSubcommand("share", new ShareCommand("acuteloot.share", this));
 
-        alCommand.registerPlayerSubcommand("repair", new RepairCommand("acuteloot.repair", this));
+        alCommand.registerGenericSubcommand("enable", new EnableCommand("acuteloot.enable", this));
+        alCommand.registerGenericSubcommand("disable", new DisableCommand("acuteloot.disable", this));
 
         final TabCompleter addAndNewCompletion = (s, c, l, args) -> {
             switch (args.length) {
@@ -657,12 +674,21 @@ public class AcuteLoot extends JavaPlugin {
             }
         };
 
+        final TabCompleter enableDisableCompletion = (s, c, l, args) -> {
+            if (args.length == 2) {
+                return StringUtil.copyPartialMatches(args[1], moduleManager.modules(), new ArrayList<>());
+            }
+            return null;
+        };
+
         alCommand.registerSubcompletion("add", addAndNewCompletion);
         alCommand.registerSubcompletion("new", addAndNewCompletion);
         alCommand.registerSubcompletion("give", giveCompletion);
         alCommand.registerSubcompletion("name", nameCompletion);
         alCommand.registerSubcompletion("chest", chestCompletion);
         alCommand.registerSubcompletion("rmchest", rmChestCompletion);
+        alCommand.registerSubcompletion("enable", enableDisableCompletion);
+        alCommand.registerSubcompletion("disable", enableDisableCompletion);
     }
 
     /**

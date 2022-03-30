@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 10 # Don't change this!
+config-version: 13 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -40,9 +40,6 @@ global-loot-name-color: false
 # Color of the effects of all AcuteLoot. See below for color options
 loot-effect-color: "&d"
 
-# Debug mode (set to false unless you are actually trying to debug something. It will change the behavior of the plugin)
-debug: false
-
 # +----------------------------------------------------------------------------------------------+ #
 # |                                                                                              | #
 # |                                                                                              | #
@@ -52,8 +49,9 @@ debug: false
 # +----------------------------------------------------------------------------------------------+ #
 reroll:
   enabled: true
-  mode: xp # Currently only xp mode available
-  cost: 1
+  mode: xp # Valid modes are "xp" and "item"
+  cost: 1  # In xp mode this is the level code, in item mode it is the number of items
+  material: EMERALD # Item type for item mode
 
 loot-sources:
   enchanting:
@@ -113,6 +111,53 @@ loot-category-lore:
     - "&7Shield"
   elytra:
     - "&7Elytra"
+
+# Loot Rules define general scenarios that can produce loot.
+# This feature can be disabled entirely by disabling the lootRules module with "/al disable lootRules"
+# Currently there is only one generator available. More generators (and loot tables) coming in future updates.
+loot-rules:
+
+  monsters-hold-loot:
+    entity-spawn:
+      mob-class: ["MONSTER"]  # Restrict to Monsters
+    generator:
+      chance: 2.0 # 2% chance for an eligible mob to spawn with an item
+
+  monsters-drop-loot:
+    entity-death:
+      mob-class: ["MONSTER"] # Restrict to monsters
+    generator:
+      chance: 2.0 # 2% chance for an eligible mob to drop an item
+
+  #specific-entity-example-rule:
+  #  entity-death:
+  #    mob-type: ["CREEPER"]
+  #  generator:
+  #    chance: .0
+
+  #multiple-entity-example-rule:
+  #  entity-spawn:
+  #    mob-type: ["WITHER_SKELETON", "SKELETON"]
+  #  generator:
+  #    chance: 50.0
+
+  # This is equivalent to the two AcuteLoot-default rules above
+  # Note that there is only one generator for the whole rule,
+  # if different generators for different subrules are needed
+  # the subrules must be broken out into individual rules.
+  #
+  #multi-subrule-example-rule:
+  #  condition: "any-of"
+  #  any-of:
+  #    loot-rules:
+  #      sub-rule-a:
+  #        entity-death:
+  #          mob-class: ["MONSTER"]
+  #      sub-rule-b:
+  #        entity-spawn:
+  #          mob-class: ["MONSTER"]
+  #  generator:
+  #    chance: 2.0
 
 
 # +----------------------------------------------------------------------------------------------+ #
@@ -488,6 +533,7 @@ msg:
   generic:
     not-acuteloot: "Item is not AcuteLoot!"
     empty-hand: "You must be holding an item!"
+    no-permission: "You do not have permission to do this"
 
 # AcuteLoot can display information about loot when it appears in a death message.
 # At the moment this only works for player deaths caused by other players.

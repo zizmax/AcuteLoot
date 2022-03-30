@@ -5,18 +5,23 @@ import static com.github.phillip.h.acutelib.util.Util.*;
 import acute.loot.*;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
+import com.github.phillip.h.acutelib.decorators.MetaEditor;
 import com.github.phillip.h.acutelib.util.Checks;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -60,6 +65,10 @@ public class LootItemGenerator {
         }
 
         return new LootItem(lootRarity, stream(effect).collect(Collectors.toList()));
+    }
+
+    public List<ItemStack> createLootWithChance(double chance) {
+        return random.nextDouble() < chance ? Collections.singletonList(createLoot()) : Collections.emptyList();
     }
 
     /**
@@ -123,8 +132,16 @@ public class LootItemGenerator {
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
-            ((Damageable) item.getItemMeta()).setDamage(random.nextInt(item.getType().getMaxDurability()));
+            MetaEditor.on(item).setDamage(random.nextInt(item.getType().getMaxDurability()));
         }
+
+        // Set random color if Material is leather armor
+        if (item.getItemMeta() instanceof LeatherArmorMeta) {
+            final LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+            meta.setColor(Color.fromRGB(random.nextInt(256), random.nextInt(256), random.nextInt(256)));
+            item.setItemMeta(meta);
+        }
+
         return item;
     }
 
