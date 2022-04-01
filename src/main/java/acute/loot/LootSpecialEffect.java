@@ -6,6 +6,8 @@ import org.bukkit.event.Event;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Class representing a special effect that may be applied on a item.
@@ -172,5 +174,12 @@ public abstract class LootSpecialEffect {
             throw new AcuteLootException("Effect has not been registered");
         }
         return effects.get(effect.ns()).remove(effect.id());
+    }
+
+    public static Optional<LootSpecialEffect> findByUniqueName(final String effect) {
+        final List<LootSpecialEffect> matched = effects.values().stream().flatMap(c -> c.values().stream())
+                                                       .filter(e -> e.getDisplayName().equals(effect))
+                                                       .collect(Collectors.toList());
+        return matched.size() == 1 ? Optional.of(matched.get(0)) : Optional.empty();
     }
 }

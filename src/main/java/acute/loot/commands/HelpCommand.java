@@ -25,7 +25,8 @@ public class HelpCommand extends AcuteLootCommand<CommandSender> {
                 ChatColor.GRAY + " Set AL chests"),
             new HelpEntry("rmchest", "acuteloot.rmchest", "/al rmchest [area]" + ChatColor.GRAY + " Unset AL chests"),
             new HelpEntry("salvage", "acuteloot.salvage", "/al salvage [player]" + ChatColor.GRAY + " Open the salvaging GUI"),
-            new HelpEntry("share", "acuteloot.share", "/al share" + ChatColor.GRAY + " Share AcuteLoot with the server")
+            new HelpEntry("share", "acuteloot.share", "/al share" + ChatColor.GRAY + " Share AcuteLoot with the server"),
+            new HelpEntry("repair", "acuteloot.repair", "/al repair" + ChatColor.GRAY + " Repair broken AcuteLoot")
     );
 
     public HelpCommand(String permission, AcuteLoot plugin) {
