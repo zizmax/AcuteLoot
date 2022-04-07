@@ -29,7 +29,7 @@ public class NoArgsCommand extends AcuteLootCommand<CommandSender> {
         final ClickEvent clickEvent = new ClickEvent( ClickEvent.Action.OPEN_URL, "https://discord.gg/BXhUUQEymg" );
         final BaseComponent[] message = new ComponentBuilder()
                 .append(AcuteLoot.CHAT_PREFIX)
-                .append("Click me to join the AcuteLoot Discord")
+                .append("Click [me] to join the AcuteLoot Discord")
                 .color(net.md_5.bungee.api.ChatColor.GRAY)
                 .event(clickEvent)
                 .create();
