@@ -133,7 +133,15 @@ public class LootCreationEventListener implements Listener {
                                         ItemStack newLoot = plugin.lootGenerator.createLoot();
                                         slotIndex = random.nextInt(emptySlots.size());
                                         int slotToFill = emptySlots.get(slotIndex);
-                                        chest.getInventory().setItem(slotToFill, newLoot);
+                                        if (plugin.getConfig().getBoolean("loot-sources.chests.auto-empty")) {
+                                            HashMap<Integer, ItemStack> overFlow = player.getInventory().addItem(newLoot);
+                                            for (final ItemStack item : overFlow.values()) {
+                                                player.getWorld().dropItemNaturally(chest.getLocation(), item);
+                                            }
+                                        }
+                                        else {
+                                            chest.getInventory().setItem(slotToFill, newLoot);
+                                        }
                                         emptySlots.remove(slotIndex);
 
                                         for (int i = 1; i <= origEmptySlotsSize - 1; i++) {
@@ -145,7 +153,15 @@ public class LootCreationEventListener implements Listener {
                                                 newLoot = plugin.lootGenerator.createLoot();
                                                 slotIndex = random.nextInt(emptySlots.size());
                                                 slotToFill = emptySlots.get(slotIndex);
-                                                chest.getInventory().setItem(slotToFill, newLoot);
+                                                if (plugin.getConfig().getBoolean("loot-sources.chests.auto-empty")) {
+                                                    HashMap<Integer, ItemStack> overFlow = player.getInventory().addItem(newLoot);
+                                                    for (final ItemStack item : overFlow.values()) {
+                                                        player.getWorld().dropItemNaturally(chest.getLocation(), item);
+                                                    }
+                                                }
+                                                else {
+                                                    chest.getInventory().setItem(slotToFill, newLoot);
+                                                }
                                                 emptySlots.remove(slotIndex);
                                             } else {
                                                 break;
@@ -163,6 +179,7 @@ public class LootCreationEventListener implements Listener {
                                     System.currentTimeMillis(), -2));
                             chest.update();
                         }
+                    event.setCancelled(true);
                     }
                 }
             }
