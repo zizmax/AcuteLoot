@@ -12,6 +12,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.bukkit.ChatColor.stripColor;
 
 @AllArgsConstructor
 class DefaultLorer implements Lorer {
@@ -54,5 +57,59 @@ class DefaultLorer implements Lorer {
             }
         }
         MetaEditor.on(itemStack).setLore(lore);
+    }
+
+    @Override
+    public LootItem inverseLore(final @NonNull ItemStack item) {
+        if (item.getItemMeta() == null || item.getItemMeta().getLore() == null) {
+            throw new UnsupportedOperationException("Lore does not exist, cannot inverse");
+        }
+
+        final List<String> lore = item.getItemMeta().getLore();
+        if (lore.isEmpty()) {
+            throw new UnsupportedOperationException("Cannot inverse empty lore");
+        }
+
+        if (Boolean.FALSE.equals(plugin.getConfig().getBoolean(("display-rarities")))) {
+            throw new UnsupportedOperationException("Cannot inverse lore without displayed rarity");
+        }
+
+        // Check that the category lore matches, if present
+        final String category = LootMaterial.lootMaterialForMaterial(item.getType()).name().toLowerCase();
+        final List<String> effectLore;
+        if (plugin.getConfig().getBoolean("loot-category-lore.enabled") &&
+                plugin.getConfig().contains("loot-category-lore." + category)) {
+            final List<String> expectedCategoryLore = plugin.getConfig()
+                                                            .getStringList("loot-category-lore." + category)
+                                                            .stream()
+                                                            .map(s -> ChatColor.translateAlternateColorCodes('&', s))
+                                                            .collect(Collectors.toList());
+
+            final List<String> categoryLore = lore.subList(Math.max(0, lore.size() - expectedCategoryLore.size()), lore.size());
+            if (!categoryLore.equals(expectedCategoryLore)) {
+                throw new UnsupportedOperationException("Category lore section does not match");
+            }
+
+            effectLore = lore.subList(1, lore.size() - expectedCategoryLore.size());
+        } else {
+            effectLore = lore.subList(1, lore.size());
+        }
+
+        // Retrieve rarity and effects from the lore
+        final String rarityName = stripColor(lore.get(0));
+        final LootRarity rarity = LootRarity.getRarities()
+                                            .values()
+                                            .stream()
+                                            .filter(r -> r.getName().equals(rarityName))
+                                            .findAny()
+                                            .orElseThrow(() -> new UnsupportedOperationException("Cannot find rarity inverse for '" + rarityName + "'"));
+
+        final List<LootSpecialEffect> effects = effectLore.stream()
+                                                          .map(ChatColor::stripColor)
+                                                          .map(effectName -> LootSpecialEffect.findByUniqueName(effectName)
+                                                                                              .orElseThrow(() -> new UnsupportedOperationException("Could not find unique effect with name " + effectName)))
+                                                          .collect(Collectors.toList());
+
+        return new LootItem(rarity, effects);
     }
 }
