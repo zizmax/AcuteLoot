@@ -8,7 +8,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
@@ -164,5 +166,32 @@ public final class Util {
                                                       .map(mapper)
                                                       .flatMap(Stream::of)
                                                       .toArray(BaseComponent[]::new);
+    }
+
+    public static List<Material> readMaterialsFile(final List<String> lines, final Consumer<String> logger) {
+        final List<Material> lootMaterials = new ArrayList<>();
+        for (String line : lines) {
+            if (!line.contains("#") && !line.trim().equals("")) {
+                String[] materialStrings = line.split(",");
+                for (String material : materialStrings) {
+                    material = material.trim();
+                    if (!material.equals("")) {
+                        try {
+                            Material mat = Material.matchMaterial(material);
+                            if (mat != null) {
+                                lootMaterials.add(mat);
+                            } else {
+                                throw new NullPointerException();
+                            }
+                        } catch (IllegalArgumentException | NullPointerException e) {
+                            logger.accept(material +
+                                            " not valid material for server version: " +
+                                            Bukkit.getBukkitVersion() + ". Skipping...");
+                        }
+                    }
+                }
+            }
+        }
+        return lootMaterials;
     }
 }

@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 13 # Don't change this!
+config-version: 14 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -112,6 +112,15 @@ loot-category-lore:
   elytra:
     - "&7Elytra"
 
+# Loot Tables define different generators for AcuteLoot.
+# Loot Tables can be used in loot rules.
+loot-tables:
+  bows:
+    materials: [BOW, CROSSBOW]
+  swords:
+    materials-file: "swords.txt"
+
+
 # Loot Rules define general scenarios that can produce loot.
 # This feature can be disabled entirely by disabling the lootRules module with "/al disable lootRules"
 # Currently there is only one generator available. More generators (and loot tables) coming in future updates.
@@ -133,7 +142,8 @@ loot-rules:
   #  entity-death:
   #    mob-type: ["CREEPER"]
   #  generator:
-  #    chance: .0
+  #    chance: 100
+  #    loot-table: "swords"
 
   #multiple-entity-example-rule:
   #  entity-spawn:

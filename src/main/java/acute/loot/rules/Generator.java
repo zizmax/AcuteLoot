@@ -1,6 +1,6 @@
 package acute.loot.rules;
 
-import acute.loot.generator.LootItemGenerator;
+import acute.loot.tables.LootTable;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
@@ -13,9 +13,9 @@ interface Generator {
 
     List<ItemStack> generate();
 
-    static Generator withChance(final double chance, final LootItemGenerator backing) {
+    static Generator withChance(final double chance, final LootTable backing) {
         final Random rand = new Random();
-        return () -> rand.nextDouble() < chance ? singletonList(backing.createLoot()) : emptyList();
+        return () -> rand.nextDouble() < chance ? singletonList(backing.generate()) : emptyList();
     }
 
 }

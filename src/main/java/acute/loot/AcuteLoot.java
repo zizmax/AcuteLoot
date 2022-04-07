@@ -7,6 +7,7 @@ import acute.loot.generator.LootItemGenerator;
 import acute.loot.listener.EnchantingLootListener;
 import acute.loot.rules.LootRulesModule;
 import acute.loot.namegen.*;
+import acute.loot.tables.LootTableParser;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
 import com.github.phillip.h.acutelib.util.Util;
@@ -82,14 +83,16 @@ public class AcuteLoot extends JavaPlugin {
 
     private final @Getter ModuleManager moduleManager;
 
+    private final AlApi alApi;
+
     public AcuteLoot() {
-        final AlApi alApi = new AlApi(this);
+        alApi = new AlApi(this);
         moduleManager = new ModuleManager(this, getLogger());
         moduleManager.add("debugMode", new DebugModule(this), "debug");
         moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
     }
 
-    public static final int configVersion = 13;
+    public static final int configVersion = 14;
 
     @Override
     public void onEnable() {
@@ -236,6 +239,17 @@ public class AcuteLoot extends JavaPlugin {
 
         String[] fixedNamesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
                                      "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents", "shields", "elytras"};
+
+        final File swordsFile = new File(getDataFolder(), "swords.txt");
+        if (!swordsFile.exists()) {
+            try {
+                Files.copy(this.getClass().getResourceAsStream("/swords.txt"),
+                        swordsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                getLogger().info("Wrote swords.txt file");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         for (String fileName : namesFiles) {
             File fileToCheck = new File("plugins/AcuteLoot/names/" + fileName + ".txt");
@@ -486,10 +500,12 @@ public class AcuteLoot extends JavaPlugin {
 
         }
 
+        // Rebuild loot tables
+        alApi.clearLootTables();
+        new LootTableParser(alApi).parseAndAddLootTables(getConfig().getConfigurationSection("loot-tables"));
 
-        lootGenerator = LootItemGenerator.builder(this)
-                                         .namePool(nameGenChancePool, true, true)
-                                         .build();
+
+        lootGenerator = alApi.getBaseLootGenerator();
 
         final boolean usePermissions = getConfig().getBoolean("use-permissions");
         final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
@@ -552,32 +568,8 @@ public class AcuteLoot extends JavaPlugin {
     }
 
     private void createMaterials(AcuteLoot plugin, String path) {
-        lootMaterials = new ArrayList<>();
         try (Stream<String> stream = Files.lines(Paths.get(path))) {
-            List<String> lines = stream.collect(Collectors.toList());
-            for (String line : lines) {
-                if (!line.contains("#") && !line.trim().equals("")) {
-                    String[] materialStrings = line.split(",");
-                    for (String material : materialStrings) {
-                        material = material.trim();
-                        if (!material.equals("")) {
-                            try {
-                                Material mat = Material.matchMaterial(material);
-                                if (mat != null) {
-                                    lootMaterials.add(mat);
-                                } else {
-                                    throw new NullPointerException();
-                                }
-                            } catch (IllegalArgumentException | NullPointerException e) {
-                                plugin.getLogger()
-                                      .warning(material +
-                                              " not valid material for server version: " +
-                                              Bukkit.getBukkitVersion() + ". Skipping...");
-                            }
-                        }
-                    }
-                }
-            }
+            lootMaterials = acute.loot.Util.readMaterialsFile(stream.collect(Collectors.toList()), s -> getLogger().warning(s));
         } catch (IOException e) {
             e.printStackTrace();
             plugin.getLogger()
@@ -721,10 +713,6 @@ public class AcuteLoot extends JavaPlugin {
 
     protected IntegerChancePool<LootRarity> rarityChancePool() {
         return rarityChancePool;
-    }
-
-    public LootItemGenerator lootGenerator() {
-        return lootGenerator;
     }
 
     public IntegerChancePool<NameGenerator> namePool() {

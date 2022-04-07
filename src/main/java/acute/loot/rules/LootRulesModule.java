@@ -23,7 +23,7 @@ public class LootRulesModule implements Module {
         final ConfigurationSection config = alApi.getBaseConfiguration();
 
         final Map<String, RuleParser.SubRuleParser> ruleParsers = new HashMap<>();
-        final DelegateParser delegateParser = new DelegateParser(lootItemGenerator, ruleParsers);
+        final DelegateParser delegateParser = new DelegateParser(alApi, ruleParsers);
         ruleParsers.put("entity-death", new EntityDeathParser());
         ruleParsers.put("any-of", new DisjunctionParser(delegateParser));
         ruleParsers.put("entity-spawn", new EntitySpawnParser());

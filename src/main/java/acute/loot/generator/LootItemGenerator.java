@@ -4,6 +4,7 @@ import static com.github.phillip.h.acutelib.util.Util.*;
 
 import acute.loot.*;
 import acute.loot.namegen.NameGenerator;
+import acute.loot.tables.LootTable;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.decorators.MetaEditor;
 import com.github.phillip.h.acutelib.util.Checks;
@@ -13,6 +14,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -31,12 +33,13 @@ import java.util.stream.Collectors;
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-public class LootItemGenerator {
+public class LootItemGenerator implements LootTable {
 
     private static final Random random = AcuteLoot.random;
 
     private final @NonNull IntegerChancePool<LootRarity> rarityPool;
     private final @NonNull IntegerChancePool<LootSpecialEffect> effectPool;
+    private final @NonNull List<Material> randomLootMaterials;
     private final @NonNull Namer namer;
     private final @NonNull Lorer lorer;
     private final @NonNull AcuteLoot plugin;
@@ -128,7 +131,7 @@ public class LootItemGenerator {
      * @return a random new item stack
      */
     public ItemStack getNewRandomLootItemStack() {
-        ItemStack item = new ItemStack(drawRandom(plugin.lootMaterials), 1);
+        ItemStack item = new ItemStack(drawRandom(randomLootMaterials), 1);
 
         // Set random damage if Material is damageable
         if (item.getItemMeta() instanceof Damageable && item.getType().getMaxDurability() > 0) {
@@ -161,7 +164,13 @@ public class LootItemGenerator {
         return new LootItemGeneratorBuilder().plugin(plugin)
                                              .rarityPool(plugin.rarityChancePool)
                                              .effectPool(plugin.effectChancePool)
+                                             .randomLootMaterials(plugin.lootMaterials)
                                              .lorer(new DefaultLorer(plugin));
+    }
+
+    @Override
+    public ItemStack generate() {
+        return createLoot();
     }
 
     /**

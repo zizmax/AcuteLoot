@@ -1,6 +1,7 @@
 package acute.loot.rules;
 
-import acute.loot.generator.LootItemGenerator;
+import acute.loot.AlApi;
+import acute.loot.tables.LootTable;
 import com.github.phillip.h.acutelib.util.Pair;
 import lombok.AllArgsConstructor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 class DelegateParser implements RuleParser, RuleParser.SubRuleParser {
 
-    private final LootItemGenerator lootItemGenerator;
+    private final AlApi alApi;
     private final Map<String, SubRuleParser> delegates;
 
     @Override
@@ -36,6 +37,9 @@ class DelegateParser implements RuleParser, RuleParser.SubRuleParser {
     }
 
     private Generator parseGenerator(final ConfigurationSection config) {
-        return Generator.withChance(config.getDouble("generator.chance") / 100, lootItemGenerator);
+        final LootTable table = config.contains("generator.loot-table") ?
+                alApi.getLootTable(config.getString("generator.loot-table")) :
+                alApi.getDefaultLootTable();
+        return Generator.withChance(config.getDouble("generator.chance") / 100, table);
     }
 }
