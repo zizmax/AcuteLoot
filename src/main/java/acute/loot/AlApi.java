@@ -29,6 +29,10 @@ public class AlApi {
         acuteLoot.getLogger().warning(message);
     }
 
+    public void info(String message) {
+        acuteLoot.getLogger().info(message);
+    }
+
     public Path getFilePath(final String path) {
         return Paths.get(acuteLoot.getDataFolder().getPath() + "/" + path);
     }
@@ -75,5 +79,4 @@ public class AlApi {
     public void clearLootTables() {
         lootTables.clear();
     }
-
 }
