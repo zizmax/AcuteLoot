@@ -119,7 +119,7 @@ loot-tables:
   bows:
     materials: [BOW, CROSSBOW]
   swords:
-    materials-file: "swords.txt"
+    materials-file: "tables/swords.txt"
 
 
 # Loot Rules define general scenarios that can produce loot.
