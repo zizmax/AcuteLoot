@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 14 # Don't change this!
+config-version: 15 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -68,6 +68,7 @@ loot-sources:
     # Example: 1 loot = 65% chance, 2 loot = 0.65 * 0.65 = 42.25% chance and so on
     chance: 65 #Percentage
     show-cooldown-msg: true
+    auto-empty: false # Automatically send AcuteLoot to player's inventory when chest is clicked
   anvils: # Currently only for shields and elytra
     enabled: true
 
