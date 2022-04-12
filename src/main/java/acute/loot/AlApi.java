@@ -3,6 +3,7 @@ package acute.loot;
 import acute.loot.generator.LootItemGenerator;
 import acute.loot.tables.LootTable;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.HandlerList;
@@ -13,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 @AllArgsConstructor
@@ -68,12 +70,12 @@ public class AlApi {
         return lootTables.computeIfAbsent("DEFAULT", k -> getBaseLootGenerator());
     }
 
-    public LootTable getLootTable(final String name) {
-        return lootTables.get(name);
+    public Optional<LootTable> getLootTable(final String name) {
+        return Optional.ofNullable(lootTables.get(name));
     }
 
-    public LootTable setLootTable(final String name, final LootTable table) {
-        return lootTables.put(name, table);
+    public void setLootTable(final @NonNull String name, final @NonNull LootTable table) {
+        lootTables.put(name, table);
     }
 
     public void clearLootTables() {

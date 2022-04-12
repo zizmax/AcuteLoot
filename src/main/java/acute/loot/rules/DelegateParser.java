@@ -37,9 +37,15 @@ class DelegateParser implements RuleParser, RuleParser.SubRuleParser {
     }
 
     private Generator parseGenerator(final ConfigurationSection config) {
-        final LootTable table = config.contains("generator.loot-table") ?
-                alApi.getLootTable(config.getString("generator.loot-table")) :
-                alApi.getDefaultLootTable();
-        return Generator.withChance(config.getDouble("generator.chance") / 100, table);
+        return Generator.withChance(config.getDouble("generator.chance") / 100, parseLootTable(config));
+    }
+
+    private LootTable parseLootTable(final ConfigurationSection config) {
+        if (config.contains("generator.loot-table")) {
+            return alApi.getLootTable(config.getString("generator.loot-table"))
+                        .orElseThrow(() -> new IllegalArgumentException("Loot table '" + config.getString("generator.loot-table") + "' does not exist"));
+        } else {
+            return alApi.getDefaultLootTable();
+        }
     }
 }

@@ -60,8 +60,8 @@ public class LootTableParser {
                 if (hasTopLevelConfig(subtableSection)) {
                     alApi.warn("Subtable is using ref, but also contains top level settings. These will be ignored.");
                 }
-                parsedSubtable = Objects.requireNonNull(alApi.getLootTable(subtableSection.getString("ref")),
-                                      "Ref does not point to existing table");
+                parsedSubtable = alApi.getLootTable(subtableSection.getString("ref"))
+                        .orElseThrow(() -> new IllegalArgumentException("Ref does not point to existing table"));
             } else {
                 parsedSubtable = parse(subtableSection);
             }
