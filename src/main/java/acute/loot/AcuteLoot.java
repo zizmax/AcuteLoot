@@ -7,6 +7,7 @@ import acute.loot.generator.LootItemGenerator;
 import acute.loot.listener.EnchantingLootListener;
 import acute.loot.rules.LootRulesModule;
 import acute.loot.namegen.*;
+import acute.loot.tables.LootTableParser;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
 import com.github.phillip.h.acutelib.util.Util;
@@ -84,8 +85,10 @@ public class AcuteLoot extends JavaPlugin {
 
     private final @Getter ModuleManager moduleManager;
 
+    private final @Getter AlApi alApi;
+
     public AcuteLoot() {
-        final AlApi alApi = new AlApi(this);
+        alApi = new AlApi(this);
         moduleManager = new ModuleManager(this, getLogger());
         moduleManager.add("debugMode", new DebugModule(this), "debug");
         moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
@@ -451,6 +454,10 @@ public class AcuteLoot extends JavaPlugin {
         lootGenerator = LootItemGenerator.builder(this)
                                          .namePool(nameGenChancePool, true, true)
                                          .build();
+
+        // Rebuild loot tables
+        alApi.clearLootTables();
+        new LootTableParser(alApi).parseAndAddLootTables(getConfig().getConfigurationSection("loot-tables"));
 
         final boolean usePermissions = getConfig().getBoolean("use-permissions");
         final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
