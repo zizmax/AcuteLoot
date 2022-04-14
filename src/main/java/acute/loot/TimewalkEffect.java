@@ -33,6 +33,9 @@ public class TimewalkEffect extends AcuteLootSpecialEffect {
     public void applyEffect(Event origEvent) {
         if (origEvent instanceof PlayerMoveEvent) {
             final PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
+            if (!onItem(event.getPlayer().getInventory().getBoots())) {
+                return;
+            }
             Player player = ((PlayerMoveEvent) origEvent).getPlayer();
             ItemStack boots = player.getInventory().getBoots();
             ItemMeta meta = boots.getItemMeta();
