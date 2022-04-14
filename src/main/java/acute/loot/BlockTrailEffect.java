@@ -24,6 +24,9 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
     public void applyEffect(Event origEvent) {
         if (origEvent instanceof PlayerMoveEvent) {
             PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
+            if (!onItem(event.getPlayer().getInventory().getBoots())) {
+                return;
+            }
 
 
 
