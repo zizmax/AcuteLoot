@@ -34,3 +34,13 @@
 /names/fixed/shields.txt
 /names/fixed/elytras.txt
 /tables/swords.txt
+/tables/1.16_items.txt
+/tables/1.17_items.txt
+/tables/armor.txt
+/tables/fisherman_items.txt
+/tables/flora.txt
+/tables/food.txt
+/tables/golden_items.txt
+/tables/misc.txt
+/tables/spooky_items.txt
+/tables/tools_weapons.txt
