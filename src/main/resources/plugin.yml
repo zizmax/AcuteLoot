@@ -2,6 +2,8 @@ name: AcuteLoot
 version: ${project.version}
 main: acute.loot.AcuteLoot
 api-version: 1.13
+softdepend:
+  - "ProtocolLib"
 authors: ["zizmax", "dizigma"]
 description: Custom loot names and effects in Minecraft
 commands:
