@@ -25,8 +25,10 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.StringUtil;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -83,7 +85,7 @@ public class AcuteLoot extends JavaPlugin {
 
     private final @Getter ModuleManager moduleManager;
 
-    private final AlApi alApi;
+    private final @Getter AlApi alApi;
 
     public AcuteLoot() {
         alApi = new AlApi(this);
@@ -92,7 +94,7 @@ public class AcuteLoot extends JavaPlugin {
         moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
     }
 
-    public static final int configVersion = 15;
+    public static final int configVersion = 13;
 
     @Override
     public void onEnable() {
@@ -220,63 +222,11 @@ public class AcuteLoot extends JavaPlugin {
             lootWell = new LootWell(this);
         }
 
-        // Writing names files to disk if they don't exist
-        File namesFolder = new File("plugins/AcuteLoot/names");
-        if (!namesFolder.exists()) {
-            namesFolder.mkdir();
-            getLogger().info("Created names folder");
-        }
-
-        File fixedFolder = new File("plugins/AcuteLoot/names/fixed");
-        if (!fixedFolder.exists()) {
-            fixedFolder.mkdir();
-            getLogger().info("Created fixed names folder");
-        }
-
-        String[] namesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
-                                "helmets", "hoes", "kana", "leggings", "picks", "prefixes", "shovels", "suffixes",
-                                "swords", "tridents", "shields", "elytras"};
-
-        String[] fixedNamesFiles = { "axes", "boots", "bows", "chest_plates", "crossbows", "fishing_rods", "generic",
-                                     "helmets", "hoes", "leggings", "picks", "shovels", "swords", "tridents", "shields", "elytras"};
-
-        final File swordsFile = new File(getDataFolder(), "swords.txt");
-        if (!swordsFile.exists()) {
-            try {
-                Files.copy(this.getClass().getResourceAsStream("/swords.txt"),
-                        swordsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                getLogger().info("Wrote swords.txt file");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        for (String fileName : namesFiles) {
-            File fileToCheck = new File("plugins/AcuteLoot/names/" + fileName + ".txt");
-            if (!fileToCheck.exists()) {
-                try {
-                    Files.copy(this.getClass().getResourceAsStream("/names/" + fileName + ".txt"),
-                               Paths.get("plugins/AcuteLoot/names/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
-                    getLogger().info("Wrote " + fileName + ".txt file");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        // Fixed names
-        for (String fileName : fixedNamesFiles) {
-            File fileToCheck = new File("plugins/AcuteLoot/names/fixed/" + fileName + ".txt");
-            if (!fileToCheck.exists()) {
-                try {
-                    Files.copy(this.getClass().getResourceAsStream("/names/fixed/" + fileName + ".txt"),
-                               Paths.get("plugins/AcuteLoot/names/fixed/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
-                    getLogger().info("Wrote fixed/" + fileName + ".txt file");
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+        // Write default files to disk if they don't exist
+        try (final BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/defaults.txt")))) {
+            br.lines().forEach(this::writeIfNotPresent);
+        } catch (IOException e) {
+            getLogger().severe("Failed to read default files list: " + e.getMessage());
         }
 
         // Materials file
@@ -500,12 +450,14 @@ public class AcuteLoot extends JavaPlugin {
 
         }
 
+
+        lootGenerator = LootItemGenerator.builder(this)
+                                         .namePool(nameGenChancePool, true, true)
+                                         .build();
+
         // Rebuild loot tables
         alApi.clearLootTables();
         new LootTableParser(alApi).parseAndAddLootTables(getConfig().getConfigurationSection("loot-tables"));
-
-
-        lootGenerator = alApi.getBaseLootGenerator();
 
         final boolean usePermissions = getConfig().getBoolean("use-permissions");
         final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
@@ -520,6 +472,19 @@ public class AcuteLoot extends JavaPlugin {
                                               enchantingGenerator);
 
         moduleManager.start();
+    }
+
+    private void writeIfNotPresent(final String path) {
+        try {
+            final File fileToCheck = new File(getDataFolder(), path);
+            Files.createDirectories(fileToCheck.getParentFile().toPath());
+            if (!fileToCheck.exists()) {
+                Files.copy(getClass().getResourceAsStream(path), fileToCheck.toPath());
+                getLogger().info("Wrote " + fileToCheck.getName());
+            }
+        } catch (IOException e) {
+            getLogger().severe("Failed to write file: " + e.getMessage());
+        }
     }
 
     /**
@@ -568,8 +533,32 @@ public class AcuteLoot extends JavaPlugin {
     }
 
     private void createMaterials(AcuteLoot plugin, String path) {
+        lootMaterials = new ArrayList<>();
         try (Stream<String> stream = Files.lines(Paths.get(path))) {
-            lootMaterials = acute.loot.Util.readMaterialsFile(stream.collect(Collectors.toList()), s -> getLogger().warning(s));
+            List<String> lines = stream.collect(Collectors.toList());
+            for (String line : lines) {
+                if (!line.contains("#") && !line.trim().equals("")) {
+                    String[] materialStrings = line.split(",");
+                    for (String material : materialStrings) {
+                        material = material.trim();
+                        if (!material.equals("")) {
+                            try {
+                                Material mat = Material.matchMaterial(material);
+                                if (mat != null) {
+                                    lootMaterials.add(mat);
+                                } else {
+                                    throw new NullPointerException();
+                                }
+                            } catch (IllegalArgumentException | NullPointerException e) {
+                                plugin.getLogger()
+                                      .warning(material +
+                                              " not valid material for server version: " +
+                                              Bukkit.getBukkitVersion() + ". Skipping...");
+                            }
+                        }
+                    }
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
             plugin.getLogger()
@@ -713,6 +702,10 @@ public class AcuteLoot extends JavaPlugin {
 
     protected IntegerChancePool<LootRarity> rarityChancePool() {
         return rarityChancePool;
+    }
+
+    public LootItemGenerator lootGenerator() {
+        return lootGenerator;
     }
 
     public IntegerChancePool<NameGenerator> namePool() {
