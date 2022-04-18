@@ -1,6 +1,7 @@
 package acute.loot;
 
 import org.bukkit.event.Event;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +35,16 @@ public abstract class AcuteLootSpecialEffect extends LootSpecialEffect {
         if (plugin.getConfig().getBoolean(effectEnabledConfigKey)) {
             applyEffect(event);
         }
+    }
+
+    protected boolean onItem(final ItemStack item) {
+        final String lootCode = plugin.getLootCode(item);
+        if (lootCode == null) {
+            return false;
+        }
+
+        final LootItem loot = new LootItem(lootCode);
+        return loot.getEffects().stream().anyMatch(e -> e.effectId().equals(effectId()));
     }
 
     protected abstract void applyEffect(Event event);
