@@ -5,10 +5,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -178,6 +175,9 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                         player.getWorld()
                                               .playSound(player.getEyeLocation(), Sound.ENTITY_ARROW_SHOOT, 1, 1);
                                         if (plugin.getConfig().getBoolean("effects.dead-eye.vanilla-enchantments")) {
+                                            if (bow.getEnchantments().containsKey(Enchantment.ARROW_INFINITE)) {
+                                                arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
+                                            }
                                             if (bow.getEnchantments().containsKey(Enchantment.ARROW_KNOCKBACK)) {
                                                 arrow.setKnockbackStrength(bow.getEnchantmentLevel(Enchantment.ARROW_KNOCKBACK));
                                             }
