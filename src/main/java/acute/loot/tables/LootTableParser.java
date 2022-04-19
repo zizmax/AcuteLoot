@@ -10,9 +10,9 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -31,8 +31,19 @@ public class LootTableParser {
             config.getStringList("materials").stream().map(Material::matchMaterial).forEach(materials::add);
         }
         if (config.contains("materials-file")) {
+            // Workaround because we moved the file
+            final Path materialsPath;
+            if (!alApi.getFilePath(config.getString("materials-file")).toFile().exists() &&
+                "swords.txt".equals(config.getString("materials-file"))) {
+                alApi.warn("Warning: referencing non-existent file swords.txt. Is your config out of date?");
+                alApi.warn("tables/swords.txt will be read instead. This behavior is TEMPORARY and will be removed, please update or correct your config!");
+                materialsPath = alApi.getFilePath("tables/swords.txt");
+            } else {
+                materialsPath = alApi.getFilePath(config.getString("materials-file"));
+            }
+
             materials.addAll(Util.readMaterialsFile(
-                    Files.lines(alApi.getFilePath(config.getString("materials-file"))).collect(Collectors.toList()),
+                    Files.lines(materialsPath).collect(Collectors.toList()),
                     alApi::warn));
         }
 
