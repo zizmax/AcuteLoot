@@ -13,4 +13,9 @@ class ChanceTable implements LootTable {
     public ItemStack generate() {
         return chancePool.draw().generate();
     }
+
+    @Override
+    public ItemStack getRandomItem() {
+        return chancePool.draw().getRandomItem();
+    }
 }

@@ -108,7 +108,7 @@ public class AcuteLoot extends JavaPlugin {
 
         // Register events
         addListener(EffectEventListener::new);
-        addListener(LootCreationEventListener::new);
+        addListener(al -> new LootCreationEventListener(al, al.alApi));
         addListener(UiEventListener::new);
         addListener(EnchantingLootListener::new);
 
@@ -456,8 +456,18 @@ public class AcuteLoot extends JavaPlugin {
                                          .build();
 
         // Rebuild loot tables
+        getLogger().info("Parsing loot tables");
         alApi.clearLootTables();
         new LootTableParser(alApi).parseAndAddLootTables(getConfig().getConfigurationSection("loot-tables"));
+
+        if (alApi.getLootTable(AlApi.DEFAULT_LOOT_TABLE).isPresent()) {
+            getLogger().info("Loaded custom global loot table");
+        } else {
+            getLogger().info("Using default global loot table from materials.txt");
+        }
+
+
+        lootGenerator = alApi.getBaseLootGenerator();
 
         final boolean usePermissions = getConfig().getBoolean("use-permissions");
         final boolean overwriteNames = getConfig().getBoolean("loot-sources.enchanting.overwrite-existing-name");
@@ -732,4 +742,7 @@ public class AcuteLoot extends JavaPlugin {
         getServer().getPluginManager().registerEvents(constructor.apply(this), this);
     }
 
+    public AlApi getApi() {
+        return alApi;
+    }
 }

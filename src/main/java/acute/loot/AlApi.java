@@ -20,6 +20,8 @@ import java.util.logging.Logger;
 @AllArgsConstructor
 public class AlApi {
 
+    protected static final String DEFAULT_LOOT_TABLE = "DEFAULT";
+
     private final AcuteLoot acuteLoot;
     private final Map<String, LootTable> lootTables = new HashMap<>();
 
@@ -67,7 +69,7 @@ public class AlApi {
     }
 
     public LootTable getDefaultLootTable() {
-        return lootTables.computeIfAbsent("DEFAULT", k -> getBaseLootGenerator());
+        return lootTables.computeIfAbsent(DEFAULT_LOOT_TABLE, k -> getBaseLootGenerator());
     }
 
     public Optional<LootTable> getLootTable(final String name) {

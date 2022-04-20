@@ -6,4 +6,6 @@ public interface LootTable {
 
     ItemStack generate();
 
+    ItemStack getRandomItem();
+
 }

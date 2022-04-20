@@ -115,6 +115,11 @@ loot-category-lore:
 
 # Loot Tables define different generators for AcuteLoot.
 # Loot Tables can be used in loot rules.
+#
+# The "global" loot table can be set by defining a loot table named "DEFAULT".
+# (All caps!)
+# The global loot table is used for loot obtained by fishing, chests, and the
+# /al give command
 loot-tables:
   bows:
     materials: [BOW, CROSSBOW]

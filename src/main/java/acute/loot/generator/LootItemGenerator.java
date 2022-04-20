@@ -173,6 +173,11 @@ public class LootItemGenerator implements LootTable {
         return createLoot();
     }
 
+    @Override
+    public ItemStack getRandomItem() {
+        return getNewRandomLootItemStack();
+    }
+
     /**
      * Builder for a LootItemGenerator.
      */

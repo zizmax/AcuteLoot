@@ -1,6 +1,8 @@
 package acute.loot;
 
+import acute.loot.tables.LootTable;
 import com.github.phillip.h.acutelib.util.UnorderedPair;
+import lombok.AllArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -29,16 +31,14 @@ import java.util.*;
 /**
  * Event listeners for creating loot.
  */
+@AllArgsConstructor
 public class LootCreationEventListener implements Listener {
 
     private final AcuteLoot plugin;
+    private final AlApi alApi;
     private final Random random = AcuteLoot.random;
     private final Map<Integer, ItemStack> anvilHistoryPairKey = new HashMap<>();
     private final Map<ItemStack, Integer> anvilHistoryItemKey = new HashMap<>();
-
-    public LootCreationEventListener(AcuteLoot plugin) {
-        this.plugin = plugin;
-    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -130,7 +130,7 @@ public class LootCreationEventListener implements Listener {
                                     }
                                     int origEmptySlotsSize = emptySlots.size();
                                     if (emptySlots.size() > 0) {
-                                        ItemStack newLoot = plugin.lootGenerator.createLoot();
+                                        ItemStack newLoot = alApi.getDefaultLootTable().generate();
                                         slotIndex = random.nextInt(emptySlots.size());
                                         int slotToFill = emptySlots.get(slotIndex);
                                         if (plugin.getConfig().getBoolean("loot-sources.chests.auto-empty")) {
@@ -150,7 +150,7 @@ public class LootCreationEventListener implements Listener {
                                                 player.sendMessage("Roll: " + roll);
                                             }
                                             if (roll <= chance) {
-                                                newLoot = plugin.lootGenerator.createLoot();
+                                                newLoot = alApi.getDefaultLootTable().generate();
                                                 slotIndex = random.nextInt(emptySlots.size());
                                                 slotToFill = emptySlots.get(slotIndex);
                                                 if (plugin.getConfig().getBoolean("loot-sources.chests.auto-empty")) {
@@ -209,7 +209,7 @@ public class LootCreationEventListener implements Listener {
                 if (roll <= chance) {
                     random.nextInt();
                     Item itemEntity = (Item) caught;
-                    ItemStack item = plugin.lootGenerator.createLoot();
+                    ItemStack item = alApi.getDefaultLootTable().generate();
                     // Turns out that unlike all the other trees, BAMBOO_SAPLING is NOT the material type
                     // BAMBOO_SAPLING appears to be the block material ONLY, so will error when applied to an ItemStack
                     // The original material lists include BAMBOO_SAPLING instead of the correct BAMBOO

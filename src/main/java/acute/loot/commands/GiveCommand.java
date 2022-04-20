@@ -27,7 +27,7 @@ public class GiveCommand extends AcuteLootCommand<CommandSender> {
         if (args.length >= 2) {
             final List<? extends Player> target = Util.handlePlayerSelector(args[1], sender);
             if (!target.isEmpty()) {
-                ItemStack item = plugin().lootGenerator.getNewRandomLootItemStack();
+                ItemStack item = plugin().getApi().getDefaultLootTable().getRandomItem();
                 LootItem lootItem = null;
                 if (args.length == 2) {
                     plugin().lootGenerator.createLoot(item, AcuteLoot.random.nextDouble());
