@@ -3,6 +3,7 @@ package acute.loot;
 import com.github.phillip.h.acutelib.util.UnorderedPair;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.block.Barrel;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.enchantments.Enchantment;
@@ -49,6 +50,16 @@ public class LootCreationEventListener implements Listener {
         }
 
         Block block = event.getClickedBlock();
+        if (block.getType() == Material.BARREL) {
+            Barrel barrel = (Barrel) block.getState();
+            if (barrel.getLootTable() != null) {
+                player.sendMessage("New barrel!");
+            }
+            else {
+                player.sendMessage("Old barrel!");
+            }
+
+        }
         if (block.getType() == Material.CHEST) {
             Chest chest = (Chest) block.getState();
             if (!player.getWorld().getBlockAt(chest.getLocation().add(0, 1, 0)).getType().isOccluding()) {
