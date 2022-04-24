@@ -120,7 +120,23 @@ loot-tables:
     materials: [BOW, CROSSBOW]
   swords:
     materials-file: "tables/swords.txt"
-
+#  netherite-pick-or-sword-or-bow:
+#    subtables:
+#      swords:
+#        chance: 1
+#        ref: "swords"
+#      picks:
+#        chance: 1
+#        materials: [NETHERITE_PICKAXE]
+#      bows:
+#        chance: 1
+#        subtables:
+#          bow:
+#            chance: 9
+#            materials: [BOW]
+#          crossbow:
+#            chance: 1
+#            materials: [CROSSBOW]
 
 # Loot Rules define general scenarios that can produce loot.
 # This feature can be disabled entirely by disabling the lootRules module with "/al disable lootRules"

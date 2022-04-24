@@ -23,9 +23,10 @@ public class NewLootCommand extends AcuteLootCommand<Player> {
     @Override
     protected void doHandle(Player sender, String[] args) {
         ItemStack item = plugin().lootGenerator.getNewRandomLootItemStack();
-        LootItem lootItem = null;
+        final LootItem lootItem;
         if (args.length == 1) {
             plugin().lootGenerator.createLoot(item, AcuteLoot.random.nextDouble());
+            lootItem = new LootItem(plugin().getLootCode(item));
         } else {
             if (plugin().rarityNames.containsKey(args[1])) {
                 final int rarityId = plugin().rarityNames.get(args[1]);
@@ -42,6 +43,8 @@ public class NewLootCommand extends AcuteLootCommand<Player> {
                         sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Effect " + args[2] + " doesn't exist");
                         return; // Do not apply the rarity if the effect is invalid
                     }
+                } else {
+                    lootItem = new LootItem(plugin().getLootCode(item));
                 }
 
             } else {
@@ -53,7 +56,7 @@ public class NewLootCommand extends AcuteLootCommand<Player> {
             sender.getInventory().addItem(item);
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Created " + ChatColor.GOLD + item.getType());
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Name: " + item.getItemMeta().getDisplayName());
-            sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + item.getItemMeta().getLore().get(0));
+            sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Rarity: " + lootItem.rarity().getRarityColor() + lootItem.rarity().getName());
             AcuteLoot.sendIncompatibleEffectsWarning(sender, lootItem, item);
         } else {
             sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Inventory cannot be full");
