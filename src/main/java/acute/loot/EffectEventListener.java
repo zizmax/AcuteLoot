@@ -121,8 +121,6 @@ public class EffectEventListener implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        LootHologram l = new LootHologram(plugin);
-        l.appendHOLO(event.getItemDrop().getLocation(), event.getItemDrop().getItemStack());
         if (DeadEyeEffect.deadEyeArrowsShot.get(player) != null && event.getItemDrop()
                                                                         .getItemStack()
                                                                         .getType()
