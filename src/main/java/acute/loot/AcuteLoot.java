@@ -94,7 +94,7 @@ public class AcuteLoot extends JavaPlugin {
         moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
     }
 
-    public static final int configVersion = 15;
+    public static final int configVersion = 16;
 
     @Override
     public void onEnable() {

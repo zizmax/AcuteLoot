@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 15 # Don't change this!
+config-version: 16 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -297,6 +297,7 @@ effects:
     chance: 5
     enabled: true
   dead-eye:
+    affect-players: false # Should nearby players also be affected by the Dead Eye potion effects?
     effect-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
     cooldown-time: 60 # Measured in ticks. E.g. 60 / 20 = 3 seconds (20 ticks/second under normal conditions)
     vanilla-enchantments: true # Should Dead Eye be affected by enchantments like Infinity, Punch and Power
