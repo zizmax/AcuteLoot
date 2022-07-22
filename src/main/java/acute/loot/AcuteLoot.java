@@ -394,6 +394,7 @@ public class AcuteLoot extends JavaPlugin {
         }
 
 
+
         // Rebuild the effect chance pool
         effectChancePool.clear();
         effectNames.clear();
@@ -410,6 +411,9 @@ public class AcuteLoot extends JavaPlugin {
 
         // Dev Effects (currently being tested)
         if (debug) {
+
+            // Fling bow
+            //registerEffect(new BowTeleportEffect("flingbow", 21, Collections.singletonList(LootMaterial.BOW), this));
 
             // Register effect, add effect to chancePool, add effect to effectNames
 
