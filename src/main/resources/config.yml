@@ -204,7 +204,13 @@ display-rarities: true
 # ID numbers are arbitrary (they are used internally by the plugin to keep track of a rarity even if the name changes)
 # You can add new (and remove old) rarities as you see fit as long as you edit the ID's to match
 # The ID does not have to go in increments of 100. That is just used so that you have room for rarities in between
-# The chances don't HAVE to add up to 100% but you'll get more accurate probabilities if they do
+# The chances don't HAVE to add up to 100% but the probabilities will behave more intuitively if they do
+# NOTE: The chances are not calculated as straight percentages, but instead as odds of occuring in the entire chance pool
+#       - Technically, this means the percent chance is the chance divided by the sum of all the chances
+#       - Because of this, floating point chances are converted to integers and chances less than 1.0 are not supported]
+#       - To create a chance below 1%, follow the below example
+#       - Example: 0.1% chance for rarity A and 99.9% chance for rarity B
+#       - Set rarity A chance to 1 and rarity B chance to 999
 # Effect chance is chance that loot of that rarity will have ANY effect
 rarities:
   100: #ID
