@@ -4,17 +4,23 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Light;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.List;
+import java.util.Random;
 
 /**
  * Effect that leaves a trail of phantom blocks behind the player.
  */
 public class BlockTrailEffect extends AcuteLootSpecialEffect {
+    Random random = AcuteLoot.random;
 
     public BlockTrailEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, id, validLootMaterials, plugin);
@@ -29,7 +35,7 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
             }
 
 
-
+            ItemStack boots = event.getPlayer().getInventory().getBoots();
             Location trailBlock = event.getFrom();
             Material soilBlock = trailBlock.clone().subtract(0, 1, 0).getBlock().getType();
             BlockData trailBlockData = Material.AIR.createBlockData();
@@ -47,6 +53,12 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
                 // Light Walker effect
                 trailBlockData = Material.LIGHT.createBlockData();
                 ((Light) trailBlockData).setLevel(12);
+                if (random.nextDouble() <= 0.2) {
+                    ItemMeta meta = boots.getItemMeta();
+                    ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig()
+                            .getInt("effects.light-walker.durability-modifier"));
+                    boots.setItemMeta(meta);
+                }
             }
 
 

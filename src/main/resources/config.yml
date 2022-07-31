@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 16 # Don't change this!
+config-version: 17 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -295,6 +295,7 @@ effects:
     name: "Light Walker"
     chance: 20
     enabled: true
+    durability-modifier: 1 # Durability cost of moving ~5 blocks
 
   # Bows
   enderbow: # Applicable only to bows and crossbows
