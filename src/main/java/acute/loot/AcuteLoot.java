@@ -388,6 +388,9 @@ public class AcuteLoot extends JavaPlugin {
         //Medusa (Gorgon)
         registerEffect(new MedusaEffect("medusa", 19, Collections.singletonList(LootMaterial.BOW), this));
 
+        // Midas Touch
+        LootSpecialEffect.registerEffect(new MidasEffect("midas", 26, Collections.singletonList(LootMaterial.CHEST_PLATE), this));
+
         if (serverVersion >= 17) {
             //Light Walker
             registerEffect(new BlockTrailEffect("light-walker", 20, Collections.singletonList(LootMaterial.BOOTS), this));
@@ -425,33 +428,11 @@ public class AcuteLoot extends JavaPlugin {
 
             // Register effect, add effect to chancePool, add effect to effectNames
 
-
-            // COMING SOON //
-
-            if (serverVersion >= 17) {
-            registerEffect(new ToolParticleEffect("weapons_dripstone", 20, axeSwordMat, Particle.DRIPPING_DRIPSTONE_LAVA, false, this));
-            registerEffect(new ToolParticleEffect("weapons_spark", 21, axeSwordMat, Particle.ELECTRIC_SPARK, false, this));
-            registerEffect(new ToolParticleEffect("weapons_glow", 22, axeSwordMat, Particle.GLOW, false, this));
-            registerEffect(new ToolParticleEffect("weapons_ink", 23, axeSwordMat, Particle.GLOW_SQUID_INK, false, this));
-            registerEffect(new ToolParticleEffect("weapons_scrape", 24, axeSwordMat, Particle.SCRAPE, false, this));
-            registerEffect(new ToolParticleEffect("weapons_spore", 25, axeSwordMat, Particle.SPORE_BLOSSOM_AIR, false, this));
-            registerEffect(new ToolParticleEffect("weapons_vibration", 26, axeSwordMat, Particle.VIBRATION, false, this));
-            registerEffect(new ToolParticleEffect("weapons_waxon", 27, axeSwordMat, Particle.WAX_OFF, false, this));
-            registerEffect(new ToolParticleEffect("weapons_waxoff", 28, axeSwordMat, Particle.WAX_ON, false, this));
-
-            }
-
             // Diviner
             registerEffect(new DivinerEffect("diviner", 29, Collections.singletonList(LootMaterial.SHOVEL), this));
             effectChancePool.add(LootSpecialEffect.get(20), 1);
             // Add "tab completer-safe" name to HashMap of effects
             effectNames.put("Diviner", "29");
-
-            // Midas Touch
-            LootSpecialEffect.registerEffect(new MidasEffect("midas", 30, Collections.singletonList(LootMaterial.CHEST_PLATE), this));
-            effectChancePool.add(LootSpecialEffect.get(21), 1);
-            // Add "tab completer-safe" name to HashMap of effects
-            effectNames.put("Midas", "30");
 
             // MoonBoots
             LootSpecialEffect.registerEffect(new MoonBootsEffect("moonboots", 31, Collections.singletonList(LootMaterial.BOOTS), this));

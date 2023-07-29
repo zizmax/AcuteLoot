@@ -297,6 +297,13 @@ effects:
     enabled: true
     durability-modifier: 1 # Durability cost of moving ~5 blocks
 
+  # Chest plates
+  midas:
+    name: "Midas Touch"
+    chance: 90
+    enabled: false # Warning: This effect is a curse. All items/blocks/entities interacted with will turn to gold
+    affect-passive-blocks: false # If true, will all blocks player interacts with to GOLD_BLOCK (blocks they walk over, beds, portals, etc)
+
   # Bows
   enderbow: # Applicable only to bows and crossbows
     # Launches the shooter like an arrow
