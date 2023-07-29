@@ -296,6 +296,22 @@ effects:
     chance: 20
     enabled: true
     durability-modifier: 1 # Durability cost of moving ~5 blocks
+  moonboots:
+    name: "Moon Boots"
+    chance: 20
+    enabled: true
+
+  # Shovels
+  diviner:
+    name: "Diviner"
+    chance: 90
+    enabled: true
+
+  # Chest plates
+  midas-touch:
+    name: "Midas Touch"
+    chance: 90
+    enabled: true
 
   # Bows
   enderbow: # Applicable only to bows and crossbows
@@ -386,40 +402,22 @@ effects:
       name: "Splash"
       chance: 30
       enabled: true
+
+    # 1.17 +
     glow:
       name: "Glow"
       chance: 30
       enabled: true
-    dripstone:
-      name: "Dripstone"
-      chance: 30
-      enabled: true
     ink:
-      name: "Ink"
+      name: "Poof"
       chance: 30
       enabled: true
     spore:
       name: "Spore"
       chance: 30
       enabled: true
-    vibration:
-      name: "Vibe"
-      chance: 30
-      enabled: true
-    waxon:
-      name: "Wax On"
-      chance: 30
-      enabled: true
-    waxoff:
-      name: "Wax Off"
-      chance: 30
-      enabled: true
     spark:
       name: "Spark"
-      chance: 30
-      enabled: true
-    scrape:
-      name: "Scrape"
       chance: 30
       enabled: true
 
