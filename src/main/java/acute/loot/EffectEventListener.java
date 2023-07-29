@@ -41,6 +41,7 @@ public class EffectEventListener implements Listener {
                 // Cancel player's attacks while in Dead Eye
                 event.setCancelled(true);
             }
+            applyEventWithPlayer(event, (Player) event.getDamager());
         }
 
         if (event.getDamager() instanceof Arrow) {

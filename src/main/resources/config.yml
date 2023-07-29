@@ -308,10 +308,11 @@ effects:
     enabled: true
 
   # Chest plates
-  midas-touch:
+  midas:
     name: "Midas Touch"
     chance: 90
-    enabled: true
+    enabled: false # Warning: This effect is a curse. All items/blocks/entities interacted with will turn to gold
+    affect-passive-blocks: false # If true, will all blocks player interacts with to GOLD_BLOCK (blocks they walk over, beds, portals, etc)
 
   # Bows
   enderbow: # Applicable only to bows and crossbows

@@ -7,6 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
@@ -31,35 +32,21 @@ public class MidasEffect extends AcuteLootSpecialEffect {
     @Override
     public void applyEffect(Event origEvent) {
         if (origEvent instanceof PlayerMoveEvent) {
+
+
             PlayerMoveEvent event = (PlayerMoveEvent) origEvent;
             Player player = event.getPlayer();
-            if (!player.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
-                player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
+            if (plugin.getConfig().getBoolean("effects.midas.affect-passive-blocks")) {
+                if (!player.getLocation().subtract(0, 1, 0).getBlock().isEmpty()) {
+                    player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
+                }
             }
             List<Entity> entities = player.getNearbyEntities(.5, .5, .5);
             if (entities.size() >= 1) {
                 for (Entity entity : entities) {
                     if (entity instanceof LivingEntity) {
                         entity.playEffect(EntityEffect.ENTITY_POOF);
-                        int fragmentsNum = AcuteLoot.random.nextInt(20);
-                        for (int i = 0; i < fragmentsNum; i++) {
-                            entity.getWorld()
-                                  .dropItemNaturally(((LivingEntity) entity).getEyeLocation(), getGoldItemStack());
-                        }
-                        new BukkitRunnable() {
-                            int count = 0;
-
-                            @Override
-                            public void run() {
-                                if (count == fragmentsNum) {
-                                    this.cancel();
-                                }
-                                entity.getWorld()
-                                      .playSound(entity.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP,
-                                                 1, AcuteLoot.random.nextFloat() + 1);
-                                count++;
-                            }
-                        }.runTaskTimer(plugin, 2, 2);
+                        entity.getWorld().dropItemNaturally(((LivingEntity) entity).getEyeLocation(), getGoldItemStack());
                         entity.remove();
                     }
                 }
@@ -102,14 +89,18 @@ public class MidasEffect extends AcuteLootSpecialEffect {
 
         if (origEvent instanceof PlayerPortalEvent) {
             PlayerPortalEvent event = (PlayerPortalEvent) origEvent;
-            event.setCancelled(true);
-            event.getFrom().getBlock().setType(Material.GOLD_BLOCK);
+            if (plugin.getConfig().getBoolean("effects.midas.affect-passive-blocks")) {
+                event.setCancelled(true);
+                event.getFrom().getBlock().setType(Material.GOLD_BLOCK);
+            }
         }
 
         if (origEvent instanceof PlayerBedEnterEvent) {
             PlayerBedEnterEvent event = (PlayerBedEnterEvent) origEvent;
-            event.setCancelled(true);
-            event.getBed().setType(Material.GOLD_BLOCK);
+            if (plugin.getConfig().getBoolean("effects.midas.affect-passive-blocks")) {
+                event.setCancelled(true);
+                event.getBed().setType(Material.GOLD_BLOCK);
+            }
         }
 
         if (origEvent instanceof EntityPickupItemEvent) {
@@ -117,6 +108,13 @@ public class MidasEffect extends AcuteLootSpecialEffect {
             ItemStack itemStack = getGoldItemStack();
             itemStack.setAmount(event.getItem().getItemStack().getAmount());
             event.getItem().setItemStack(getGoldItemStack());
+        }
+
+        if (origEvent instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
+            event.getEntity().playEffect(EntityEffect.ENTITY_POOF);
+            event.getEntity().getWorld().dropItemNaturally(((LivingEntity) event.getEntity()).getEyeLocation(), getGoldItemStack());
+            event.getEntity().remove();
         }
     }
 
