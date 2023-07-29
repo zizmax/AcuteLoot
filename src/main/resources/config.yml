@@ -540,6 +540,15 @@ msg:
   share:
     shared: "&7[name] shared [[item]&7]"
 
+  # Clicking item frames with AcuteLoot while sneaking will show the AcuteLoot stats/lore
+  # Supported variables:
+  # - [name] the player name
+  # - [item] the item info, presented as hover text
+  sneak-click-itemframes:
+    enabled: true
+    clicked: "&7<[item]&7>"
+
+
   # NOTE: You cannot have a blank line separator after a multi-line string without
   # it getting interpreted as part of the string.
   # NOTE: Variables cannot, at the moment, have colors

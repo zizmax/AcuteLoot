@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class MoonBootsEffect extends AcuteLootSpecialEffect {
 
-    public MoonBootsEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+    public MoonBootsEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, id, validLootMaterials, plugin);
     }
 

@@ -1,10 +1,14 @@
 package acute.loot;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -77,6 +81,37 @@ public class UiEventListener implements Listener {
                 );
                 Bukkit.getOnlinePlayers().forEach(p -> p.spigot().sendMessage(message));
                 e.setDeathMessage(null);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerHitItemFrame(EntityDamageByEntityEvent e)  {
+        if (!acuteLoot.getConfig().getBoolean("msg.sneak-click-itemframes.enabled")) {
+            return;
+        }
+        if (e.getEntity() instanceof ItemFrame && e.getDamager() instanceof Player) {
+            Player p = (Player) e.getDamager();
+            if (p.isSneaking()) {
+                e.setCancelled(true);
+                ItemFrame frame = (ItemFrame) e.getEntity();
+                if (acuteLoot.getLootCode(frame.getItem()) != null) {
+                    final String name = frame.getItem().getItemMeta().getDisplayName();
+                    final LootItem loot = new LootItem(acuteLoot.getLootCode(frame.getItem()));
+                    final BaseComponent[] hover = new ComponentBuilder().append(Util.colorLootName(name, loot.rarity()))
+                            .event(Util.getLootHover(name, loot, acuteLoot))
+                            .create();
+                    final Map<String, String> variableMap = new HashMap<String, String>() {{
+                        put("[name]", p.getDisplayName());
+                        put("[item]", name);
+                    }};
+                    final BaseComponent[] message = Util.substituteAndBuildMessage(
+                            AcuteLoot.CHAT_PREFIX + acuteLoot.getConfig().getString("msg.sneak-click-itemframes.clicked"),
+                            variableMap,
+                            i -> i.getKey().right().equals("[item]") ? hover : Util.liftString(i.getValue())
+                    );
+                    p.spigot().sendMessage(message);
+                }
             }
         }
     }

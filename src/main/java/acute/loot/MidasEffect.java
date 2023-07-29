@@ -23,7 +23,7 @@ public class MidasEffect extends AcuteLootSpecialEffect {
     //FIXME: Does calling setType() work as intended for all types of blocks?
     private final AcuteLoot plugin;
 
-    public MidasEffect(String name, String ns, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
+    public MidasEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, id, validLootMaterials, plugin);
         this.plugin = plugin;
     }
