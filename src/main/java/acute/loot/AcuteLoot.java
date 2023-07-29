@@ -391,6 +391,12 @@ public class AcuteLoot extends JavaPlugin {
         if (serverVersion >= 17) {
             //Light Walker
             registerEffect(new BlockTrailEffect("light-walker", 20, Collections.singletonList(LootMaterial.BOOTS), this));
+
+            // Tool Particle
+            registerEffect(new ToolParticleEffect("weapons_spark", 21, axeSwordMat, Particle.ELECTRIC_SPARK, false, this));
+            registerEffect(new ToolParticleEffect("weapons_glow", 22, axeSwordMat, Particle.GLOW, false, this));
+            registerEffect(new ToolParticleEffect("weapons_ink", 23, axeSwordMat, Particle.GLOW_SQUID_INK, false, this));
+            registerEffect(new ToolParticleEffect("weapons_spore", 25, axeSwordMat, Particle.SPORE_BLOSSOM_AIR, false, this));
         }
 
 
