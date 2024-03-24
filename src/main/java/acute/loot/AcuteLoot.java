@@ -571,6 +571,8 @@ public class AcuteLoot extends JavaPlugin {
 
         alCommand.registerPlayerSubcommand("add", new AddCommand("acuteloot.add", this));
 
+        alCommand.registerConsoleSubcommand("append", new AppendCommand.ConsoleAppendCommand("acuteloot.append", this));
+
         alCommand.registerPlayerSubcommand("chest", new ChestCommand.CreateChestCommand("acuteloot.chest", this));
 
         alCommand.registerGenericSubcommand("give", new GiveCommand("acuteloot.give", this));
