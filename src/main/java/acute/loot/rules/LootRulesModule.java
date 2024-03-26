@@ -27,6 +27,7 @@ public class LootRulesModule implements Module {
         ruleParsers.put("entity-death", new EntityDeathParser());
         ruleParsers.put("any-of", new DisjunctionParser(delegateParser));
         ruleParsers.put("entity-spawn", new EntitySpawnParser());
+        ruleParsers.put("chest-open", new ChestOpenedParser());
 
         final Set<Rule> rules = new HashSet<>();
         final ConfigurationSection section = config.getConfigurationSection("loot-rules");
