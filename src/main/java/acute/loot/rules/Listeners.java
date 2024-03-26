@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.function.Consumer;
 
@@ -22,6 +23,11 @@ class Listeners implements Listener {
 
     @EventHandler
     public void onEntitySpawn(EntitySpawnEvent e) {
+        callback.accept(e);
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent e) {
         callback.accept(e);
     }
 
