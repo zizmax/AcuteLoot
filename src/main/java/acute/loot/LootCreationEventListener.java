@@ -1,6 +1,7 @@
 package acute.loot;
 
 import com.github.phillip.h.acutelib.util.UnorderedPair;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
@@ -109,7 +110,7 @@ public class LootCreationEventListener implements Listener {
 
                     if (plugin.chestLootEnabled(player.getWorld())) {
                         // Runs chest-filling logic on next tick to account for items placed by vanilla loot table
-                        plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+                        Scheduler.runRegion(chest.getLocation(), new Runnable() {
                             @Override
                             public void run() {
                                 double roll = random.nextDouble();
@@ -179,7 +180,6 @@ public class LootCreationEventListener implements Listener {
                                     System.currentTimeMillis(), -2));
                             chest.update();
                         }
-                    event.setCancelled(true);
                     }
                 }
             }

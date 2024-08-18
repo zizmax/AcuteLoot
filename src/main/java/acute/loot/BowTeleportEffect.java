@@ -17,6 +17,8 @@ import java.util.List;
  */
 public class BowTeleportEffect extends AcuteLootSpecialEffect {
 
+    private Scheduler.Task endArrowRideTask;
+
     public BowTeleportEffect(String name, int id, List<LootMaterial> validLootMaterials, AcuteLoot plugin) {
         super(name, id, validLootMaterials, plugin);
     }
@@ -47,16 +49,16 @@ public class BowTeleportEffect extends AcuteLootSpecialEffect {
             launchee.playSound(launchee.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1, 1);
 
             Player finalLaunchee = launchee;
-            new BukkitRunnable() {
+            endArrowRideTask = Scheduler.runTimerEntity(arrow, new Runnable() {
                 @Override
                 public void run() {
                     if ((arrow.isOnGround() || arrow.isDead()) && arrow.getPassengers().contains(finalLaunchee)) {
                         arrow.removePassenger(finalLaunchee);
                         finalLaunchee.playSound(finalLaunchee.getLocation(), Sound.BLOCK_HONEY_BLOCK_FALL, 1, 1);
-                        cancel();
+                        endArrowRideTask.cancel();
                     }
                 }
-            }.runTaskTimer(plugin, 0L, 0L);
+            }, 0L, 0L);
         }
     }
 

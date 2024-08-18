@@ -12,7 +12,6 @@ import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
 import com.github.phillip.h.acutelib.util.Util;
 import lombok.Getter;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -92,6 +91,10 @@ public class AcuteLoot extends JavaPlugin {
         moduleManager = new ModuleManager(this, getLogger());
         moduleManager.add("debugMode", new DebugModule(this), "debug");
         moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
+    }
+
+    public static AcuteLoot getInstance() {
+        return getPlugin(AcuteLoot.class);
     }
 
     public static final int configVersion = 17;
