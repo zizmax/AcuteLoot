@@ -354,24 +354,25 @@ public class AcuteLoot extends JavaPlugin {
         final List<LootMaterial> bowMat = Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW);
 
         // Tool Particle
-        registerEffect(new ToolParticleEffect("weapons_laser", 1, axeSwordMat, Particle.REDSTONE, true, this));
+        registerEffect(new ToolParticleEffect("weapons_laser", 1, axeSwordMat, Particle.DUST, true, this));
         registerEffect(new ToolParticleEffect("weapons_note", 2, axeSwordMat, Particle.NOTE, false, this));
         registerEffect(new ToolParticleEffect("weapons_lava", 3, axeSwordMat, Particle.LAVA, false, this));
-        registerEffect(new ToolParticleEffect("weapons_enchanting-table", 4, axeSwordMat, Particle.ENCHANTMENT_TABLE, false, this));
-        registerEffect(new ToolParticleEffect("weapons_potion-effect", 5, axeSwordMat, Particle.SPELL_MOB, false, this));
+        registerEffect(new ToolParticleEffect("weapons_enchanting-table", 4, axeSwordMat, Particle.ENCHANT, false, this));
+        //registerEffect(new ToolParticleEffect("weapons_potion-effect", 5, axeSwordMat, Particle.SPELL_MOB, false, this));
+        registerEffect(new ToolParticleEffect("weapons_potion-effect", 5, axeSwordMat, Particle.valueOf("SPELL_MOB"), false, this));
         registerEffect(new ToolParticleEffect("weapons_nautilus", 6, axeSwordMat, Particle.NAUTILUS, false, this));
-        registerEffect(new ToolParticleEffect("weapons_slime", 7, axeSwordMat, Particle.SLIME, false, this));
-        registerEffect(new ToolParticleEffect("weapons_water-splash", 8, axeSwordMat, Particle.WATER_SPLASH, false, this));
+        //registerEffect(new ToolParticleEffect("weapons_slime", 7, axeSwordMat, Particle.SLIME, false, this));
+        //registerEffect(new ToolParticleEffect("weapons_water-splash", 8, axeSwordMat, Particle.WATER_SPLASH, false, this));
 
         // Bow Teleport
         registerEffect(new BowTeleportEffect("enderbow", 9, bowMat, this));
 
         // Bow Particle
         registerEffect(new BowParticleEffect("bows_heart", 10, bowMat, Particle.HEART, this));
-        registerEffect(new BowParticleEffect("bows_purple-spark", 11, bowMat, Particle.SPELL_WITCH, this));
+        //registerEffect(new BowParticleEffect("bows_purple-spark", 11, bowMat, Particle.SPELL_WITCH, this));
         registerEffect(new BowParticleEffect("bows_lava", 12, bowMat, Particle.LAVA, this));
-        registerEffect(new BowParticleEffect("bows_drip", 13, bowMat, Particle.DRIP_LAVA, this));
-        registerEffect(new BowParticleEffect("bows_sparkle", 14, bowMat, Particle.TOTEM, this));
+        //registerEffect(new BowParticleEffect("bows_drip", 13, bowMat, Particle.DRIP_LAVA, this));
+        //registerEffect(new BowParticleEffect("bows_sparkle", 14, bowMat, Particle.TOTEM, this));
 
         // Block Trail
         registerEffect(new BlockTrailEffect("gardener", 15, Collections.singletonList(LootMaterial.BOOTS), this));

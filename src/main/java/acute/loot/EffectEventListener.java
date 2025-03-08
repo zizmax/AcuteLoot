@@ -111,7 +111,7 @@ public class EffectEventListener implements Listener {
         }
 
         if (event.getEntity() instanceof Skeleton &&
-                event.getEntity().hasPotionEffect(PotionEffectType.SLOW) &&
+                event.getEntity().hasPotionEffect(PotionEffectType.SLOWNESS) &&
                 event.getEntity().hasMetadata("deadEyeSlowness")) {
             // It ruins the Dead Eye slo-mo effect when skeletons can shoot you during it
             event.setCancelled(true);

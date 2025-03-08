@@ -135,9 +135,9 @@ public class TimewalkEffect extends AcuteLootSpecialEffect {
                     double chance = 5 / 100.0;
                     if (roll < chance) {
                         if (forward) {
-                            location.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, x, y, z, 1);
+                            //location.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, x, y, z, 1);
                         } else {
-                            location.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, x, y, z, 0, 0, 0, 0, 1);
+                            //location.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, x, y, z, 0, 0, 0, 0, 1);
                         }
                     }
 

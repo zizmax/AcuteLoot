@@ -28,7 +28,8 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
     }
 
     public double healEntity(LivingEntity entity, double health) {
-        return Math.min(entity.getHealth() + health, entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        //return Math.min(entity.getHealth() + health, entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        return 1.0;
     }
 
     @Override

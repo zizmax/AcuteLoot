@@ -202,7 +202,7 @@ public class LootCreationEventListener implements Listener {
                 chance = chance + event.getPlayer()
                                        .getInventory()
                                        .getItemInMainHand()
-                                       .getEnchantmentLevel(Enchantment.LUCK) * .021;
+                                       .getEnchantmentLevel(Enchantment.LUCK_OF_THE_SEA) * .021;
                 if (plugin.debug) {
                     event.getPlayer().sendMessage("Enchanted chance: " + chance);
                 }
