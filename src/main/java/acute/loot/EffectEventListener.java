@@ -1,5 +1,6 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XPotion;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Arrow;
@@ -111,7 +112,7 @@ public class EffectEventListener implements Listener {
         }
 
         if (event.getEntity() instanceof Skeleton &&
-                event.getEntity().hasPotionEffect(PotionEffectType.SLOWNESS) &&
+                event.getEntity().hasPotionEffect(XPotion.SLOWNESS.getPotionEffectType()) &&
                 event.getEntity().hasMetadata("deadEyeSlowness")) {
             // It ruins the Dead Eye slo-mo effect when skeletons can shoot you during it
             event.setCancelled(true);

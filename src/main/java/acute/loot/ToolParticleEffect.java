@@ -1,5 +1,6 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.particles.XParticle;
 import com.github.phillip.h.acutelib.util.Util;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -48,7 +49,7 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
 
             Particle.DustOptions dustOptions = null;
 
-            if (particle == Particle.DUST) {
+            if (particle == XParticle.DUST.get()) {
                 if (this.getName().contains("laser")) {
                     dustOptions = new Particle.DustOptions(Color.fromRGB(255, 0, 0), 1);
                 }
@@ -61,9 +62,9 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
             final List<Location> locations = Util.getLine(player.getEyeLocation(), maxBeamDistance, beamSegmentLength);
             for (int i = 0; i < locations.size(); i++) {
                 if (beamVisible) {
-                    if (particle == Particle.DUST) {
+                    if (particle == XParticle.DUST.get()) {
                         player.getWorld().spawnParticle(particle, locations.get(i), 1, dustOptions);
-                    } else if (particle == Particle.DRAGON_BREATH) { // Add other directional/velocity particles
+                    } else if (particle == XParticle.DRAGON_BREATH.get()) { // Add other directional/velocity particles
                         player.getWorld().spawnParticle(particle, locations.get(i), 0, 0, 0, 0);
                     } else {
                         player.getWorld().spawnParticle(particle, locations.get(i), 1);
@@ -85,26 +86,26 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
                     } else {
                         location = locations.get(i - 1);
                     }
-                    /*
-                    if (particle == Particle.REDSTONE) {
+
+                    if (particle == XParticle.DUST.get()) {
                         player.getWorld().spawnParticle(particle, location, 1, dustOptions);
-                    } else if (particle == Particle.DRAGON_BREATH) { // Add other directional/velocity particles
+                    } else if (particle == XParticle.DRAGON_BREATH.get()) { // Add other directional/velocity particles
                         player.getWorld().spawnParticle(particle, location, 0, 0, 0, 0);
-                    } else if (particle == Particle.ENCHANTMENT_TABLE) {
+                    } else if (particle == XParticle.ENCHANT.get()) {
                         player.getWorld().spawnParticle(particle, location, 100);
-                    } else if (particle == Particle.NAUTILUS) {
+                    } else if (particle == XParticle.NAUTILUS.get()) {
                         player.getWorld().spawnParticle(particle, location.add(0, 1, 0), 100);
-                    } else if (particle == Particle.SPELL_MOB) {
-                        player.getWorld().spawnParticle(particle, location, 10);
-                    } else if (particle == Particle.SLIME || particle == Particle.WATER_SPLASH) {
+                    } else if (particle == XParticle.ENTITY_EFFECT.get()) {
+                        Color spellColor = Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255));
+                        player.getWorld().spawnParticle(particle, location, 10, spellColor);
+                    } else if (particle == XParticle.ITEM_SLIME.get() || particle == XParticle.SPLASH.get()) {
                         player.getWorld().spawnParticle(particle, location, 40);
-                    } else if (particle == Particle.LAVA) {
+                    } else if (particle == XParticle.LAVA.get()) {
                         player.getWorld().spawnParticle(particle, location, 5);
                     } else {
                         player.getWorld().spawnParticle(particle, location, 100);
                     }
 
-                     */
                     return;
                 }
             }

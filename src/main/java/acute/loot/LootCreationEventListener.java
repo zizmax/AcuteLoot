@@ -1,5 +1,6 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XEnchantment;
 import com.github.phillip.h.acutelib.util.UnorderedPair;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.AnvilInventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -202,7 +204,7 @@ public class LootCreationEventListener implements Listener {
                 chance = chance + event.getPlayer()
                                        .getInventory()
                                        .getItemInMainHand()
-                                       .getEnchantmentLevel(Enchantment.LUCK_OF_THE_SEA) * .021;
+                                       .getEnchantmentLevel(XEnchantment.LUCK_OF_THE_SEA.get()) * .021;
                 if (plugin.debug) {
                     event.getPlayer().sendMessage("Enchanted chance: " + chance);
                 }
@@ -226,7 +228,8 @@ public class LootCreationEventListener implements Listener {
 
     @EventHandler
     public void anvilListener(PrepareAnvilEvent event) {
-        Player player = (Player) event.getView().getPlayer();
+        InventoryView view = event.getView();
+        Player player = (Player) view.getPlayer();
         AnvilInventory inv = event.getInventory();
         if (event.getViewers().isEmpty() || inv.getItem(0) == null) {
             return;
@@ -269,7 +272,6 @@ public class LootCreationEventListener implements Listener {
 
     @EventHandler
     public void onPlayerFinishAnvil(InventoryClickEvent event) {
-        Player player = (Player) event.getView().getPlayer();
         if (anvilHistoryItemKey.containsKey(event.getCurrentItem())) {
             anvilHistoryPairKey.remove(anvilHistoryItemKey.get(event.getCurrentItem()));
             anvilHistoryItemKey.remove(event.getCurrentItem());
