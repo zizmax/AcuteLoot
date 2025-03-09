@@ -64,7 +64,7 @@ public class AcuteLoot extends JavaPlugin {
 
     public List<Material> lootMaterials = new ArrayList<>();
 
-    public boolean debug = true;
+    public boolean debug = false;
 
     public TabCompletedMultiCommand acuteLootCommand;
 

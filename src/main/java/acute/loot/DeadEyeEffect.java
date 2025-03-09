@@ -263,8 +263,8 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                 if (entity instanceof LivingEntity) {
                                     if (!(!plugin.getConfig().getBoolean("effects.dead-eye.affect-players") && entity instanceof Player)) {
                                         LivingEntity livingEntity = (LivingEntity) entity;
-                                        livingEntity.removePotionEffect(PotionEffectType.SLOWNESS);
-                                        livingEntity.removePotionEffect(PotionEffectType.SLOW_FALLING);
+                                        livingEntity.removePotionEffect(XPotion.SLOWNESS.getPotionEffectType());
+                                        livingEntity.removePotionEffect(XPotion.SLOW_FALLING.getPotionEffectType());
                                     }
                                 }
 

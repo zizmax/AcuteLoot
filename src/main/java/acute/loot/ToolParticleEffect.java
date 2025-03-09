@@ -97,7 +97,12 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
                         player.getWorld().spawnParticle(particle, location.add(0, 1, 0), 100);
                     } else if (particle == XParticle.ENTITY_EFFECT.get()) {
                         Color spellColor = Color.fromRGB(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-                        player.getWorld().spawnParticle(particle, location, 10, spellColor);
+                        // 1.20.5/1.20.6 changed SPELL_MOB to ENTITY_EFFECT and requires a color
+                        try {
+                            player.getWorld().spawnParticle(particle, location, 10, spellColor);
+                        } catch (IllegalArgumentException e) {
+                            player.getWorld().spawnParticle(particle, location, 10);
+                        }
                     } else if (particle == XParticle.ITEM_SLIME.get() || particle == XParticle.SPLASH.get()) {
                         player.getWorld().spawnParticle(particle, location, 40);
                     } else if (particle == XParticle.LAVA.get()) {

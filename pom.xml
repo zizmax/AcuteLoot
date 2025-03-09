@@ -62,6 +62,10 @@
                                         <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
                                         <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
                                         <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
+                                        <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XBlock*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XSound*</exclude>
+                                        <exclude>com/cryptomorin/xseries/XMaterial*</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
