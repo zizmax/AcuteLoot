@@ -103,14 +103,16 @@ public class DivinerEffect extends AcuteLootSpecialEffect {
 
 
     private ArrayList<String[]> getHorseStats(LivingEntity entity) {
-        double speed = entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() * 42.157787584;
+        //double speed = entity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getValue() * 42.157787584;
+        double speed = 1.0;
         double scaled = scale(speed, 4.74, 14.23, 1.0, 10.0);
-        double jumpStrength = entity.getAttribute(Attribute.HORSE_JUMP_STRENGTH).getValue();
-        double jumpHeight = -0.1817584952 * Math.pow(jumpStrength, 3) + 3.689713992 *
-                            Math.pow(jumpStrength, 2) + 2.128599134 * jumpStrength - 0.343930367;
+        //double jumpStrength = entity.getAttribute(Attribute.HORSE_JUMP_STRENGTH).getValue();
+        //double jumpHeight = -0.1817584952 * Math.pow(jumpStrength, 3) + 3.689713992 *
+        //                    Math.pow(jumpStrength, 2) + 2.128599134 * jumpStrength - 0.343930367;
+        double jumpHeight = 1.0;
         ArrayList<String[]> stats = new ArrayList<>();
-        stats.add(new String[]{"Max Health", String.format("%.3f", entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
-                                                                         .getValue())});
+        //stats.add(new String[]{"Max Health", String.format("%.3f", entity.getAttribute(Attribute.GENERIC_MAX_HEALTH)
+        //                                                                 .getValue())});
         stats.add(new String[]{"Speed (bps)", String.format("%.3f", speed)});
         stats.add(new String[]{"Speed (scaled)", String.format("%.3f", scaled)});
         stats.add(new String[]{"Jump Height", String.format("%.3f", jumpHeight)});

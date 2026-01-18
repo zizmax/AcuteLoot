@@ -1,10 +1,11 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XAttribute;
+import com.cryptomorin.xseries.particles.XParticle;
 import org.bukkit.Color;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -30,7 +31,7 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
     }
 
     public double healEntity(LivingEntity entity, double health) {
-        return Math.min(entity.getHealth() + health, entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        return Math.min(entity.getHealth() + health, entity.getAttribute(XAttribute.MAX_HEALTH.get()).getValue());
     }
 
     @Override
@@ -59,7 +60,7 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
             if (event.getEntity() instanceof LivingEntity && event.getDamager() instanceof AbstractArrow) {
                 LivingEntity target = (LivingEntity) event.getEntity();
-                if (particle == Particle.HEART) {
+                if (particle == XParticle.HEART.get()) {
                     AbstractArrow arrow = (AbstractArrow) event.getDamager();
                     if (arrow.getShooter() instanceof Player) {
                         Player player = (Player) arrow.getShooter();

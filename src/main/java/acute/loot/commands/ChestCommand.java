@@ -1,6 +1,7 @@
 package acute.loot.commands;
 
 import acute.loot.AcuteLoot;
+import com.cryptomorin.xseries.particles.XParticle;
 import com.github.phillip.h.acutelib.util.Either;
 import com.github.phillip.h.acutelib.util.Util;
 import org.bukkit.*;
@@ -141,7 +142,7 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
                 sender.sendMessage("Code: " + chestMetadataCode);
             }
             updateChestData(chest, pdc -> pdc.set(key, PersistentDataType.STRING, chestMetadataCode));
-            chest.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, chest.getBlock().getLocation().add(.5, 1, .5), 100);
+            chest.getWorld().spawnParticle(XParticle.ENCHANT.get(), chest.getBlock().getLocation().add(.5, 1, .5), 100);
         }
 
         private void printRefillInfo(final Player sender, final String refillCooldown) {
@@ -191,7 +192,7 @@ public abstract class ChestCommand extends AcuteLootCommand<Player> {
                                                  AcuteLoot.CHAT_PREFIX, ChatColor.AQUA, ChatColor.GRAY));
             } else {
                 chests.forEach(c -> updateChestData(c, pdc -> pdc.remove(key)));
-                chests.forEach(c -> c.getWorld().spawnParticle(Particle.SMOKE_NORMAL, c.getBlock().getLocation().add(.5, 1, .5), 100));
+                chests.forEach(c -> c.getWorld().spawnParticle(XParticle.SMOKE.get(), c.getBlock().getLocation().add(.5, 1, .5), 100));
                 sender.sendMessage(AcuteLoot.CHAT_PREFIX + "Chests reset: " + ChatColor.AQUA + chests.size());
             }
         }

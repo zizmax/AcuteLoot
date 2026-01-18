@@ -3,7 +3,10 @@ package acute.loot;
 import acute.loot.namegen.NameGenerator;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.util.Util;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.UnsafeValues;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.junit.jupiter.api.AfterAll;
@@ -37,6 +40,16 @@ public class ApiTest {
         Mockito.when(acuteLoot.getLogger()).thenReturn(logger);
         API.setAcuteLoot(acuteLoot);
         Mockito.when(acuteLoot.rarityChancePool()).thenReturn(testHelper.rarityChancePool);
+
+        Server mockServer = Mockito.mock(Server.class);
+        UnsafeValues mockUnsafe = Mockito.mock(UnsafeValues.class);
+        Mockito.when(mockServer.getUnsafe()).thenReturn(mockUnsafe);
+
+        // Mock getServer().getLogger()
+        Logger mockLogger = Mockito.mock(Logger.class);
+        Mockito.when(mockServer.getLogger()).thenReturn(mockLogger);
+
+        Bukkit.setServer(mockServer);
     }
 
     @AfterAll
@@ -70,7 +83,7 @@ public class ApiTest {
         final List<String> lootMaterials = Arrays.stream(LootMaterial.values()).map(LootMaterial::toString).collect(Collectors.toList());
         for (int i = 0; i < 100; i++) {
             assertThat(api.rollName(new ItemStack(Util.drawRandom(lootMaterialList)), testHelper.rarityChancePool.draw()),
-                       either(oneOf("Common", "Uncommon", "Rare")).or(in(lootMaterials)));
+                    either(oneOf("Common", "Uncommon", "Rare")).or(in(lootMaterials)));
             assertThat(api.rollName(new ItemStack(Util.drawRandom(lootMaterialList)), null),
                     either(oneOf("Common", "Uncommon", "Rare")).or(in(lootMaterials)));
             assertThat(api.rollName(null, testHelper.rarityChancePool.draw()),

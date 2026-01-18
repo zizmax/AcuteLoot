@@ -64,7 +64,7 @@ public class LootWell {
                                                                                                  .getItemInMainHand()
                                                                                                  .getItemMeta()
                                                                                                  .getDisplayName())));
-                                    player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, well.add(0, .25, 0), 100);
+                                    //player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, well.add(0, .25, 0), 100);
                                     player.getWorld().playSound(well, Sound.ENTITY_GENERIC_EXPLODE, 1f, 2.5f);
                                 }
                             }

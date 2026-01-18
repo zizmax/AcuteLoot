@@ -1,5 +1,8 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XEnchantment;
+import com.cryptomorin.xseries.XPotion;
+import com.cryptomorin.xseries.particles.XParticle;
 import com.github.phillip.h.acutelib.util.Util;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -23,6 +26,7 @@ import java.util.List;
 /**
  * Dead Eye effect class.
  */
+
 public class DeadEyeEffect extends AcuteLootSpecialEffect {
 
     public static HashMap<Player, Integer> deadEyeArrowsShot = new HashMap<>();
@@ -78,16 +82,16 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                             new BukkitRunnable() {
                                 @Override
                                 public void run() {
-                                    if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
+                                    if (!player.hasPotionEffect(XPotion.SLOWNESS.getPotionEffectType())) {
                                         this.cancel();
                                     }
-                                    player.getWorld().spawnParticle(Particle.REDSTONE, location, 1, dustOptions);
+                                    player.getWorld().spawnParticle(XParticle.DUST.get(), location, 1, dustOptions);
                                 }
 
                             }.runTaskTimer(plugin, 0L, 2L);
                             long timeLeft = 0L;
-                            if (player.hasPotionEffect(PotionEffectType.SLOW)) {
-                                timeLeft = player.getPotionEffect(PotionEffectType.SLOW).getDuration();
+                            if (player.hasPotionEffect(XPotion.SLOWNESS.getPotionEffectType())) {
+                                timeLeft = player.getPotionEffect(XPotion.SLOWNESS.getPotionEffectType()).getDuration();
                             }
                             new BukkitRunnable() {
                                 @Override
@@ -143,7 +147,7 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                                         .getBoolean("effects.dead-eye.vanilla-enchantments")) || (plugin
                                                     .getConfig()
                                                     .getBoolean("effects.dead-eye.vanilla-enchantments") && !bow.getEnchantments()
-                                                    .containsKey(Enchantment.ARROW_INFINITE))) {
+                                                    .containsKey(XEnchantment.INFINITY.get()))) {
                                                 player.getInventory().getItem(arrowSlot).setAmount(arrowAmount - 1);
                                             }
                                             if (((Damageable) bowMeta).getDamage() > bow.getType().getMaxDurability()) {
@@ -175,18 +179,18 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                         player.getWorld()
                                               .playSound(player.getEyeLocation(), Sound.ENTITY_ARROW_SHOOT, 1, 1);
                                         if (plugin.getConfig().getBoolean("effects.dead-eye.vanilla-enchantments")) {
-                                            if (bow.getEnchantments().containsKey(Enchantment.ARROW_INFINITE)) {
+                                            if (bow.getEnchantments().containsKey(XEnchantment.INFINITY.get())) {
                                                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
                                             }
-                                            if (bow.getEnchantments().containsKey(Enchantment.ARROW_KNOCKBACK)) {
-                                                arrow.setKnockbackStrength(bow.getEnchantmentLevel(Enchantment.ARROW_KNOCKBACK));
+                                            if (bow.getEnchantments().containsKey(XEnchantment.PUNCH.get())) {
+                                                arrow.setKnockbackStrength(bow.getEnchantmentLevel(XEnchantment.PUNCH.get()));
                                             }
-                                            if (bow.getEnchantments().containsKey(Enchantment.ARROW_FIRE)) {
+                                            if (bow.getEnchantments().containsKey(XEnchantment.FLAME.get())) {
                                                 arrow.setFireTicks(2000);
                                             }
-                                            if (bow.getEnchantments().containsKey(Enchantment.ARROW_DAMAGE)) {
+                                            if (bow.getEnchantments().containsKey(XEnchantment.POWER.get())) {
                                                 arrow.setDamage(arrow.getDamage() * (1 + (0.25 *
-                                                    (bow.getEnchantmentLevel(Enchantment.ARROW_DAMAGE) + 1))));
+                                                    (bow.getEnchantmentLevel(XEnchantment.POWER.get()) + 1))));
                                             }
                                         }
                                     } else {
@@ -231,8 +235,8 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                           .sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD + "[" +
                                   ChatColor.GREEN + "Dead Eye" + ChatColor.GOLD + "]"));
                     deadEyeArrowsShot.put(player, 0);
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, deadEyeLength, 5, true));
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, deadEyeLength, 5, true));
+                    player.addPotionEffect(new PotionEffect(XPotion.SLOWNESS.getPotionEffectType(), deadEyeLength, 5, true));
+                    player.addPotionEffect(new PotionEffect(XPotion.SLOW_FALLING.getPotionEffectType(), deadEyeLength, 5, true));
                     ItemMeta bowMeta = player.getInventory().getItemInMainHand().getItemMeta();
                     List<String> bowLore = bowMeta.getLore();
                     bowLore.add(ChatColor.GREEN + "Activated");
@@ -245,8 +249,8 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                         if (entity instanceof LivingEntity) {
                             LivingEntity livingEntity = (LivingEntity) entity;
                             entity.setMetadata("deadEyeSlowness", new FixedMetadataValue(plugin, true));
-                            livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, deadEyeLength, 3, true));
-                            livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, deadEyeLength, 3, true));
+                            livingEntity.addPotionEffect(new PotionEffect(XPotion.SLOWNESS.getPotionEffectType(), deadEyeLength, 3, true));
+                            livingEntity.addPotionEffect(new PotionEffect(XPotion.SLOW_FALLING.getPotionEffectType(), deadEyeLength, 3, true));
                         }
 
                     }
@@ -259,8 +263,8 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                 if (entity instanceof LivingEntity) {
                                     if (!(!plugin.getConfig().getBoolean("effects.dead-eye.affect-players") && entity instanceof Player)) {
                                         LivingEntity livingEntity = (LivingEntity) entity;
-                                        livingEntity.removePotionEffect(PotionEffectType.SLOW);
-                                        livingEntity.removePotionEffect(PotionEffectType.SLOW_FALLING);
+                                        livingEntity.removePotionEffect(XPotion.SLOWNESS.getPotionEffectType());
+                                        livingEntity.removePotionEffect(XPotion.SLOW_FALLING.getPotionEffectType());
                                     }
                                 }
 
