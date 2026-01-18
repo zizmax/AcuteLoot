@@ -28,7 +28,7 @@ jobs:
           modrinth-id: 'Pool7IDt'
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
           
-          curseforge-id: '1435261'
+          curseforge-id: '1435207'
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
           
           github-token: ${{ secrets.GITHUB_TOKEN }}
