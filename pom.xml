@@ -38,7 +38,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -50,7 +50,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>org.bstats</pattern>
-                                    <shadedPattern>me.nate.acuteloot</shadedPattern>
+                                    <shadedPattern>me.nate.acuteloot.libs.bstats</shadedPattern>
                                 </relocation>
                                 <relocation>
                                     <pattern>com.github.phillip.h.acutelib</pattern>
@@ -58,7 +58,7 @@
                                 </relocation>
                                 <relocation>
                                     <pattern>com.cryptomorin.xseries</pattern>
-                                    <shadedPattern>me.nate.acuteloot</shadedPattern>
+                                    <shadedPattern>me.nate.acuteloot.libs.xseries</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>
@@ -69,11 +69,7 @@
                                         <exclude>com/cryptomorin/xseries/NMSExtras*</exclude>
                                         <exclude>com/cryptomorin/xseries/NoteBlockMusic*</exclude>
                                         <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
-                                        <exclude>com/cryptomorin/xseries/SkullCacheListener*</exclude>
-                                        <exclude>com/cryptomorin/xseries/XBlock*</exclude>
-                                        <exclude>com/cryptomorin/xseries/XSound*</exclude>
-                                        <exclude>com/cryptomorin/xseries/XMaterial*</exclude>
-                                        <exclude>com/cryptomorin/xseries/reflection/**</exclude>
+                                        <exclude>com/cryptomorin/xseries/reflection/asm/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -85,6 +81,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
+                <configuration>
+                    <argLine>-Dnet.bytebuddy.experimental=true</argLine>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -158,7 +157,7 @@
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
             <artifactId>XSeries</artifactId>
-            <version>13.0.0</version>
+            <version>13.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
