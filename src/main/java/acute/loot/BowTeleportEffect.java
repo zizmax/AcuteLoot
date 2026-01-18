@@ -5,6 +5,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.EntityShootBowEvent;
@@ -26,7 +27,7 @@ public class BowTeleportEffect extends AcuteLootSpecialEffect {
         if (origEvent instanceof EntityShootBowEvent) {
             EntityShootBowEvent event = (EntityShootBowEvent) origEvent;
             Player launchee = null;
-            Arrow arrow = (Arrow) event.getProjectile();
+            Entity arrow = event.getProjectile();
             if (this.getName() == "enderbow"){
                 launchee = (Player) event.getEntity();
             }

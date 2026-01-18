@@ -5,7 +5,9 @@ import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -35,11 +37,13 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
     public void applyEffect(Event origEvent) {
         if (origEvent instanceof EntityShootBowEvent) {
             EntityShootBowEvent event = (EntityShootBowEvent) origEvent;
-            Arrow arrow = (Arrow) event.getProjectile();
+            Entity arrow = event.getProjectile();
             World world = arrow.getWorld();
             // Heal Effect
             if (this.getName().equals("bows_heart")) {
-                arrow.setColor(Color.RED);
+                if (arrow instanceof Arrow) {
+                    ((Arrow) arrow).setColor(Color.RED);
+                }
             }
 
             new BukkitRunnable() {
@@ -53,10 +57,10 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
             }.runTaskTimer(plugin, 0L, 0L);
         } else if (origEvent instanceof EntityDamageByEntityEvent) {
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) origEvent;
-            if (event.getEntity() instanceof LivingEntity && event.getDamager() instanceof Arrow) {
+            if (event.getEntity() instanceof LivingEntity && event.getDamager() instanceof AbstractArrow) {
                 LivingEntity target = (LivingEntity) event.getEntity();
                 if (particle == Particle.HEART) {
-                    Arrow arrow = (Arrow) event.getDamager();
+                    AbstractArrow arrow = (AbstractArrow) event.getDamager();
                     if (arrow.getShooter() instanceof Player) {
                         Player player = (Player) arrow.getShooter();
                         player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);

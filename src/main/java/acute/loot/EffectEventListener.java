@@ -2,6 +2,7 @@ package acute.loot;
 
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,8 +45,8 @@ public class EffectEventListener implements Listener {
             applyEventWithPlayer(event, (Player) event.getDamager());
         }
 
-        if (event.getDamager() instanceof Arrow) {
-            Arrow arrow = (Arrow) event.getDamager();
+        if (event.getDamager() instanceof AbstractArrow) {
+            AbstractArrow arrow = (AbstractArrow) event.getDamager();
             if (arrow.getShooter() instanceof Player) {
                 if (plugin.effectsEnabled(arrow.getWorld()) && ((Player) arrow.getShooter()).getInventory()
                                                                                                      .getItemInMainHand()
