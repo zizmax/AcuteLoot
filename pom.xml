@@ -73,6 +73,7 @@
                                         <exclude>com/cryptomorin/xseries/XBlock*</exclude>
                                         <exclude>com/cryptomorin/xseries/XSound*</exclude>
                                         <exclude>com/cryptomorin/xseries/XMaterial*</exclude>
+                                        <exclude>com/cryptomorin/xseries/reflection/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
