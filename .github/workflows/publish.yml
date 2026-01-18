@@ -79,7 +79,7 @@ jobs:
 
           files: |
             target/AcuteLoot-*.jar
+            !target/AcuteLoot-*-javadoc.jar
+            !target/AcuteLoot-*-sources.jar
             !target/AcuteLoot-*-shaded.jar
-            !target/*-sources.jar
-            !target/*-javadoc.jar
             !target/original-*.jar
