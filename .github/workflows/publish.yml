@@ -78,8 +78,5 @@ jobs:
             1.21.11
 
           files: |
-            target/AcuteLoot-*.jar
-            !target/AcuteLoot-*-javadoc.jar
-            !target/AcuteLoot-*-sources.jar
-            !target/AcuteLoot-*-shaded.jar
+            target/AcuteLoot-*[0-9].jar
             !target/original-*.jar
