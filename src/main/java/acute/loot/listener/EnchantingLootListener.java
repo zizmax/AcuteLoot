@@ -1,6 +1,7 @@
 package acute.loot.listener;
 
 import acute.loot.AcuteLoot;
+import acute.loot.LootMaterial;
 import acute.loot.LootSource;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -40,26 +41,46 @@ public class EnchantingLootListener implements Listener {
         ItemStack item = event.getItem();
         if (roll <= chance && plugin.getLootCode(item) == null) {
             final int enchantRarity = getEnchantRarity(event.getEnchantsToAdd());
+            final int maxScore = getMaxEnchantScore(item);
+            final double normalizedLuck = Math.min(1.0, (double) enchantRarity / maxScore);
 
             double seed = AcuteLoot.random.nextDouble();
-            chance = (seed + (enchantRarity / 300.0)) / 2.0;
+            chance = (seed + normalizedLuck) / 2.0;
             item = lootSource.getGenerator().createLoot(item, chance);
 
-            sendDebugStats(player, chance, enchantRarity, item, seed);
+            sendDebugStats(player, chance, enchantRarity, item, seed, maxScore);
         }
     }
 
-    private void sendDebugStats(Player player, double chance, int enchantRarity, ItemStack item, double seed) {
+    private void sendDebugStats(Player player, double chance, int enchantRarity, ItemStack item, double seed, int maxScore) {
         if (plugin.debug) {
             player.sendMessage(ChatColor.GOLD + "You enchanted a " + ChatColor.AQUA + item.getType());
             player.sendMessage(ChatColor.GOLD + "It is called " + item.getItemMeta().getDisplayName());
-            player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity);
+            player.sendMessage(ChatColor.GOLD + "Enchant Score: " + ChatColor.AQUA + enchantRarity + "/" + maxScore);
             player.sendMessage(ChatColor.GOLD + "Enchant Score Percentage: " + ChatColor.AQUA +
-                    String.format("%.2f%%", ((enchantRarity / 300.0) * 100.0)));
+                    String.format("%.2f%%", (( (double) enchantRarity / maxScore) * 100.0)));
             player.sendMessage(ChatColor.GOLD + "Seed: " + ChatColor.AQUA + String.format("%.2f%%", seed * 100.0));
             player.sendMessage(ChatColor.GOLD + "Final Rarity Score: " + ChatColor.AQUA +
                     String.format("%.2f%%", chance * 100.0));
             player.sendMessage(ChatColor.GOLD + "Rarity: " + ChatColor.AQUA + item.getItemMeta().getLore().get(0));
+        }
+    }
+
+    private int getMaxEnchantScore(ItemStack item) {
+        switch (LootMaterial.lootMaterialForMaterial(item.getType())) {
+            case CHEST_PLATE:
+            case PANTS:
+                return 200;
+            case HELMET:
+            case BOOTS:
+            case PICK:
+            case SHOVEL:
+            case HOE:
+            case CROSSBOW:
+            case FISHING_ROD:
+                return 250;
+            default:
+                return 300;
         }
     }
 
