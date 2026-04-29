@@ -26,7 +26,7 @@
 # |                                                                                              | #
 # +----------------------------------------------------------------------------------------------+ #
 
-config-version: 17 # Don't change this!
+config-version: 18 # Don't change this!
 
 # False means that permissions are ignored. When false: OPs can do everything and non-OPs can enchant only
 use-permissions: true
@@ -71,6 +71,8 @@ loot-sources:
     auto-empty: false # Automatically send AcuteLoot to player's inventory when chest is clicked
   anvils: # Currently only for shields and elytra
     enabled: true
+    overwrite-existing-name: false
+    overwrite-existing-colors: false # If overwrite-existing-name is true this option does nothing
 
 # This is the chance for the "next" vanilla enchantment for random loot (from fishing, chests and /al new command
 # All individual enchantments have an equal chance. i.e. Sharpness is just as common as Bane of Arthropods

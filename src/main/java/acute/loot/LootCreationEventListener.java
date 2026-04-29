@@ -28,6 +28,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 import java.util.*;
 
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+
 /**
  * Event listeners for creating loot.
  */
@@ -36,7 +39,6 @@ public class LootCreationEventListener implements Listener {
     private final AcuteLoot plugin;
     private final Random random = AcuteLoot.random;
     private final Map<Integer, ItemStack> anvilHistoryPairKey = new HashMap<>();
-    private final Map<ItemStack, Integer> anvilHistoryItemKey = new HashMap<>();
 
     public LootCreationEventListener(AcuteLoot plugin) {
         this.plugin = plugin;
@@ -249,32 +251,57 @@ public class LootCreationEventListener implements Listener {
                 }
             }
             if (plugin.anvilLootEnabled(player.getWorld())) {
-                UnorderedPair pair = UnorderedPair.of(inv.getItem(0), inv.getItem(1));
                 if (result.getType().equals(Material.SHIELD) || result.getType().equals(Material.ELYTRA)) {
                     //TODO Add configurable anvil chance
                     //TODO Check for anvil permission and register permission
                     //TODO Shield that is already AL gets overwritten since this block comes after first check
 
-                    if (!anvilHistoryPairKey.containsKey(pair.hashCode())) {
+                    int key = getAnvilKey(player, inv);
+                    if (!anvilHistoryPairKey.containsKey(key)) {
                         double chance = AcuteLoot.random.nextDouble();
-                        result = plugin.lootGenerator.createLoot(result, chance);
-                        anvilHistoryPairKey.put(pair.hashCode(), result);
-                        anvilHistoryItemKey.put(result, pair.hashCode());
+                        result = plugin.anvilGenerator.createLoot(result, chance);
+                        anvilHistoryPairKey.put(key, result.clone());
                         event.setResult(result);
                     } else {
-                        event.setResult(anvilHistoryPairKey.get(pair.hashCode()));
+                        ItemStack cached = anvilHistoryPairKey.get(key).clone();
+                        if (result != null && result.hasItemMeta() && result.getItemMeta().hasDisplayName()) {
+                            // Player typed a name in the anvil
+                            LootItem loot = new LootItem(plugin.getLootCode(cached));
+                            result = plugin.anvilGenerator.createLoot(result, loot);
+                            event.setResult(result);
+                        } else {
+                            event.setResult(cached);
+                        }
                     }
                 }
             }
         }
     }
 
+    private int getAnvilKey(Player player, AnvilInventory inv) {
+        ItemStack item0 = inv.getItem(0);
+        ItemStack item1 = inv.getItem(1);
+        return Objects.hash(
+                player.getUniqueId(),
+                item0 != null ? item0.getType() : null,
+                item0 != null ? item0.getAmount() : 0,
+                item1 != null ? item1.getType() : null,
+                item1 != null ? item1.getAmount() : 0
+        );
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory() instanceof AnvilInventory) {
+            anvilHistoryPairKey.remove(getAnvilKey((Player) event.getPlayer(), (AnvilInventory) event.getInventory()));
+        }
+    }
 
     @EventHandler
     public void onPlayerFinishAnvil(InventoryClickEvent event) {
-        if (anvilHistoryItemKey.containsKey(event.getCurrentItem())) {
-            anvilHistoryPairKey.remove(anvilHistoryItemKey.get(event.getCurrentItem()));
-            anvilHistoryItemKey.remove(event.getCurrentItem());
+        if (event.getInventory() instanceof AnvilInventory && event.getSlotType() == InventoryType.SlotType.RESULT) {
+            AnvilInventory inv = (AnvilInventory) event.getInventory();
+            anvilHistoryPairKey.remove(getAnvilKey((Player) event.getWhoClicked(), inv));
         }
     }
 
