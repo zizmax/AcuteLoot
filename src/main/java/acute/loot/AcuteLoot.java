@@ -78,6 +78,7 @@ public class AcuteLoot extends JavaPlugin {
     public final HashMap<String, String> effectNames = new HashMap<>();
     public final HashMap<String, NameGenerator> nameGeneratorNames = new HashMap<>();
     public LootItemGenerator lootGenerator;
+    public LootItemGenerator anvilGenerator;
 
     private @Getter AlConfig globalConfig;
     private final @Getter Map<String, AlConfig> worldConfigs = new HashMap<>();
@@ -95,7 +96,7 @@ public class AcuteLoot extends JavaPlugin {
         moduleManager.add("lootRules", new LootRulesModule(alApi), "lootRules");
     }
 
-    public static final int configVersion = 17;
+    public static final int configVersion = 18;
 
     @Override
     public void onEnable() {
@@ -466,6 +467,12 @@ public class AcuteLoot extends JavaPlugin {
         enchantingLootSource = new LootSource(globalConfig.isEnchantingEnabled(), enchantingConfigs,
                                               usePermissions, "acuteloot.enchant",
                                               enchantingGenerator);
+
+        final boolean anvilOverwriteNames = getConfig().getBoolean("loot-sources.anvils.overwrite-existing-name", true);
+        final boolean anvilOverwriteColors = getConfig().getBoolean("loot-sources.anvils.overwrite-existing-colors", true);
+        anvilGenerator = LootItemGenerator.builder(this)
+                                          .namePool(nameGenChancePool, anvilOverwriteNames, anvilOverwriteColors)
+                                          .build();
 
         moduleManager.start();
     }
