@@ -40,6 +40,7 @@ public class ToolParticleEffect extends AcuteLootSpecialEffect {
 
     @Override
     public void applyEffect(Event origEvent) {
+        if (particle == null) return;
         if (origEvent instanceof PlayerInteractEvent) {
             PlayerInteractEvent event = (PlayerInteractEvent) origEvent;
             Player player = event.getPlayer();

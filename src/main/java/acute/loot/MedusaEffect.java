@@ -10,8 +10,13 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.cryptomorin.xseries.XMaterial;
+import com.cryptomorin.xseries.XSound;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Medusa effect class.
@@ -31,21 +36,27 @@ public class MedusaEffect extends AcuteLootSpecialEffect {
                 LivingEntity livingEntity = (LivingEntity) event.getEntity();
                 event.getEntity().playEffect(EntityEffect.ENTITY_POOF);
                 World world = event.getEntity().getWorld();
-                world.playSound(event.getEntity().getLocation(), Sound.BLOCK_STONE_PLACE, 2, 1);
-                Material[] stoneBlockTypes;
+                XSound.BLOCK_STONE_PLACE.play(event.getEntity().getLocation(), 2.0f, 1.0f);
+                List<XMaterial> stoneXMaterials;
                 if (world.getEnvironment().equals(World.Environment.NETHER)) {
-                    if (AcuteLoot.serverVersion > 15) {
-                        stoneBlockTypes = new Material[]{Material.BLACKSTONE, Material.CRACKED_POLISHED_BLACKSTONE_BRICKS,
-                            Material.POLISHED_BLACKSTONE_BRICKS, Material.POLISHED_BLACKSTONE};
-                    } else {
-                        stoneBlockTypes = new Material[]{Material.GRAVEL, Material.SOUL_SAND};
-                    }
-
+                    stoneXMaterials = Arrays.asList(
+                            XMaterial.BLACKSTONE,
+                            XMaterial.CRACKED_POLISHED_BLACKSTONE_BRICKS,
+                            XMaterial.POLISHED_BLACKSTONE_BRICKS,
+                            XMaterial.POLISHED_BLACKSTONE,
+                            XMaterial.GRAVEL,
+                            XMaterial.SOUL_SAND
+                    );
                 } else if (world.getEnvironment().equals(World.Environment.THE_END)) {
-                    stoneBlockTypes = new Material[]{Material.END_STONE};
+                    stoneXMaterials = Arrays.asList(XMaterial.END_STONE);
                 } else {
-                    stoneBlockTypes = new Material[]{Material.COBBLESTONE, Material.MOSSY_COBBLESTONE};
+                    stoneXMaterials = Arrays.asList(XMaterial.COBBLESTONE, XMaterial.MOSSY_COBBLESTONE);
                 }
+
+                List<Material> stoneBlockTypes = stoneXMaterials.stream()
+                                                                .map(XMaterial::parseMaterial)
+                                                                .filter(java.util.Objects::nonNull)
+                                                                .collect(Collectors.toList());
 
                 if (event.getEntity() instanceof Player) {
                     Player player = (Player) event.getEntity();
@@ -86,7 +97,7 @@ public class MedusaEffect extends AcuteLootSpecialEffect {
                                                                                                           .getWidthZ() / 2));
                 for (Block block : blocks) {
                     if (block.getType().equals(Material.AIR) || block.isLiquid() || !block.getType().isSolid()) {
-                        block.setType(stoneBlockTypes[AcuteLoot.random.nextInt(stoneBlockTypes.length)]);
+                        block.setType(stoneBlockTypes.get(AcuteLoot.random.nextInt(stoneBlockTypes.size())));
                     }
                 }
             }

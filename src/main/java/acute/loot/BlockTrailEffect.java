@@ -13,8 +13,14 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.cryptomorin.xseries.XMaterial;
+
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Effect that leaves a trail of phantom blocks behind the player.
@@ -45,19 +51,28 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
                 if (soilBlock.equals(Material.DIRT) ||
                         soilBlock.equals(Material.GRASS_BLOCK) ||
                         soilBlock.equals(Material.COARSE_DIRT)) {
-                    int f = AcuteLoot.random.nextInt(FLOWER_TYPES.length);
-                    trailBlockData = FLOWER_TYPES[f].createBlockData();
+                    List<Material> validFlowers = Arrays.stream(FLOWER_TYPES)
+                                                        .map(XMaterial::parseMaterial)
+                                                        .filter(Objects::nonNull)
+                                                        .collect(Collectors.toList());
+                    if (!validFlowers.isEmpty()) {
+                        int f = AcuteLoot.random.nextInt(validFlowers.size());
+                        trailBlockData = validFlowers.get(f).createBlockData();
+                    }
                 }
 
             } else if (this.getName().equals("light-walker")) {
                 // Light Walker effect
-                trailBlockData = Material.LIGHT.createBlockData();
-                ((Light) trailBlockData).setLevel(12);
-                if (random.nextDouble() <= 0.2) {
-                    ItemMeta meta = boots.getItemMeta();
-                    ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig()
-                            .getInt("effects.light-walker.durability-modifier"));
-                    boots.setItemMeta(meta);
+                Material lightMat = XMaterial.LIGHT.parseMaterial();
+                if (lightMat != null) {
+                    trailBlockData = lightMat.createBlockData();
+                    ((Light) trailBlockData).setLevel(12);
+                    if (random.nextDouble() <= 0.2) {
+                        ItemMeta meta = boots.getItemMeta();
+                        ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig()
+                                .getInt("effects.light-walker.durability-modifier"));
+                        boots.setItemMeta(meta);
+                    }
                 }
             }
 
@@ -82,14 +97,15 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
     }
 
     // Flowers used by the effect
-    private static final Material[] FLOWER_TYPES = new Material[] { Material.DANDELION, Material.POPPY,
-                                                                    Material.BLUE_ORCHID, Material.ALLIUM,
-                                                                    Material.AZURE_BLUET, Material.RED_TULIP,
-                                                                    Material.ORANGE_TULIP, Material.WHITE_TULIP,
-                                                                    Material.PINK_TULIP, Material.CORNFLOWER,
-                                                                    Material.OXEYE_DAISY, Material.LILY_OF_THE_VALLEY,
-                                                                    Material.WITHER_ROSE, Material.LILAC,
-                                                                    Material.ROSE_BUSH, Material.PEONY
+    private static final XMaterial[] FLOWER_TYPES = new XMaterial[] {
+            XMaterial.DANDELION, XMaterial.POPPY,
+            XMaterial.BLUE_ORCHID, XMaterial.ALLIUM,
+            XMaterial.AZURE_BLUET, XMaterial.RED_TULIP,
+            XMaterial.ORANGE_TULIP, XMaterial.WHITE_TULIP,
+            XMaterial.PINK_TULIP, XMaterial.CORNFLOWER,
+            XMaterial.OXEYE_DAISY, XMaterial.LILY_OF_THE_VALLEY,
+            XMaterial.WITHER_ROSE, XMaterial.LILAC,
+            XMaterial.ROSE_BUSH, XMaterial.PEONY
     };
 
 }

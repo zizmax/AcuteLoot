@@ -8,6 +8,7 @@ import acute.loot.listener.EnchantingLootListener;
 import acute.loot.rules.LootRulesModule;
 import acute.loot.namegen.*;
 import acute.loot.tables.LootTableParser;
+import com.cryptomorin.xseries.XMaterial;
 import com.cryptomorin.xseries.particles.XParticle;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import com.github.phillip.h.acutelib.commands.TabCompletedMultiCommand;
@@ -57,10 +58,6 @@ public class AcuteLoot extends JavaPlugin {
     public static final String UNRELEASED_VERSION = "Version (%s) is more recent than the one publicly available. Dev build?";
     public static final String UPDATE_CHECK_FAILED = "Could not check for updates. Reason: ";
     public static final int spigotID = 81899;
-
-    // Minecraft version: Used for materials compatibility
-    // Defaults to -1 before the plugin has loaded, useful for tests
-    public static int serverVersion = -1;
 
     public List<Material> lootMaterials = new ArrayList<>();
 
@@ -121,9 +118,6 @@ public class AcuteLoot extends JavaPlugin {
         // Connect to bStats
         int bStatsId = 7348;
         Metrics metrics = new Metrics(this, bStatsId);
-
-        // Set server version
-        serverVersion = Integer.parseInt(Bukkit.getBukkitVersion().substring(2, 4));
 
         // Configure name generators, rarities, and effects
         reloadConfiguration();
@@ -233,28 +227,37 @@ public class AcuteLoot extends JavaPlugin {
 
         // Materials file
         String fileName = "materials";
-        if (debug) {
-            getLogger().info("Detected Major MC version: 1." + serverVersion);
-        }
-        String version;
-        // MC version 1.16 or above
-        if (serverVersion > 15) {
-            version = "1.16";
-            if (serverVersion > 16) {
-                version = "1.17";
-
-            }
-        } else { // MC version 1.15 or below
-            version = "1.15";
-        }
         File fileToCheck = new File("plugins/AcuteLoot/" + fileName + ".txt");
-        if (!fileToCheck.exists()) {
+        boolean needsUpdate = false;
+        if (fileToCheck.exists()) {
             try {
-                Files.copy(this.getClass().getResourceAsStream("/" + fileName + version + ".txt"),
-                           Paths.get("plugins/AcuteLoot/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
-                getLogger().info("Wrote " + version + " " + fileName + ".txt file");
+                // Check for version header
+                try (Stream<String> lines = Files.lines(fileToCheck.toPath())) {
+                    boolean hasVersionHeader = lines.limit(5).anyMatch(l -> l.contains("# version: 2"));
+                    if (!hasVersionHeader) {
+                        needsUpdate = true;
+                        File oldFile = new File("plugins/AcuteLoot/" + fileName + ".txt.old");
+                        Files.move(fileToCheck.toPath(), oldFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        getLogger().info("Old materials.txt found. Renamed to materials.txt.old");
+                        getLogger().warning("Migrating materials.txt to new version-agnostic format.");
+                        getLogger().warning("If you previously had custom materials in materials1.1x.txt files,");
+                        getLogger().warning("you MUST manually copy them to the new materials.txt file!");
+                    }
+                }
             } catch (IOException e) {
-                this.getLogger().severe("IO Exception");
+                getLogger().warning("Could not check/migrate existing materials.txt");
+            }
+        } else {
+            needsUpdate = true;
+        }
+
+        if (needsUpdate) {
+            try {
+                Files.copy(this.getClass().getResourceAsStream("/" + fileName + ".txt"),
+                           Paths.get("plugins/AcuteLoot/" + fileName + ".txt"), StandardCopyOption.REPLACE_EXISTING);
+                getLogger().info("Wrote new materials.txt master list");
+            } catch (IOException e) {
+                this.getLogger().severe("IO Exception while copying materials.txt");
                 e.printStackTrace();
             }
         }
@@ -352,7 +355,7 @@ public class AcuteLoot extends JavaPlugin {
         // Clear any existing effects
         LootSpecialEffect.getEffects(LootSpecialEffect.AL_NS).clear();
 
-        final List<LootMaterial> axeSwordMat = Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE);
+        final List<LootMaterial> axeSwordMat = Arrays.asList(LootMaterial.SWORD, LootMaterial.AXE, LootMaterial.MACE, LootMaterial.SPEAR);
         final List<LootMaterial> bowMat = Arrays.asList(LootMaterial.BOW, LootMaterial.CROSSBOW);
 
         // Tool Particle
@@ -393,17 +396,17 @@ public class AcuteLoot extends JavaPlugin {
         // Midas Touch
         LootSpecialEffect.registerEffect(new MidasEffect("midas", 26, Collections.singletonList(LootMaterial.CHEST_PLATE), this));
 
-        if (serverVersion >= 17) {
-            //Light Walker
-            registerEffect(new BlockTrailEffect("light-walker", 20, Collections.singletonList(LootMaterial.BOOTS), this));
+        //Light Walker
+        registerEffect(new BlockTrailEffect("light-walker", 20, Collections.singletonList(LootMaterial.BOOTS), this));
 
-            // Tool Particle
-            registerEffect(new ToolParticleEffect("weapons_spark", 21, axeSwordMat, XParticle.ELECTRIC_SPARK.get(), false, this));
-            registerEffect(new ToolParticleEffect("weapons_glow", 22, axeSwordMat, XParticle.GLOW.get(), false, this));
-            registerEffect(new ToolParticleEffect("weapons_ink", 23, axeSwordMat, XParticle.GLOW_SQUID_INK.get(), false, this));
-            registerEffect(new ToolParticleEffect("weapons_spore", 25, axeSwordMat, XParticle.SPORE_BLOSSOM_AIR.get(), false, this));
-        }
+        // Tool Particle
+        registerEffect(new ToolParticleEffect("weapons_spark", 21, axeSwordMat, XParticle.ELECTRIC_SPARK.get(), false, this));
+        registerEffect(new ToolParticleEffect("weapons_glow", 22, axeSwordMat, XParticle.GLOW.get(), false, this));
+        registerEffect(new ToolParticleEffect("weapons_ink", 23, axeSwordMat, XParticle.GLOW_SQUID_INK.get(), false, this));
+        registerEffect(new ToolParticleEffect("weapons_spore", 25, axeSwordMat, XParticle.SPORE_BLOSSOM_AIR.get(), false, this));
 
+        // Deluminator
+        registerEffect(new DeluminatorEffect("weapons_deluminator", 101, Arrays.asList(LootMaterial.PICK, LootMaterial.SHOVEL, LootMaterial.AXE, LootMaterial.HOE, LootMaterial.SWORD), this));
 
 
         // Rebuild the effect chance pool
@@ -536,32 +539,9 @@ public class AcuteLoot extends JavaPlugin {
     }
 
     private void createMaterials(AcuteLoot plugin, String path) {
-        lootMaterials = new ArrayList<>();
-        try (Stream<String> stream = Files.lines(Paths.get(path))) {
-            List<String> lines = stream.collect(Collectors.toList());
-            for (String line : lines) {
-                if (!line.contains("#") && !line.trim().equals("")) {
-                    String[] materialStrings = line.split(",");
-                    for (String material : materialStrings) {
-                        material = material.trim();
-                        if (!material.equals("")) {
-                            try {
-                                Material mat = Material.matchMaterial(material);
-                                if (mat != null) {
-                                    lootMaterials.add(mat);
-                                } else {
-                                    throw new NullPointerException();
-                                }
-                            } catch (IllegalArgumentException | NullPointerException e) {
-                                plugin.getLogger()
-                                      .warning(material +
-                                              " not valid material for server version: " +
-                                              Bukkit.getBukkitVersion() + ". Skipping...");
-                            }
-                        }
-                    }
-                }
-            }
+        try {
+            lootMaterials = acute.loot.Util.readMaterialsFile(Files.lines(Paths.get(path)).collect(Collectors.toList()),
+                    plugin.getLogger()::warning);
         } catch (IOException e) {
             e.printStackTrace();
             plugin.getLogger()

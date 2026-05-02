@@ -1,10 +1,10 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XSound;
 import com.github.phillip.h.acutelib.util.Util;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -95,7 +95,7 @@ public class SalvagerGui implements Listener {
 
     private void denyUiClick(Player player, String reason) {
         player.sendMessage(AcuteLoot.CHAT_PREFIX + reason);
-        player.playSound(player.getLocation(), Sound.ENTITY_ARMOR_STAND_HIT, 1, 1);
+        XSound.ENTITY_ARMOR_STAND_HIT.play(player, 1.0f, 1.0f);
     }
 
     @EventHandler
@@ -192,7 +192,7 @@ public class SalvagerGui implements Listener {
                                                     if (plugin.getConfig().getBoolean(dropIdNode + "give-item")) {
                                                         slotsToGive.add(slot);
                                                     }
-                                                    player.playSound(player.getLocation(), Sound.BLOCK_SMITHING_TABLE_USE, 1, 1);
+                                                    XSound.BLOCK_SMITHING_TABLE_USE.play(player, 1.0f, 1.0f);
                                                     inv.setItem(53, createItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN +
                                                             "Confirm"));
                                                     salvaged = inv.getItem(13);
@@ -226,7 +226,7 @@ public class SalvagerGui implements Listener {
             event.setCancelled(true);
         } else if (event.getRawSlot() == 53) {
             if (salvaged != null && salvaged.equals(inv.getItem(13))) {
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
+                XSound.ENTITY_EXPERIENCE_ORB_PICKUP.play(player, 1.0f, 1.5f);
                 inv.setItem(13, null);
                 for (int slot : slotsToGive) {
                     if (inv.getItem(slot) != null) {
@@ -269,7 +269,7 @@ public class SalvagerGui implements Listener {
         } else if (event.getRawSlot() >= 54) {
             // Do nothing because it's in the player's own inventory
         } else {
-            player.playSound(player.getLocation(), Sound.ENTITY_ARMOR_STAND_HIT, 1, 1);
+            XSound.ENTITY_ARMOR_STAND_HIT.play(player, 1.0f, 1.0f);
             event.setCancelled(true);
         }
     }

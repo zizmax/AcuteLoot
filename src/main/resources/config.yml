@@ -114,6 +114,10 @@ loot-category-lore:
     - "&7Shield"
   elytra:
     - "&7Elytra"
+  mace:
+    - "&7Mace"
+  spear:
+    - "&7Spear"
 
 # Loot Tables define different generators for AcuteLoot.
 # Loot Tables can be used in loot rules.
@@ -393,6 +397,10 @@ effects:
       enabled: true
     water-splash:
       name: "Splash"
+      chance: 30
+      enabled: true
+    deluminator:
+      name: "Deluminator"
       chance: 30
       enabled: true
 

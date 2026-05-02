@@ -24,6 +24,9 @@ Optional:
 * Edit .txt files in the /names folder that was created
 * `/al reload` or restart server
 
+**Migration Note (v2.0+):**
+AcuteLoot now uses a unified `materials.txt` file for all Minecraft versions. If you previously had custom materials in `materials1.15.txt`, `materials1.16.txt`, or `materials1.17.txt`, you should manually copy those entries into the new `materials.txt` file. The old version-specific files are now deprecated and ignored.
+
 
 Support & Feature Suggestions
 -------

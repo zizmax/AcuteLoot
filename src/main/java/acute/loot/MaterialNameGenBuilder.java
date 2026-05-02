@@ -37,6 +37,8 @@ public class MaterialNameGenBuilder {
     private String genericFile;
     private String shieldFile;
     private String elytraFile;
+    private String maceFile;
+    private String spearFile;
 
     private String prefix = "";
 
@@ -64,6 +66,8 @@ public class MaterialNameGenBuilder {
         mapping.put(LootMaterial.GENERIC, genericFile);
         mapping.put(LootMaterial.SHIELD, shieldFile);
         mapping.put(LootMaterial.ELYTRA, elytraFile);
+        mapping.put(LootMaterial.MACE, maceFile);
+        mapping.put(LootMaterial.SPEAR, spearFile);
 
         final Map<String, NameGenerator> map = mapping.entrySet().stream().collect(Collectors.toMap(
                 e -> e.getKey().name(),
@@ -94,7 +98,9 @@ public class MaterialNameGenBuilder {
                 .helmetFile(DEFAULT_HELMET_NAME_FILE)
                 .genericFile(DEFAULT_GENERIC_NAME_FILE)
                 .shieldFile(DEFAULT_SHIELD_NAME_FILE)
-                .elytraFile(DEFAULT_ELYTRA_NAME_FILE);
+                .elytraFile(DEFAULT_ELYTRA_NAME_FILE)
+                .maceFile(DEFAULT_MACE_NAME_FILE)
+                .spearFile(DEFAULT_SPEAR_NAME_FILE);
 
     }
 
@@ -114,4 +120,6 @@ public class MaterialNameGenBuilder {
     public static final String DEFAULT_GENERIC_NAME_FILE = "generic.txt";
     public static final String DEFAULT_SHIELD_NAME_FILE = "shields.txt";
     public static final String DEFAULT_ELYTRA_NAME_FILE = "elytras.txt";
+    public static final String DEFAULT_MACE_NAME_FILE = "maces.txt";
+    public static final String DEFAULT_SPEAR_NAME_FILE = "spears.txt";
 }

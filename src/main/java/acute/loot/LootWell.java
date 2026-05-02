@@ -1,9 +1,9 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XSound;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -65,7 +65,7 @@ public class LootWell {
                                                                                                  .getItemMeta()
                                                                                                  .getDisplayName())));
                                     //player.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, well.add(0, .25, 0), 100);
-                                    player.getWorld().playSound(well, Sound.ENTITY_GENERIC_EXPLODE, 1f, 2.5f);
+                                    XSound.ENTITY_GENERIC_EXPLODE.play(well, 1.0f, 2.5f);
                                 }
                             }
                         }

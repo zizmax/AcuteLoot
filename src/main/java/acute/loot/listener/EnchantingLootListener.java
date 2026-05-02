@@ -79,6 +79,12 @@ public class EnchantingLootListener implements Listener {
             case CROSSBOW:
             case FISHING_ROD:
                 return 250;
+            case MACE:
+            case SPEAR:
+            case SWORD:
+            case AXE:
+            case BOW:
+            case TRIDENT:
             default:
                 return 300;
         }

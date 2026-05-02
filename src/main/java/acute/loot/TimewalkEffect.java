@@ -1,9 +1,9 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.particles.XParticle;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -42,7 +42,7 @@ public class TimewalkEffect extends AcuteLootSpecialEffect {
             ItemMeta meta = boots.getItemMeta();
             if (((Damageable) meta).getDamage() > boots.getType().getMaxDurability()) {
                 player.getInventory().setBoots(null);
-                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
+                XSound.ENTITY_ITEM_BREAK.play(player, 1.0f, 1.0f);
                 return;
             }
             ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig()

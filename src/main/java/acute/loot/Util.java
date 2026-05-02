@@ -8,6 +8,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -170,27 +171,27 @@ public final class Util {
 
     public static List<Material> readMaterialsFile(final List<String> lines, final Consumer<String> logger) {
         final List<Material> lootMaterials = new ArrayList<>();
+        final List<String> skippedMaterials = new ArrayList<>();
         for (String line : lines) {
             if (!line.contains("#") && !line.trim().equals("")) {
                 String[] materialStrings = line.split(",");
                 for (String material : materialStrings) {
                     material = material.trim();
                     if (!material.equals("")) {
-                        try {
-                            Material mat = Material.matchMaterial(material);
-                            if (mat != null) {
-                                lootMaterials.add(mat);
-                            } else {
-                                throw new NullPointerException();
-                            }
-                        } catch (IllegalArgumentException | NullPointerException e) {
-                            logger.accept(material +
-                                            " not valid material for server version: " +
-                                            Bukkit.getBukkitVersion() + ". Skipping...");
+                        Optional<Material> mat = XMaterial.matchXMaterial(material)
+                                                          .map(XMaterial::parseMaterial);
+                        if (mat.isPresent()) {
+                            lootMaterials.add(mat.get());
+                        } else {
+                            skippedMaterials.add(material);
                         }
                     }
                 }
             }
+        }
+        if (!skippedMaterials.isEmpty()) {
+            logger.accept("Skipped " + skippedMaterials.size() + " materials not valid for server version: " +
+                    Bukkit.getBukkitVersion());
         }
         return lootMaterials;
     }
