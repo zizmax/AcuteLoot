@@ -26,7 +26,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download "${{ inputs.tag }}" --pattern "${{ inputs.file }}" --dir release
+          gh release download "${{ inputs.tag }}" --repo "${{ github.repository }}" --pattern "${{ inputs.file }}" --dir release
 
       - name: Publish to Modrinth and CurseForge
         uses: Kir-Antipov/mc-publish@v3.3
