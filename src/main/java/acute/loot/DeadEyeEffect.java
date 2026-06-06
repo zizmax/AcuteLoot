@@ -2,6 +2,7 @@ package acute.loot;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XPotion;
+import com.cryptomorin.xseries.XSound;
 import com.cryptomorin.xseries.particles.XParticle;
 import com.github.phillip.h.acutelib.util.Util;
 import net.md_5.bungee.api.ChatMessageType;
@@ -46,14 +47,14 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
             Player player = ((PlayerInteractEvent) origEvent).getPlayer();
             ItemStack item = player.getInventory().getItemInMainHand();
             if (deadEyeArrowsShot.get(player) != null && deadEyeArrowsShot.get(player) <= -1) {
-                player.playSound(player.getEyeLocation(), Sound.BLOCK_LANTERN_BREAK, 1, 1);
+                XSound.BLOCK_LANTERN_BREAK.play(player, 1.0f, 1.0f);
                 return;
             }
 
             int deadEyeLength = plugin.getConfig().getInt("effects.dead-eye.effect-time");
             if (item.getType().equals(Material.BOW)) {
                 if (deadEyeArrowsShot.containsKey(player)) {
-                    player.playSound(player.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, .5f, 1);
+                    XSound.ENTITY_EXPERIENCE_ORB_PICKUP.play(player, 0.5f, 1.0f);
                     deadEyeArrowsShot.replace(player, deadEyeArrowsShot.get(player) + 1);
                     final List<Location> locations = Util.getLine(player.getEyeLocation(), 30, .3);
                     for (int i = 0; i < locations.size(); i++) {
@@ -132,7 +133,7 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                                 player.spigot()
                                                       .sendMessage(ChatMessageType.ACTION_BAR,
                                                       TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow"));
-                                                player.playSound(player.getEyeLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
+                                                XSound.ENTITY_ITEM_BREAK.play(player, 1.0f, 1.0f);
                                             }
                                             deadEyeArrowsShot.replace(player, -3);
                                             return;
@@ -152,7 +153,7 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                             }
                                             if (((Damageable) bowMeta).getDamage() > bow.getType().getMaxDurability()) {
                                                 player.getInventory().setBoots(null);
-                                                player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
+                                                XSound.ENTITY_ITEM_BREAK.play(player, 1.0f, 1.0f);
                                                 deadEyeArrowsShot.replace(player, -3);
                                                 player.getInventory().setItem(bowSlot, null);
                                                 return;
@@ -176,8 +177,7 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                         }
                                         arrow.setMetadata("deadEye", new FixedMetadataValue(plugin, true));
                                         arrow.setCritical(true);
-                                        player.getWorld()
-                                              .playSound(player.getEyeLocation(), Sound.ENTITY_ARROW_SHOOT, 1, 1);
+                                        XSound.ENTITY_ARROW_SHOOT.play(player.getEyeLocation(), 1.0f, 1.0f);
                                         if (plugin.getConfig().getBoolean("effects.dead-eye.vanilla-enchantments")) {
                                             if (bow.getEnchantments().containsKey(XEnchantment.INFINITY.get())) {
                                                 arrow.setPickupStatus(AbstractArrow.PickupStatus.DISALLOWED);
@@ -199,14 +199,14 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                             player.spigot()
                                                   .sendMessage(ChatMessageType.ACTION_BAR,
                                                   TextComponent.fromLegacyText(ChatColor.DARK_RED + "Out of arrows"));
-                                            player.playSound(player.getEyeLocation(), Sound.ENTITY_VILLAGER_WORK_FLETCHER, 1, 1);
+                                            XSound.ENTITY_VILLAGER_WORK_FLETCHER.play(player, 1.0f, 1.0f);
                                             deadEyeArrowsShot.replace(player, -2);
                                         } else if (deadEyeArrowsShot.get(player) >= -1 && player.getInventory()
                                                                                                 .contains(Material.ARROW)) {
                                             player.spigot()
                                                   .sendMessage(ChatMessageType.ACTION_BAR,
                                                           TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow"));
-                                            player.playSound(player.getEyeLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
+                                            XSound.ENTITY_ITEM_BREAK.play(player, 1.0f, 1.0f);
                                             deadEyeArrowsShot.replace(player, -3);
                                         } else if (deadEyeArrowsShot.get(player) >= -1 && (!player.getInventory()
                                                                                                   .contains(Material.ARROW) && !player
@@ -215,7 +215,7 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                             player.spigot()
                                                   .sendMessage(ChatMessageType.ACTION_BAR,
                                                           TextComponent.fromLegacyText(ChatColor.DARK_RED + "No bow or arrows"));
-                                            player.playSound(player.getEyeLocation(), Sound.ENTITY_ITEM_BREAK, 1, 1);
+                                            XSound.ENTITY_ITEM_BREAK.play(player, 1.0f, 1.0f);
                                             deadEyeArrowsShot.replace(player, -4);
                                         }
 
@@ -242,8 +242,8 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                     bowLore.add(ChatColor.GREEN + "Activated");
                     bowMeta.setLore(bowLore);
                     player.getInventory().getItemInMainHand().setItemMeta(bowMeta);
-                    player.playSound(player.getEyeLocation(), Sound.AMBIENT_UNDERWATER_LOOP, 2, 1);
-                    player.playSound(player.getEyeLocation(), Sound.BLOCK_CAMPFIRE_CRACKLE, 2, 1);
+                    XSound.AMBIENT_UNDERWATER_LOOP.play(player, 2.0f, 1.0f);
+                    XSound.BLOCK_CAMPFIRE_CRACKLE.play(player, 2.0f, 1.0f);
                     List<Entity> entities = player.getNearbyEntities(20, 20, 20);
                     for (Entity entity : entities) {
                         if (entity instanceof LivingEntity) {
@@ -269,8 +269,8 @@ public class DeadEyeEffect extends AcuteLootSpecialEffect {
                                 }
 
                             }
-                            player.stopSound(Sound.AMBIENT_UNDERWATER_LOOP);
-                            player.stopSound(Sound.BLOCK_CAMPFIRE_CRACKLE);
+                            XSound.AMBIENT_UNDERWATER_LOOP.stopSound(player);
+                            XSound.BLOCK_CAMPFIRE_CRACKLE.stopSound(player);
                             player.spigot()
                                   .sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.GOLD +
                                           "[" + ChatColor.RED + "Dead Eye" + ChatColor.GOLD + "]"));

@@ -1,5 +1,6 @@
 package acute.loot.economy;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -15,7 +16,10 @@ public class CostParser {
             case "xp":
                 return new LevelCost(cost);
             case "item":
-                return new ItemCost(Material.valueOf(configuration.getString("material").toUpperCase()), cost);
+                Material material = XMaterial.matchXMaterial(configuration.getString("material"))
+                                             .map(XMaterial::parseMaterial)
+                                             .orElse(Material.EMERALD);
+                return new ItemCost(material, cost);
         }
         throw new IllegalArgumentException("Unknown mode" + mode);
     }

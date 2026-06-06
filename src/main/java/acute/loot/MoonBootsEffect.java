@@ -1,12 +1,12 @@
 package acute.loot;
 
-import org.bukkit.Sound;
+import com.cryptomorin.xseries.XPotion;
+import com.cryptomorin.xseries.XSound;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.player.PlayerStatisticIncrementEvent;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.List;
 
@@ -26,9 +26,9 @@ public class MoonBootsEffect extends AcuteLootSpecialEffect {
             PlayerStatisticIncrementEvent event = (PlayerStatisticIncrementEvent) origEvent;
             Player player = event.getPlayer();
             if (event.getStatistic() == Statistic.JUMP) {
-                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_SLIME_JUMP, 2, 1);
+                XSound.ENTITY_SLIME_JUMP.play(player.getLocation(), 2.0f, 1.0f);
                 player.setVelocity(player.getVelocity().multiply(1.2));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_FALLING, 20, 5, true));
+                player.addPotionEffect(new PotionEffect(XPotion.SLOW_FALLING.getPotionEffectType(), 20, 5, true));
 
             }
         }

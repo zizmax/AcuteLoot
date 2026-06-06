@@ -4,8 +4,8 @@ import acute.loot.AcuteLoot;
 import acute.loot.LootMaterial;
 import acute.loot.economy.Cost;
 import acute.loot.economy.CostParser;
+import com.cryptomorin.xseries.XSound;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -41,7 +41,7 @@ public class RerollCommand extends AcuteLootCommand<Player> {
                     if (cost.pay(sender)) {
                         plugin().lootGenerator.createLoot(item, AcuteLoot.random.nextDouble());
                         sender.sendMessage(CHAT_PREFIX + "Reroll successful!");
-                        sender.playSound(sender.getEyeLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0f, 1.0f);
+                        XSound.ENTITY_EXPERIENCE_ORB_PICKUP.play(sender, 1.0f, 1.0f);
                     } else {
                         sender.sendMessage(CHAT_PREFIX + cost.notEnoughDescription());
                     }

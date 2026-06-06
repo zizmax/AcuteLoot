@@ -26,3 +26,6 @@ Ignored paths
 /target/
 Ignored paths
 api_example/target/
+
+/roadmap/
+/.ai-scratchpad.md

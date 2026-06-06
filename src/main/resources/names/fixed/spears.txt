@@ -1,0 +1,7 @@
+Spear
+Pike
+Lance
+Javelin
+Harpoon
+Glaive
+Halberd

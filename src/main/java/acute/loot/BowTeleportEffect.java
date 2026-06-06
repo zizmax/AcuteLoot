@@ -1,9 +1,9 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XSound;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -45,7 +45,7 @@ public class BowTeleportEffect extends AcuteLootSpecialEffect {
             }
 
             arrow.addPassenger(launchee);
-            launchee.playSound(launchee.getLocation(), Sound.ENTITY_FIREWORK_ROCKET_LAUNCH, 1, 1);
+            XSound.ENTITY_FIREWORK_ROCKET_LAUNCH.play(launchee, 1.0f, 1.0f);
 
             Player finalLaunchee = launchee;
             new BukkitRunnable() {
@@ -53,7 +53,7 @@ public class BowTeleportEffect extends AcuteLootSpecialEffect {
                 public void run() {
                     if ((arrow.isOnGround() || arrow.isDead()) && arrow.getPassengers().contains(finalLaunchee)) {
                         arrow.removePassenger(finalLaunchee);
-                        finalLaunchee.playSound(finalLaunchee.getLocation(), Sound.BLOCK_HONEY_BLOCK_FALL, 1, 1);
+                        XSound.BLOCK_HONEY_BLOCK_FALL.play(finalLaunchee, 1.0f, 1.0f);
                         cancel();
                     }
                 }

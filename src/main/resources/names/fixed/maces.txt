@@ -1,0 +1,6 @@
+Mace
+Maul
+Warhammer
+Greatclub
+Flail
+Morningstar

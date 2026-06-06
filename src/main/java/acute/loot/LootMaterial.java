@@ -1,11 +1,9 @@
 package acute.loot;
 
+import com.cryptomorin.xseries.XMaterial;
 import org.bukkit.Material;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Enum for the type of loot, e.g. SWORD or BOW.
@@ -15,12 +13,13 @@ public enum LootMaterial {
     SWORD, BOW, HELMET, BOOTS, CROSSBOW, // Can have effects (for now)
     PICK, SHOVEL, HOE, AXE, PANTS, CHEST_PLATE, FISHING_ROD, TRIDENT, // Have names only
     SHIELD, ELYTRA, // Only become AcuteLoot from anvils
+    MACE, SPEAR,
     GENERIC, UNKNOWN;
 
-    private static List<Material> genericMaterialsList = Collections.emptyList();
+    private static Set<Material> genericMaterialsList = Collections.emptySet();
 
-    public static void setGenericMaterialsList(final List<Material> genericMaterialsList) {
-        LootMaterial.genericMaterialsList = genericMaterialsList;
+    public static void setGenericMaterialsList(final Collection<Material> genericMaterialsList) {
+        LootMaterial.genericMaterialsList = new HashSet<>(genericMaterialsList);
     }
 
     /*
@@ -37,117 +36,124 @@ public enum LootMaterial {
     static {
         final Map<Material, LootMaterial> matMap = new HashMap<>();
 
-        final boolean has15 = AcuteLoot.serverVersion > 15;
-
         // Swords
-        matMap.put(Material.WOODEN_SWORD, SWORD);
-        matMap.put(Material.STONE_SWORD, SWORD);
-        matMap.put(Material.IRON_SWORD, SWORD);
-        matMap.put(Material.GOLDEN_SWORD, SWORD);
-        matMap.put(Material.DIAMOND_SWORD, SWORD);
-        if (has15) {
-            matMap.put(Material.NETHERITE_SWORD, SWORD);
-        }
+        register(matMap, "WOODEN_SWORD", SWORD);
+        register(matMap, "COPPER_SWORD", SWORD);
+        register(matMap, "STONE_SWORD", SWORD);
+        register(matMap, "IRON_SWORD", SWORD);
+        register(matMap, "GOLDEN_SWORD", SWORD);
+        register(matMap, "DIAMOND_SWORD", SWORD);
+        register(matMap, "NETHERITE_SWORD", SWORD);
 
         // Picks
-        matMap.put(Material.WOODEN_PICKAXE, PICK);
-        matMap.put(Material.STONE_PICKAXE, PICK);
-        matMap.put(Material.IRON_PICKAXE, PICK);
-        matMap.put(Material.GOLDEN_PICKAXE, PICK);
-        matMap.put(Material.DIAMOND_PICKAXE, PICK);
-        if (has15) {
-            matMap.put(Material.NETHERITE_PICKAXE, PICK);
-        }
+        register(matMap, "WOODEN_PICKAXE", PICK);
+        register(matMap, "COPPER_PICKAXE", PICK);
+        register(matMap, "STONE_PICKAXE", PICK);
+        register(matMap, "IRON_PICKAXE", PICK);
+        register(matMap, "GOLDEN_PICKAXE", PICK);
+        register(matMap, "DIAMOND_PICKAXE", PICK);
+        register(matMap, "NETHERITE_PICKAXE", PICK);
 
         // Shovels
-        matMap.put(Material.WOODEN_SHOVEL, SHOVEL);
-        matMap.put(Material.STONE_SHOVEL, SHOVEL);
-        matMap.put(Material.IRON_SHOVEL, SHOVEL);
-        matMap.put(Material.GOLDEN_SHOVEL, SHOVEL);
-        matMap.put(Material.DIAMOND_SHOVEL, SHOVEL);
-        if (has15) {
-            matMap.put(Material.NETHERITE_SHOVEL, SHOVEL);
-        }
+        register(matMap, "WOODEN_SHOVEL", SHOVEL);
+        register(matMap, "COPPER_SHOVEL", SHOVEL);
+        register(matMap, "STONE_SHOVEL", SHOVEL);
+        register(matMap, "IRON_SHOVEL", SHOVEL);
+        register(matMap, "GOLDEN_SHOVEL", SHOVEL);
+        register(matMap, "DIAMOND_SHOVEL", SHOVEL);
+        register(matMap, "NETHERITE_SHOVEL", SHOVEL);
 
         // Axes
-        matMap.put(Material.WOODEN_AXE, AXE);
-        matMap.put(Material.STONE_AXE, AXE);
-        matMap.put(Material.IRON_AXE, AXE);
-        matMap.put(Material.GOLDEN_AXE, AXE);
-        matMap.put(Material.DIAMOND_AXE, AXE);
-        if (has15) {
-            matMap.put(Material.NETHERITE_AXE, AXE);
-        }
+        register(matMap, "WOODEN_AXE", AXE);
+        register(matMap, "COPPER_AXE", AXE);
+        register(matMap, "STONE_AXE", AXE);
+        register(matMap, "IRON_AXE", AXE);
+        register(matMap, "GOLDEN_AXE", AXE);
+        register(matMap, "DIAMOND_AXE", AXE);
+        register(matMap, "NETHERITE_AXE", AXE);
 
         // Hoes
-        matMap.put(Material.WOODEN_HOE, HOE);
-        matMap.put(Material.STONE_HOE, HOE);
-        matMap.put(Material.IRON_HOE, HOE);
-        matMap.put(Material.GOLDEN_HOE, HOE);
-        matMap.put(Material.DIAMOND_HOE, HOE);
-        if (has15) {
-            matMap.put(Material.NETHERITE_HOE, HOE);
-        }
+        register(matMap, "WOODEN_HOE", HOE);
+        register(matMap, "COPPER_HOE", HOE);
+        register(matMap, "STONE_HOE", HOE);
+        register(matMap, "IRON_HOE", HOE);
+        register(matMap, "GOLDEN_HOE", HOE);
+        register(matMap, "DIAMOND_HOE", HOE);
+        register(matMap, "NETHERITE_HOE", HOE);
 
         // Helmets
-        matMap.put(Material.TURTLE_HELMET, HELMET);
-        matMap.put(Material.LEATHER_HELMET, HELMET);
-        matMap.put(Material.CHAINMAIL_HELMET, HELMET);
-        matMap.put(Material.IRON_HELMET, HELMET);
-        matMap.put(Material.GOLDEN_HELMET, HELMET);
-        matMap.put(Material.DIAMOND_HELMET, HELMET);
-        if (has15) {
-            matMap.put(Material.NETHERITE_HELMET, HELMET);
-        }
+        register(matMap, "TURTLE_HELMET", HELMET);
+        register(matMap, "LEATHER_HELMET", HELMET);
+        register(matMap, "COPPER_HELMET", HELMET);
+        register(matMap, "CHAINMAIL_HELMET", HELMET);
+        register(matMap, "IRON_HELMET", HELMET);
+        register(matMap, "GOLDEN_HELMET", HELMET);
+        register(matMap, "DIAMOND_HELMET", HELMET);
+        register(matMap, "NETHERITE_HELMET", HELMET);
 
         // Chest plates
-        matMap.put(Material.LEATHER_CHESTPLATE, CHEST_PLATE);
-        matMap.put(Material.CHAINMAIL_CHESTPLATE, CHEST_PLATE);
-        matMap.put(Material.IRON_CHESTPLATE, CHEST_PLATE);
-        matMap.put(Material.GOLDEN_CHESTPLATE, CHEST_PLATE);
-        matMap.put(Material.DIAMOND_CHESTPLATE, CHEST_PLATE);
-        if (has15) {
-            matMap.put(Material.NETHERITE_CHESTPLATE, CHEST_PLATE);
-        }
+        register(matMap, "LEATHER_CHESTPLATE", CHEST_PLATE);
+        register(matMap, "COPPER_CHESTPLATE", CHEST_PLATE);
+        register(matMap, "CHAINMAIL_CHESTPLATE", CHEST_PLATE);
+        register(matMap, "IRON_CHESTPLATE", CHEST_PLATE);
+        register(matMap, "GOLDEN_CHESTPLATE", CHEST_PLATE);
+        register(matMap, "DIAMOND_CHESTPLATE", CHEST_PLATE);
+        register(matMap, "NETHERITE_CHESTPLATE", CHEST_PLATE);
 
         // Leggings
-        matMap.put(Material.LEATHER_LEGGINGS, PANTS);
-        matMap.put(Material.CHAINMAIL_LEGGINGS, PANTS);
-        matMap.put(Material.IRON_LEGGINGS, PANTS);
-        matMap.put(Material.GOLDEN_LEGGINGS, PANTS);
-        matMap.put(Material.DIAMOND_LEGGINGS, PANTS);
-        if (has15) {
-            matMap.put(Material.NETHERITE_LEGGINGS, PANTS);
-        }
+        register(matMap, "LEATHER_LEGGINGS", PANTS);
+        register(matMap, "COPPER_LEGGINGS", PANTS);
+        register(matMap, "CHAINMAIL_LEGGINGS", PANTS);
+        register(matMap, "IRON_LEGGINGS", PANTS);
+        register(matMap, "GOLDEN_LEGGINGS", PANTS);
+        register(matMap, "DIAMOND_LEGGINGS", PANTS);
+        register(matMap, "NETHERITE_LEGGINGS", PANTS);
 
         // Boots
-        matMap.put(Material.LEATHER_BOOTS, BOOTS);
-        matMap.put(Material.CHAINMAIL_BOOTS, BOOTS);
-        matMap.put(Material.IRON_BOOTS, BOOTS);
-        matMap.put(Material.GOLDEN_BOOTS, BOOTS);
-        matMap.put(Material.DIAMOND_BOOTS, BOOTS);
-        if (has15) {
-            matMap.put(Material.NETHERITE_BOOTS, BOOTS);
-        }
+        register(matMap, "LEATHER_BOOTS", BOOTS);
+        register(matMap, "COPPER_BOOTS", BOOTS);
+        register(matMap, "CHAINMAIL_BOOTS", BOOTS);
+        register(matMap, "IRON_BOOTS", BOOTS);
+        register(matMap, "GOLDEN_BOOTS", BOOTS);
+        register(matMap, "DIAMOND_BOOTS", BOOTS);
+        register(matMap, "NETHERITE_BOOTS", BOOTS);
 
         // Bow
-        matMap.put(Material.BOW, BOW);
+        register(matMap, "BOW", BOW);
 
         // Fishing Rod
-        matMap.put(Material.FISHING_ROD, FISHING_ROD);
+        register(matMap, "FISHING_ROD", FISHING_ROD);
 
         // Crossbow
-        matMap.put(Material.CROSSBOW, CROSSBOW);
+        register(matMap, "CROSSBOW", CROSSBOW);
 
         // Trident
-        matMap.put(Material.TRIDENT, TRIDENT);
+        register(matMap, "TRIDENT", TRIDENT);
 
         // Shield
-        matMap.put(Material.SHIELD, SHIELD);
+        register(matMap, "SHIELD", SHIELD);
 
-        //Elytra
-        matMap.put(Material.ELYTRA, ELYTRA);
+        // Elytra
+        register(matMap, "ELYTRA", ELYTRA);
+
+        // Mace
+        register(matMap, "MACE", MACE);
+
+        // Spear
+        register(matMap, "WOODEN_SPEAR", SPEAR);
+        register(matMap, "STONE_SPEAR", SPEAR);
+        register(matMap, "COPPER_SPEAR", SPEAR);
+        register(matMap, "IRON_SPEAR", SPEAR);
+        register(matMap, "GOLDEN_SPEAR", SPEAR);
+        register(matMap, "DIAMOND_SPEAR", SPEAR);
+        register(matMap, "NETHERITE_SPEAR", SPEAR);
 
         materialMap = Collections.unmodifiableMap(matMap);
+    }
+
+    private static void register(Map<Material, LootMaterial> map, String materialName, LootMaterial category) {
+        XMaterial.matchXMaterial(materialName)
+                 .map(XMaterial::parseMaterial)
+                 .ifPresent(mat -> map.put(mat, category));
     }
 }

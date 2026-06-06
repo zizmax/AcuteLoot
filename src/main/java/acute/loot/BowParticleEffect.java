@@ -2,9 +2,9 @@ package acute.loot;
 
 import com.cryptomorin.xseries.XAttribute;
 import com.cryptomorin.xseries.particles.XParticle;
+import com.cryptomorin.xseries.XSound;
 import org.bukkit.Color;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
@@ -36,6 +36,7 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
 
     @Override
     public void applyEffect(Event origEvent) {
+        if (particle == null) return;
         if (origEvent instanceof EntityShootBowEvent) {
             EntityShootBowEvent event = (EntityShootBowEvent) origEvent;
             Entity arrow = event.getProjectile();
@@ -64,7 +65,7 @@ public class BowParticleEffect extends AcuteLootSpecialEffect {
                     AbstractArrow arrow = (AbstractArrow) event.getDamager();
                     if (arrow.getShooter() instanceof Player) {
                         Player player = (Player) arrow.getShooter();
-                        player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
+                        XSound.BLOCK_ENCHANTMENT_TABLE_USE.play(player, 1.0f, 1.0f);
                     }
                     target.setHealth(healEntity(target, event.getFinalDamage()));
                     event.setDamage(0);

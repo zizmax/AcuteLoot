@@ -2,6 +2,7 @@ package acute.loot.tables;
 
 import acute.loot.AlApi;
 import acute.loot.Util;
+import com.cryptomorin.xseries.XMaterial;
 import com.github.phillip.h.acutelib.collections.IntegerChancePool;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -13,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -28,7 +30,11 @@ public class LootTableParser {
 
         final List<Material> materials = new ArrayList<>();
         if (config.contains("materials")) {
-            config.getStringList("materials").stream().map(Material::matchMaterial).forEach(materials::add);
+            config.getStringList("materials").stream()
+                  .map(m -> XMaterial.matchXMaterial(m).map(XMaterial::parseMaterial))
+                  .filter(o -> o.isPresent())
+                  .map(o -> o.get())
+                  .forEach(materials::add);
         }
         if (config.contains("materials-file")) {
             // Workaround because we moved the file
