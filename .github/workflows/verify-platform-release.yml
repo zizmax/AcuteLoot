@@ -1,0 +1,27 @@
+name: Verify Platform Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Platform version number to verify"
+        required: true
+        default: "2.16.0"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify Modrinth
+        run: |
+          version_json="$(curl -fsSL https://api.modrinth.com/v2/project/Pool7IDt/version | jq --arg version "${{ inputs.version }}" 'map(select(.version_number == $version))[0]')"
+          test "$version_json" != "null"
+          echo "$version_json" | jq '{id, name, version_number, status, featured, date_published, files: [.files[] | {filename, size, url}]}'
+
+      - name: Verify CurseForge
+        env:
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+        run: |
+          version_json="$(curl -fsSL -H "x-api-key: ${CURSEFORGE_TOKEN}" "https://api.curseforge.com/v1/mods/1435207/files?pageSize=50" | jq --arg version "${{ inputs.version }}" '.data | map(select(.displayName == $version or .fileName == ("AcuteLoot-" + $version + ".jar")))[0]')"
+          test "$version_json" != "null"
+          echo "$version_json" | jq '{id, displayName, fileName, isAvailable, fileStatus, fileDate, fileLength, downloadUrl}'
