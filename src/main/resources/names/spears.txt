@@ -1,1 +1,30 @@
-Spear, Pike, Lance, Javelin, Harpoon, Glaive, Halberd, Partisan, Naginata, Spetum, Ranseur, Vouge, Bill, Guisarme, Lochaber Axe, Bardiche, Point, Skewer, Longtooth, Sharpstick, Needle, Spike, Fang, Stinger, Thrust, Pierce, Impaler, Spit, Skewer, Shaft
+Spear
+Pike
+Lance
+Javelin
+Harpoon
+Glaive
+Halberd
+Partisan
+Naginata
+Spetum
+Ranseur
+Vouge
+Bill
+Guisarme
+Lochaber Axe
+Bardiche
+Point
+Skewer
+Longtooth
+Sharpstick
+Needle
+Spike
+Fang
+Stinger
+Thrust
+Pierce
+Impaler
+Spit
+Skewer
+Shaft

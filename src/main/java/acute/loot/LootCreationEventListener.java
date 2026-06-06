@@ -20,7 +20,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.AnvilInventory;
-import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -230,12 +229,11 @@ public class LootCreationEventListener implements Listener {
 
     @EventHandler
     public void anvilListener(PrepareAnvilEvent event) {
-        InventoryView view = event.getView();
-        Player player = (Player) view.getPlayer();
         AnvilInventory inv = event.getInventory();
         if (event.getViewers().isEmpty() || inv.getItem(0) == null) {
             return;
         }
+        Player player = (Player) event.getViewers().get(0);
 
         String origName = getDisplayName(inv.getItem(0));
         ItemStack result = event.getResult();

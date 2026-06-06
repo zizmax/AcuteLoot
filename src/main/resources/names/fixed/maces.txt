@@ -1,1 +1,6 @@
-Mace, Maul, Warhammer, Greatclub, Flail, Morningstar
+Mace
+Maul
+Warhammer
+Greatclub
+Flail
+Morningstar

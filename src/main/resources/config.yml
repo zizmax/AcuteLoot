@@ -401,8 +401,8 @@ effects:
       enabled: true
     deluminator:
       name: "Deluminator"
-      chance: 30
-      enabled: true
+      chance: 0
+      enabled: false
 
     # 1.17+
     glow:

@@ -396,14 +396,16 @@ public class AcuteLoot extends JavaPlugin {
         // Midas Touch
         LootSpecialEffect.registerEffect(new MidasEffect("midas", 26, Collections.singletonList(LootMaterial.CHEST_PLATE), this));
 
-        //Light Walker
-        registerEffect(new BlockTrailEffect("light-walker", 20, Collections.singletonList(LootMaterial.BOOTS), this));
+        if (isServerAtLeast("1.17")) {
+            // Light Walker
+            registerEffect(new BlockTrailEffect("light-walker", 20, Collections.singletonList(LootMaterial.BOOTS), this));
 
-        // Tool Particle
-        registerEffect(new ToolParticleEffect("weapons_spark", 21, axeSwordMat, XParticle.ELECTRIC_SPARK.get(), false, this));
-        registerEffect(new ToolParticleEffect("weapons_glow", 22, axeSwordMat, XParticle.GLOW.get(), false, this));
-        registerEffect(new ToolParticleEffect("weapons_ink", 23, axeSwordMat, XParticle.GLOW_SQUID_INK.get(), false, this));
-        registerEffect(new ToolParticleEffect("weapons_spore", 25, axeSwordMat, XParticle.SPORE_BLOSSOM_AIR.get(), false, this));
+            // Tool Particle
+            registerEffect(new ToolParticleEffect("weapons_spark", 21, axeSwordMat, XParticle.ELECTRIC_SPARK.get(), false, this));
+            registerEffect(new ToolParticleEffect("weapons_glow", 22, axeSwordMat, XParticle.GLOW.get(), false, this));
+            registerEffect(new ToolParticleEffect("weapons_ink", 23, axeSwordMat, XParticle.GLOW_SQUID_INK.get(), false, this));
+            registerEffect(new ToolParticleEffect("weapons_spore", 25, axeSwordMat, XParticle.SPORE_BLOSSOM_AIR.get(), false, this));
+        }
 
         // Deluminator
         registerEffect(new DeluminatorEffect("weapons_deluminator", 101, Arrays.asList(LootMaterial.PICK, LootMaterial.SHOVEL, LootMaterial.AXE, LootMaterial.HOE, LootMaterial.SWORD), this));
@@ -417,10 +419,12 @@ public class AcuteLoot extends JavaPlugin {
             if (debug) {
                 getLogger().info(effect.getName() + ": " + chance);
             }
-            effectChancePool.addDiscardingInvalid(effect, chance);
-            // Add "tab completer-safe" name to HashMap of effects
-            //FIXME: Append namespace for duplicate effect names across different namespaces
-            effectNames.put(effect.getName(), effect.effectId().toString());
+            if (isEffectEnabled(effect)) {
+                effectChancePool.addDiscardingInvalid(effect, chance);
+                // Add "tab completer-safe" name to HashMap of effects
+                //FIXME: Append namespace for duplicate effect names across different namespaces
+                effectNames.put(effect.getName(), effect.effectId().toString());
+            }
         }
 
         // Dev Effects (currently being tested)
@@ -678,6 +682,42 @@ public class AcuteLoot extends JavaPlugin {
                         "Effect may not work as expected/won't do anything");
             }
         }
+    }
+
+    public static boolean isServerAtLeast(final String minimumVersion) {
+        return isVersionAtLeast(Bukkit.getBukkitVersion(), minimumVersion);
+    }
+
+    private boolean isEffectEnabled(final LootSpecialEffect effect) {
+        return getConfig().getBoolean("effects." + effect.getName().replace("_", ".") + ".enabled");
+    }
+
+    static boolean isVersionAtLeast(final String currentVersion, final String minimumVersion) {
+        final int[] current = parseMinecraftVersion(currentVersion);
+        final int[] minimum = parseMinecraftVersion(minimumVersion);
+        final int length = Math.max(current.length, minimum.length);
+        for (int i = 0; i < length; i++) {
+            final int currentPart = i < current.length ? current[i] : 0;
+            final int minimumPart = i < minimum.length ? minimum[i] : 0;
+            if (currentPart != minimumPart) {
+                return currentPart > minimumPart;
+            }
+        }
+        return true;
+    }
+
+    private static int[] parseMinecraftVersion(final String version) {
+        if (version == null) {
+            return new int[] {0};
+        }
+
+        final String baseVersion = version.split("-", 2)[0];
+        final String[] parts = baseVersion.split("\\.");
+        return Arrays.stream(parts)
+                     .map(part -> part.replaceAll("[^0-9].*$", ""))
+                     .filter(part -> !part.isEmpty())
+                     .mapToInt(Integer::parseInt)
+                     .toArray();
     }
 
     public boolean hasPermission(CommandSender sender, String node) {

@@ -191,8 +191,16 @@ public final class Util {
         }
         if (!skippedMaterials.isEmpty()) {
             logger.accept("Skipped " + skippedMaterials.size() + " materials not valid for server version: " +
-                    Bukkit.getBukkitVersion());
+                    safeBukkitVersion() + ": " + skippedMaterials);
         }
         return lootMaterials;
+    }
+
+    private static String safeBukkitVersion() {
+        try {
+            return Bukkit.getBukkitVersion();
+        } catch (RuntimeException | LinkageError e) {
+            return "unknown";
+        }
     }
 }

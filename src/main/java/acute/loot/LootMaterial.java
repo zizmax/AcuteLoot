@@ -38,6 +38,7 @@ public enum LootMaterial {
 
         // Swords
         register(matMap, "WOODEN_SWORD", SWORD);
+        register(matMap, "COPPER_SWORD", SWORD);
         register(matMap, "STONE_SWORD", SWORD);
         register(matMap, "IRON_SWORD", SWORD);
         register(matMap, "GOLDEN_SWORD", SWORD);
@@ -46,6 +47,7 @@ public enum LootMaterial {
 
         // Picks
         register(matMap, "WOODEN_PICKAXE", PICK);
+        register(matMap, "COPPER_PICKAXE", PICK);
         register(matMap, "STONE_PICKAXE", PICK);
         register(matMap, "IRON_PICKAXE", PICK);
         register(matMap, "GOLDEN_PICKAXE", PICK);
@@ -54,6 +56,7 @@ public enum LootMaterial {
 
         // Shovels
         register(matMap, "WOODEN_SHOVEL", SHOVEL);
+        register(matMap, "COPPER_SHOVEL", SHOVEL);
         register(matMap, "STONE_SHOVEL", SHOVEL);
         register(matMap, "IRON_SHOVEL", SHOVEL);
         register(matMap, "GOLDEN_SHOVEL", SHOVEL);
@@ -62,6 +65,7 @@ public enum LootMaterial {
 
         // Axes
         register(matMap, "WOODEN_AXE", AXE);
+        register(matMap, "COPPER_AXE", AXE);
         register(matMap, "STONE_AXE", AXE);
         register(matMap, "IRON_AXE", AXE);
         register(matMap, "GOLDEN_AXE", AXE);
@@ -70,6 +74,7 @@ public enum LootMaterial {
 
         // Hoes
         register(matMap, "WOODEN_HOE", HOE);
+        register(matMap, "COPPER_HOE", HOE);
         register(matMap, "STONE_HOE", HOE);
         register(matMap, "IRON_HOE", HOE);
         register(matMap, "GOLDEN_HOE", HOE);
@@ -79,6 +84,7 @@ public enum LootMaterial {
         // Helmets
         register(matMap, "TURTLE_HELMET", HELMET);
         register(matMap, "LEATHER_HELMET", HELMET);
+        register(matMap, "COPPER_HELMET", HELMET);
         register(matMap, "CHAINMAIL_HELMET", HELMET);
         register(matMap, "IRON_HELMET", HELMET);
         register(matMap, "GOLDEN_HELMET", HELMET);
@@ -87,6 +93,7 @@ public enum LootMaterial {
 
         // Chest plates
         register(matMap, "LEATHER_CHESTPLATE", CHEST_PLATE);
+        register(matMap, "COPPER_CHESTPLATE", CHEST_PLATE);
         register(matMap, "CHAINMAIL_CHESTPLATE", CHEST_PLATE);
         register(matMap, "IRON_CHESTPLATE", CHEST_PLATE);
         register(matMap, "GOLDEN_CHESTPLATE", CHEST_PLATE);
@@ -95,6 +102,7 @@ public enum LootMaterial {
 
         // Leggings
         register(matMap, "LEATHER_LEGGINGS", PANTS);
+        register(matMap, "COPPER_LEGGINGS", PANTS);
         register(matMap, "CHAINMAIL_LEGGINGS", PANTS);
         register(matMap, "IRON_LEGGINGS", PANTS);
         register(matMap, "GOLDEN_LEGGINGS", PANTS);
@@ -103,6 +111,7 @@ public enum LootMaterial {
 
         // Boots
         register(matMap, "LEATHER_BOOTS", BOOTS);
+        register(matMap, "COPPER_BOOTS", BOOTS);
         register(matMap, "CHAINMAIL_BOOTS", BOOTS);
         register(matMap, "IRON_BOOTS", BOOTS);
         register(matMap, "GOLDEN_BOOTS", BOOTS);
@@ -138,7 +147,6 @@ public enum LootMaterial {
         register(matMap, "GOLDEN_SPEAR", SPEAR);
         register(matMap, "DIAMOND_SPEAR", SPEAR);
         register(matMap, "NETHERITE_SPEAR", SPEAR);
-        register(matMap, "SPEAR", SPEAR);
 
         materialMap = Collections.unmodifiableMap(matMap);
     }

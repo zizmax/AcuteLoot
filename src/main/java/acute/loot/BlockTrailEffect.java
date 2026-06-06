@@ -1,9 +1,9 @@
 package acute.loot;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Light;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -65,8 +65,7 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
                 // Light Walker effect
                 Material lightMat = XMaterial.LIGHT.parseMaterial();
                 if (lightMat != null) {
-                    trailBlockData = lightMat.createBlockData();
-                    ((Light) trailBlockData).setLevel(12);
+                    trailBlockData = createLightBlockData(lightMat);
                     if (random.nextDouble() <= 0.2) {
                         ItemMeta meta = boots.getItemMeta();
                         ((Damageable) meta).setDamage(((Damageable) meta).getDamage() + plugin.getConfig()
@@ -107,5 +106,13 @@ public class BlockTrailEffect extends AcuteLootSpecialEffect {
             XMaterial.WITHER_ROSE, XMaterial.LILAC,
             XMaterial.ROSE_BUSH, XMaterial.PEONY
     };
+
+    private static BlockData createLightBlockData(final Material lightMat) {
+        try {
+            return Bukkit.createBlockData(lightMat, "[level=12]");
+        } catch (IllegalArgumentException e) {
+            return lightMat.createBlockData();
+        }
+    }
 
 }

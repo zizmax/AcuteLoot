@@ -1,1 +1,7 @@
-Spear, Pike, Lance, Javelin, Harpoon, Glaive, Halberd
+Spear
+Pike
+Lance
+Javelin
+Harpoon
+Glaive
+Halberd
