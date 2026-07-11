@@ -4,6 +4,9 @@ AcuteLoot adds customizable, RPG style loot to Minecraft servers with over **6 B
 
 [![Build](https://github.com/zizmax/AcuteLoot/actions/workflows/maven.yml/badge.svg)](https://github.com/zizmax/AcuteLoot/actions/workflows/maven.yml)
 
+[Release publishing notes](docs/release-publishing.md) document the Modrinth and
+CurseForge mc-publish workflows and verification steps.
+
 Features
 --------
 * **Custom Name Generator** - 6 billion not enough for you? Add or remove names from the algorithm as you see fit
